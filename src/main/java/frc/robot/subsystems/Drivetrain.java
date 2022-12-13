@@ -63,8 +63,8 @@ public class Drivetrain extends SubsystemBase {
             .withSize(2, 6).withPosition(0, config.drivingID - 10),
          
          moduleConfig, Mk4SwerveModuleHelper.GearRatio.L2,
-         config.drivingID, config.steeringID, //: drving & steering ID
-         config.encoderID, config.offset.getRadians() //: encoder ID & steering ID are the same
+         config.drivingID, config.steeringID, //: drving & steering IDs
+         config.encoderID, config.offset.getRadians() //: encoder ID and offset (rotation)
       );
    }
 
