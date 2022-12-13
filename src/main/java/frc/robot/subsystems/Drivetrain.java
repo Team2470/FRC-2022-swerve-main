@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Drive.ModuleConfig;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
@@ -31,32 +32,39 @@ public class Drivetrain extends SubsystemBase {
       var imuShuffleboard = tab.getLayout("IMU", BuiltInLayouts.kList)
          .withSize(2, 2).withPosition(8, 0);
       
-      imuShuffleboard.addNumber( 
-         "Heading", () -> getHeading().getDegrees() 
-      );
+      imuShuffleboard.addNumber
+         ( "Heading", () -> getHeading().getDegrees() );
 
-      Mk4ModuleConfiguration moduleConfiguration = new Mk4ModuleConfiguration();
-      moduleConfiguration.setNominalVoltage(Constants.Drive.kDriveVoltageCompensation);
+      Mk4ModuleConfiguration moduleConfig = new Mk4ModuleConfiguration();
+      moduleConfig.setNominalVoltage(Constants.Drive.kDriveVoltageCompensation);
 
       //: Swerve setup
-      this.m_frontLeft = this.creatModule("Front Left Module", 10, moduleConfiguration, tab);
-      this.m_frontRight = this.creatModule("Front Right Module", 12, moduleConfiguration, tab);
-      this.m_backLeft = this.creatModule("Back Left Module", 14, moduleConfiguration, tab);
-      this.m_backRight = this.creatModule("Back Right Module", 16, moduleConfiguration, tab);
+      this.m_frontLeft = this.creatModule(
+         Constants.Drive.kFrontLeft,
+         moduleConfig, tab
+      );
+      this.m_frontRight = this.creatModule(
+         Constants.Drive.kFrontRight,
+         moduleConfig, tab
+      );
+      this.m_backLeft = this.creatModule(
+         Constants.Drive.kBackLeft,
+         moduleConfig, tab
+      );
+      this.m_backRight = this.creatModule(
+         Constants.Drive.kBackRight,
+         moduleConfig, tab
+      );
    }
 
-   private SwerveModule creatModule(
-      String name, int main_number, 
-      Mk4ModuleConfiguration config, ShuffleboardTab tab
-   ) {
+   private SwerveModule creatModule(ModuleConfig config, Mk4ModuleConfiguration moduleConfig, ShuffleboardTab tab) {
       return Mk4SwerveModuleHelper.createNeo(
-         tab.getLayout(name, BuiltInLayouts.kList)
-            .withSize(2, 6).withPosition(0, main_number - 10),
+         tab.getLayout(config.name, BuiltInLayouts.kList)
+            .withSize(2, 6).withPosition(0, config.drivingID - 10),
          
-         config, Mk4SwerveModuleHelper.GearRatio.L2,
-         main_number, //: drive IDe
-         main_number + 1, //: steering ID
-         11, 0 //: these are constant
+         moduleConfig, Mk4SwerveModuleHelper.GearRatio.L2,
+         config.drivingID, config.steeringID, //: drving & steering ID
+         config.encoderID, config.offset.getRadians() //: encoder ID & steering ID are the same
       );
    }
 

@@ -57,25 +57,61 @@ public final class Constants {
       public static final int kPigeonID = 0;
       public static final CanBus kPigeonCANBus = CanBus.kCanivore;
 
-      public static final int kFrontLeftMotorDriveID = 10;
-      public static final int kFrontLeftMotorSteerID = 11;
-      public static final int kFrontLeftEncoderID = 11;
-      public static final Rotation2d kFrontLeftOffset = Rotation2d.fromDegrees(0);
+      public static class ModuleConfig {
+         public int line, col;
+         public int encoderID, steeringID, drivingID;
+         public String name;
+         public Rotation2d offset;
 
-      public static final int kFrontRightMotorDriveID = 12;
-      public static final int kFrontRightMotorSteerID = 13;
-      public static final int kFrontRightEncoderID = 11;
-      public static final Rotation2d kFrontRightOffset = Rotation2d.fromDegrees(0);
+         public ModuleConfig(String name) {
+            this.name = name;
+         }
 
-      public static final int kRightLeftMotorDriveID = 14;
-      public static final int kRightLeftMotorSteerID = 15;
-      public static final int kRightLeftEncoderID = 11;
-      public static final Rotation2d kRightLeftOffset = Rotation2d.fromDegrees(0);
+         public ModuleConfig setTab(int line, int col) {
+            this.line = line; this.col = col;
+            return this;
+         }
 
-      public static final int kBackRightMotorDriveID = 16;
-      public static final int kBackRightMotorSteerID = 17;
-      public static final int kBackRightEncoderID = 11;
-      public static final Rotation2d kBackRightOffset = Rotation2d.fromDegrees(0);
+         public ModuleConfig setSteeringID(int id) {
+            this.steeringID = id; return this;
+         }
+
+         public ModuleConfig setEncoderID(int id) {
+            this.encoderID = id; return this;
+         }
+         
+         public ModuleConfig setDrivingID(int id) {
+            this.drivingID = id; return this;
+         }
+
+         public ModuleConfig setOffset(double angle) {
+            this.offset = Rotation2d.fromDegrees(angle); 
+            return this;
+         }
+      }
       //: specific module config
+      public static final ModuleConfig kFrontLeft = new ModuleConfig("Front Left")
+         .setDrivingID(10)
+         .setEncoderID(11)
+         .setSteeringID(11)
+         .setOffset(0);
+
+      public static final ModuleConfig kFrontRight = new ModuleConfig("Front Left")
+         .setDrivingID(12)
+         .setEncoderID(13)
+         .setSteeringID(13)
+         .setOffset(0);
+
+      public static final ModuleConfig kBackLeft = new ModuleConfig("Front Left")
+         .setDrivingID(14)
+         .setEncoderID(15)
+         .setSteeringID(15)
+         .setOffset(0);
+
+      public static final ModuleConfig kBackRight = new ModuleConfig("Front Left")
+         .setDrivingID(16)
+         .setEncoderID(17)
+         .setSteeringID(17)
+         .setOffset(0);
    }
 }
