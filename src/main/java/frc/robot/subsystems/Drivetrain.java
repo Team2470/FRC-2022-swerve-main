@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -18,8 +20,7 @@ public class Drivetrain extends SubsystemBase {
 
    //: Hardware
    private final Pigeon2 m_imu;
-   private SwerveModule m_frontLeft, m_frontRight,
-                        m_backLeft,  m_backRight;
+   private SwerveModule[] m_swerve_modules;
 
    public Drivetrain() {
       //: IMU setup
@@ -39,19 +40,19 @@ public class Drivetrain extends SubsystemBase {
       moduleConfig.setNominalVoltage(Constants.Drive.kDriveVoltageCompensation);
 
       //: Swerve setup
-      this.m_frontLeft = this.creatModule(
+      this.m_swerve_modules[0] = this.creatModule(
          Constants.Drive.kFrontLeft,
          moduleConfig, tab
       );
-      this.m_frontRight = this.creatModule(
+      this.m_swerve_modules[1] = this.creatModule(
          Constants.Drive.kFrontRight,
          moduleConfig, tab
       );
-      this.m_backLeft = this.creatModule(
+      this.m_swerve_modules[2] = this.creatModule(
          Constants.Drive.kBackLeft,
          moduleConfig, tab
       );
-      this.m_backRight = this.creatModule(
+      this.m_swerve_modules[3] = this.creatModule(
          Constants.Drive.kBackRight,
          moduleConfig, tab
       );
@@ -66,6 +67,38 @@ public class Drivetrain extends SubsystemBase {
          config.drivingID, config.steeringID, //: drving & steering IDs
          config.encoderID, config.offset.getRadians() //: encoder ID and offset (rotation)
       );
+   }
+
+   public void setModuleStates(SwerveModuleState[] states) {
+      for (int i = 0; i < states.length; i ++) {
+         states[i] = SwerveModuleState.optimize(
+            states[i], new Rotation2d(
+               this.m_swerve_modules[i].getSteerAngle()
+            )
+         );
+
+         this.m_swerve_modules[i].set(
+            states[i].speedMetersPerSecond / 
+               Constants.Drive.kMaxDriveVelocityMetersPerSecond * 
+               Constants.Drive.kDriveVoltageCompensation,
+            states[i].angle.getRadians()
+         );
+      }
+   }
+
+   public void drive(double xSpeed, double ySpeed, double rotation, boolean feildRelative) {
+      ChassisSpeeds chassisSpeeds;
+
+      if (feildRelative)
+         { chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, getHeading());}
+      else
+         { chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotation); }
+
+      setModuleStates(Constants.Drive.kDriveKinematics.toSwerveModuleStates(chassisSpeeds));
+   }
+
+   public void stop() {
+      drive(0, 0, 0, false);
    }
 
    @Override public void periodic() {}
