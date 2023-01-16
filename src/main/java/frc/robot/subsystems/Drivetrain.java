@@ -86,6 +86,16 @@ public class Drivetrain extends SubsystemBase {
       }
    }
 
+   public SwerveModuleState[] getModuleStates() {
+      // Note the order of modules needs to match the order provided to DriveConstants.kDriveKinematics
+      return new SwerveModuleState[]{
+          new SwerveModuleState(m_swerve_modules[0].getDriveVelocity(), new Rotation2d(m_swerve_modules[0].getSteerAngle())),
+          new SwerveModuleState(m_swerve_modules[1].getDriveVelocity(), new Rotation2d(m_swerve_modules[1].getSteerAngle())),
+          new SwerveModuleState(m_swerve_modules[2].getDriveVelocity(), new Rotation2d(m_swerve_modules[2].getSteerAngle())),
+          new SwerveModuleState(m_swerve_modules[3].getDriveVelocity(), new Rotation2d(m_swerve_modules[3].getSteerAngle()))
+      };
+    }
+
    public void drive(double xSpeed, double ySpeed, double rotation, boolean feildRelative) {
       ChassisSpeeds chassisSpeeds;
 
