@@ -6,6 +6,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Drive.ModuleConfig;
@@ -20,7 +21,7 @@ public class Drivetrain extends SubsystemBase {
 
    //: Hardware
    private final Pigeon2 m_imu;
-   private SwerveModule[] m_swerve_modules;
+   private final SwerveModule[] m_swerve_modules = new SwerveModule[4];
 
    public Drivetrain() {
       //: IMU setup
@@ -61,7 +62,7 @@ public class Drivetrain extends SubsystemBase {
    private SwerveModule creatModule(ModuleConfig config, Mk4ModuleConfiguration moduleConfig, ShuffleboardTab tab) {
       return Mk4SwerveModuleHelper.createNeo(
          tab.getLayout(config.name, BuiltInLayouts.kList)
-            .withSize(2, 6).withPosition(0, config.drivingID - 10),
+            .withSize(2, 6).withPosition(config.col, config.line),
          
          moduleConfig, Mk4SwerveModuleHelper.GearRatio.L2,
          config.drivingID, config.steeringID, //: drving & steering IDs
