@@ -99,19 +99,19 @@ public final class Constants {
          .setSteeringID(11)
          .setOffset(0);
 
-      public static final ModuleConfig kFrontRight = new ModuleConfig("Front Left")
+      public static final ModuleConfig kFrontRight = new ModuleConfig("Front Right")
          .setDrivingID(12)
          .setEncoderID(13)
          .setSteeringID(13)
          .setOffset(0);
 
-      public static final ModuleConfig kBackLeft = new ModuleConfig("Front Left")
+      public static final ModuleConfig kBackLeft = new ModuleConfig("Back Left")
          .setDrivingID(14)
          .setEncoderID(15)
          .setSteeringID(15)
          .setOffset(0);
 
-      public static final ModuleConfig kBackRight = new ModuleConfig("Front Left")
+      public static final ModuleConfig kBackRight = new ModuleConfig("Back Right")
          .setDrivingID(16)
          .setEncoderID(17)
          .setSteeringID(17)
