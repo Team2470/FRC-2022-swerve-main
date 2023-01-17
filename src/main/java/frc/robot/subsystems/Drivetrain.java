@@ -40,25 +40,25 @@ public class Drivetrain extends SubsystemBase {
       moduleConfig.setNominalVoltage(Constants.Drive.kDriveVoltageCompensation);
 
       //: Swerve setup
-      this.m_swerve_modules[0] = this.creatModule(
+      this.m_swerve_modules[0] = this.createModule(
          Constants.Drive.kFrontLeft,
          moduleConfig, tab
       );
-      this.m_swerve_modules[1] = this.creatModule(
+      this.m_swerve_modules[1] = this.createModule(
          Constants.Drive.kFrontRight,
          moduleConfig, tab
       );
-      this.m_swerve_modules[2] = this.creatModule(
+      this.m_swerve_modules[2] = this.createModule(
          Constants.Drive.kBackLeft,
          moduleConfig, tab
       );
-      this.m_swerve_modules[3] = this.creatModule(
+      this.m_swerve_modules[3] = this.createModule(
          Constants.Drive.kBackRight,
          moduleConfig, tab
       );
    }
 
-   private SwerveModule creatModule(ModuleConfig config, Mk4ModuleConfiguration moduleConfig, ShuffleboardTab tab) {
+   private SwerveModule createModule(ModuleConfig config, Mk4ModuleConfiguration moduleConfig, ShuffleboardTab tab) {
       return Mk4SwerveModuleHelper.createNeo(
          tab.getLayout(config.name, BuiltInLayouts.kList)
             .withSize(2, 6).withPosition(0, config.drivingID - 10),
