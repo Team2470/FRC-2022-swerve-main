@@ -36,7 +36,7 @@ public class Drivetrain extends SubsystemBase {
       imuShuffleboard.addNumber
          ( "Heading", () -> getHeading().getDegrees() );
 
-      Mk4ModuleConfiguration moduleConfig = new Mk4ModuleConfiguration();
+      Mk4ModuleConfiguration moduleConfig = Mk4ModuleConfiguration.getDefaultSteerNEO();
       moduleConfig.setNominalVoltage(Constants.Drive.kDriveVoltageCompensation);
 
       //: Swerve setup
