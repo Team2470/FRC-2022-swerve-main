@@ -43,7 +43,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new JoystickButton(m_controller,XboxController.Button.kA.value)
     .whileTrue(new IntakeGamePieceCommand(m_intake));
-    new JoystickButton(m_controller,XboxController.Button.kA.value)
+    new JoystickButton(m_controller,XboxController.Button.kB.value)
     .whileTrue(new OuttakeGamePieceCommand(m_intake));
   }
 
