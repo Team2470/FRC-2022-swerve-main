@@ -39,8 +39,8 @@ public final class Constants {
       //: Physical constants (motors, sensors, ...)
       public static final double kDriveVoltageCompensation = 10;
       public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
-      public static final double kWheelBaseLengthMeters = Units.inchesToMeters(21.5);
-      public static final double kTrackWidthMeters = Units.inchesToMeters(26);
+      public static final double kWheelBaseLengthMeters = Units.inchesToMeters(25.5);
+      public static final double kTrackWidthMeters = Units.inchesToMeters(20.5);
 
       public static final double kDriveGearReduction = SdsModuleConfigurations.MK4_L2.getDriveReduction();
 
@@ -58,7 +58,7 @@ public final class Constants {
             new Translation2d(-kWheelBaseLengthMeters / 2, -kTrackWidthMeters / 2));
       //: IMU constants
       public static final int kPigeonID = 0;
-      public static final CanBus kPigeonCANBus = CanBus.kCanivore;
+      public static final CanBus kPigeonCANBus = CanBus.kRoboRIO;
 
       public static class ModuleConfig {
          public int line, col;
@@ -95,26 +95,30 @@ public final class Constants {
       //: specific module config
       public static final ModuleConfig kFrontLeft = new ModuleConfig("Front Left")
          .setDrivingID(10)
-         .setEncoderID(11)
+         .setEncoderID(10)
          .setSteeringID(11)
-         .setOffset(0);
+         .setOffset(-112.5167456318007+180)
+         .setTab(0, 0);
 
-      public static final ModuleConfig kFrontRight = new ModuleConfig("Front Left")
+      public static final ModuleConfig kFrontRight = new ModuleConfig("Front Right")
          .setDrivingID(12)
-         .setEncoderID(13)
+         .setEncoderID(12)
          .setSteeringID(13)
-         .setOffset(0);
+         .setOffset(-121.9921875)
+         .setTab(0, 2);
 
-      public static final ModuleConfig kBackLeft = new ModuleConfig("Front Left")
-         .setDrivingID(14)
-         .setEncoderID(15)
-         .setSteeringID(15)
-         .setOffset(0);
-
-      public static final ModuleConfig kBackRight = new ModuleConfig("Front Left")
+      public static final ModuleConfig kBackLeft = new ModuleConfig("Back Left")
          .setDrivingID(16)
-         .setEncoderID(17)
+         .setEncoderID(16)
          .setSteeringID(17)
-         .setOffset(0);
+         .setOffset(-53.349609375000014)
+         .setTab(0, 4);
+
+      public static final ModuleConfig kBackRight = new ModuleConfig("Back Right")
+         .setDrivingID(14)
+         .setEncoderID(14)
+         .setSteeringID(15)
+         .setOffset(-126.03515625)
+         .setTab(0, 6);
    }
 }
