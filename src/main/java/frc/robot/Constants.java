@@ -117,4 +117,11 @@ public final class Constants {
          .setSteeringID(17)
          .setOffset(0);
    }
+
+
+   public static class ArmJoint {
+   public static final int kSolenoidChannelRatchet = 0;
+   public static final int kMotorID = 10;
+   public static final int kEncoderID = 10;
+   }
 }

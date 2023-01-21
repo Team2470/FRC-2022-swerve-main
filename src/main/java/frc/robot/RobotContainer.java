@@ -5,10 +5,14 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.subsystems.ArmJoint;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -17,15 +21,29 @@ import edu.wpi.first.wpilibj2.command.Command;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  //OI
+  private final XboxController m_controller = new XboxController(0);
+
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final ArmJoint m_armJoint = new ArmJoint();
+
+  private final PneumaticHub m_PneumaticHub = new PneumaticHub();
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    //Configure default commands
+    m_armJoint.setDefaultCommand(new RunCommand(
+      () -> m_armJoint.stop(),
+      m_armJoint
+    ));
+
     // Configure the button bindings
     configureButtonBindings();
+
+    m_PneumaticHub.enableCompressorDigital();
   }
 
   /**
@@ -34,8 +52,13 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    new JoystickButton(m_controller, XboxController.Button.kA.value)
+     .whileTrue(new RunCommand(()->m_armJoint.upwards(),m_armJoint));
 
+     new JoystickButton(m_controller, XboxController.Button.kB.value)
+     .whileTrue(new RunCommand(()->m_armJoint.downwards(),m_armJoint));
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
