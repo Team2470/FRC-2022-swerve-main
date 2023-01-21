@@ -108,17 +108,17 @@ public final class Constants {
          .setTab(0, 2);
 
       public static final ModuleConfig kBackLeft = new ModuleConfig("Back Left")
-         .setDrivingID(14)
-         .setEncoderID(14)
-         .setSteeringID(15)
-         .setOffset(-126.03515625)
-         .setTab(0, 4);
-
-      public static final ModuleConfig kBackRight = new ModuleConfig("Back Right")
          .setDrivingID(16)
          .setEncoderID(16)
          .setSteeringID(17)
          .setOffset(-53.349609375000014)
+         .setTab(0, 4);
+
+      public static final ModuleConfig kBackRight = new ModuleConfig("Back Right")
+         .setDrivingID(14)
+         .setEncoderID(14)
+         .setSteeringID(15)
+         .setOffset(-126.03515625)
          .setTab(0, 6);
    }
 }

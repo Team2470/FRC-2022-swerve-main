@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.CircularBuffer;
@@ -22,6 +23,9 @@ public class DriveWithController extends CommandBase {
     private boolean fieldOrient;
     private boolean lastMovingState = false;
     private SwerveModuleState[] latchedModuleStates;
+    private final SlewRateLimiter xFilter = new SlewRateLimiter(4);
+    private final SlewRateLimiter yFilter = new SlewRateLimiter(4);
+    private final SlewRateLimiter rotateFilter = new SlewRateLimiter(4);
 
     // Keep track of the last 5 module angles
     private static final int kAngleHistoryMilliseconds = 100;
@@ -68,6 +72,11 @@ public class DriveWithController extends CommandBase {
         } else {
             rotate =  left;
         }
+        
+        //Apply filter
+        xMove = xFilter.calculate(xMove);
+        yMove = yFilter.calculate(yMove);
+        rotate = rotateFilter.calculate(rotate);
 
         // Apply deadband
         xMove = MathUtil.applyDeadband(xMove, kDeadband);
@@ -99,8 +108,8 @@ public class DriveWithController extends CommandBase {
             // xMove *= 0.3;
             // yMove *= 0.3;
             // rotate *= 0.25;
-            xMove *= 0.8;
-            yMove *= 0.8;
+            xMove *= 1.0;
+            yMove *= 1.0;
             rotate *= 0.5;
 
             // Now we need to map the percentages to Meters (or Radians) per second, as that is what the drive train
