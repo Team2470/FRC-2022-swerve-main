@@ -124,8 +124,12 @@ public final class Constants {
 
 
    public static class ArmJoint {
-   public static final int kSolenoidChannelRatchet = 0;
-   public static final int kMotorID = 10;
-   public static final int kEncoderID = 10;
+      public static final int kSolenoidChannelRatchet = 0;
+      public static final int kMotorID = 10;
+      public static final int kEncoderID = 10;
+   }
+
+   public static class Gripper {
+      public static final int kSolenoidChannelGripper = 1;
    }
 }
