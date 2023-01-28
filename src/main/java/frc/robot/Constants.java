@@ -121,4 +121,11 @@ public final class Constants {
          .setOffset(-126.03515625)
          .setTab(0, 6);
    }
+
+
+   public static class ArmJoint {
+   public static final int kSolenoidChannelRatchet = 0;
+   public static final int kMotorID = 10;
+   public static final int kEncoderID = 10;
+   }
 }
