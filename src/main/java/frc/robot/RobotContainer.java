@@ -64,10 +64,10 @@ public class RobotContainer {
       .onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do something with odometry? As it freaks out
   
     new JoystickButton(m_controller, XboxController.Button.kA.value)
-     .whileTrue(new RunCommand(()->m_armJoint1.upwards(),m_armJoint1));
+     .whileTrue(new RunCommand(()->m_armJoint1.outwards(),m_armJoint1));
 
      new JoystickButton(m_controller, XboxController.Button.kB.value)
-     .whileTrue(new RunCommand(()->m_armJoint1.downwards(),m_armJoint1));
+     .whileTrue(new RunCommand(()->m_armJoint1.inwards(),m_armJoint1));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

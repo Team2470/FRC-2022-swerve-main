@@ -67,12 +67,12 @@ public class ArmJoint1 extends SubsystemBase {
     return Rotation2d.fromDegrees(m_encoder.getPosition());
   }
 
-  public void upwards(){
+  public void outwards(){
     engageRatchet(false);
     m_motor.set(ControlMode.PercentOutput, .1);
   }
 
-  public void downwards() {
+  public void inwards() {
     engageRatchet(true);
 m_motor.set(ControlMode.PercentOutput, -.2);
   }
