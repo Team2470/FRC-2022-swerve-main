@@ -4,12 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.ControlAffinePlantInversionFeedforward;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ArmJoint;
+import frc.robot.subsystems.ArmJoint1;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -29,7 +30,7 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
-  private final ArmJoint m_armJoint = new ArmJoint();
+  private final ArmJoint1 m_armJoint1 = new ArmJoint1();
 
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
 
@@ -37,9 +38,9 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     //Configure default commands
-    m_armJoint.setDefaultCommand(new RunCommand(
-      () -> m_armJoint.stop(),
-      m_armJoint
+    m_armJoint1.setDefaultCommand(new RunCommand(
+      () -> m_armJoint1.stop(),
+      m_armJoint1
     ));
 
     // Configure the button bindings
@@ -63,10 +64,10 @@ public class RobotContainer {
       .onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do something with odometry? As it freaks out
   
     new JoystickButton(m_controller, XboxController.Button.kA.value)
-     .whileTrue(new RunCommand(()->m_armJoint.upwards(),m_armJoint));
+     .whileTrue(new RunCommand(()->m_armJoint1.upwards(),m_armJoint1));
 
      new JoystickButton(m_controller, XboxController.Button.kB.value)
-     .whileTrue(new RunCommand(()->m_armJoint.downwards(),m_armJoint));
+     .whileTrue(new RunCommand(()->m_armJoint1.downwards(),m_armJoint1));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

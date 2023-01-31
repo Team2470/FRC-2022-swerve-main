@@ -123,9 +123,11 @@ public final class Constants {
    }
 
 
-   public static class ArmJoint {
-   public static final int kSolenoidChannelRatchet = 0;
-   public static final int kMotorID = 10;
-   public static final int kEncoderID = 10;
+   public static class ArmJoint1 {
+      public static final int kSolenoidChannelRatchet = 0;
+      public static final int kMotorID = 10;
+      public static final int kEncoderID = 10;
+      public static final CanBus kMotorCANBus = CanBus.kCanivore; 
+      public static final CanBus kEncoderCANBus = CanBus.kCanivore;
    }
 }

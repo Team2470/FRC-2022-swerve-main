@@ -17,20 +17,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class ArmJoint extends SubsystemBase {
+public class ArmJoint1 extends SubsystemBase {
 
   private final Solenoid m_ratchetSolenoid;
   private final TalonFX m_motor;
   private final CANCoder m_encoder;
 
-  /** Creates a new ArmJoint. */
-  public ArmJoint() {
-    m_ratchetSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.ArmJoint.kSolenoidChannelRatchet);
-    m_motor = new TalonFX(Constants.ArmJoint.kMotorID);
+  /** Creates a new ArmJoint.*/
+  public ArmJoint1() {
+    m_ratchetSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.ArmJoint1.kSolenoidChannelRatchet);
+    m_motor = new TalonFX(Constants.ArmJoint1.kMotorID, Constants.ArmJoint1.kMotorCANBus.bus_name);
     m_motor.configFactoryDefault();
     m_motor.setInverted(true);
 
-    m_encoder = new CANCoder(Constants.ArmJoint.kEncoderID);
+    m_encoder = new CANCoder(Constants.ArmJoint1.kEncoderID, Constants.ArmJoint1.kEncoderCANBus.bus_name);
     m_encoder.configFactoryDefault();
     m_encoder.configSensorDirection(false);
     m_encoder.configMagnetOffset(0);
@@ -44,6 +44,7 @@ public class ArmJoint extends SubsystemBase {
     SmartDashboard.putNumber("Arm Joint Angle", getAngle().getDegrees());
   }
 
+   
   public void engageRatchet(boolean on){
     m_ratchetSolenoid.set(!on);
   }
