@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -29,13 +31,25 @@ public class ArmJoint1 extends SubsystemBase {
     m_motor = new TalonFX(Constants.ArmJoint1.kMotorID, Constants.ArmJoint1.kMotorCANBus.bus_name);
     m_motor.configFactoryDefault();
     m_motor.setInverted(true);
+    m_motor.configForwardSoftLimitEnable(true);
+    m_motor.configReverseSoftLimitEnable(true);
+    m_motor.configReverseSoftLimitThreshold(Constants.ArmJoint1.kReverseSoftLimit);
+    m_motor.configForwardSoftLimitThreshold(Constants.ArmJoint1.kForwardSoftLimit);
+    m_motor.setNeutralMode(NeutralMode.Brake);
+    m_motor.configVoltageCompSaturation(10);
+    m_motor.enableVoltageCompensation(true);
+
 
     m_encoder = new CANCoder(Constants.ArmJoint1.kEncoderID, Constants.ArmJoint1.kEncoderCANBus.bus_name);
     m_encoder.configFactoryDefault();
-    m_encoder.configSensorDirection(false);
-    m_encoder.configMagnetOffset(0);
+    m_encoder.configSensorDirection(true);
+    m_encoder.configMagnetOffset(88.59375 - 90);
     m_encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_encoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+
+    m_motor.configRemoteFeedbackFilter(m_encoder, 0);
+    m_motor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
+    m_motor.setSensorPhase(true);
   }
 
   @Override
@@ -55,12 +69,12 @@ public class ArmJoint1 extends SubsystemBase {
 
   public void upwards(){
     engageRatchet(false);
-    m_motor.set(ControlMode.PercentOutput, .5);
+    m_motor.set(ControlMode.PercentOutput, .1);
   }
 
   public void downwards() {
     engageRatchet(true);
-m_motor.set(ControlMode.PercentOutput, -.5);
+m_motor.set(ControlMode.PercentOutput, -.2);
   }
 
   public void stop() {

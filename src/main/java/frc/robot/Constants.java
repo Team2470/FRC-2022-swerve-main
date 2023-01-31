@@ -27,7 +27,7 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
    public enum CanBus {
       kRoboRIO("rio"),
-      kCanivore("canivore");
+      kCanivore("Canivore0");
 
       public final String bus_name;
       private CanBus(String value) {
@@ -124,10 +124,13 @@ public final class Constants {
 
 
    public static class ArmJoint1 {
-      public static final int kSolenoidChannelRatchet = 0;
-      public static final int kMotorID = 10;
-      public static final int kEncoderID = 10;
+      public static final int kSolenoidChannelRatchet = 7;
+      public static final int kMotorID = 20;
+      public static final int kEncoderID = 20;
       public static final CanBus kMotorCANBus = CanBus.kCanivore; 
       public static final CanBus kEncoderCANBus = CanBus.kCanivore;
+
+      public static final int kReverseSoftLimit = 695;
+      public static final int kForwardSoftLimit = 1289;
    }
 }

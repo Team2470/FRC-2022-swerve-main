@@ -46,7 +46,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    m_PneumaticHub.enableCompressorDigital();
+    m_PneumaticHub.enableCompressorAnalog(90, 120);
   }
 
   /**
