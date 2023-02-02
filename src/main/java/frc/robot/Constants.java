@@ -94,9 +94,9 @@ public final class Constants {
       }
       //: specific module config
       public static final ModuleConfig kFrontLeft = new ModuleConfig("Front Left")
-         .setDrivingID(10)
+         .setDrivingID(11)
          .setEncoderID(10)
-         .setSteeringID(11)
+         .setSteeringID(10)
          .setOffset(-112.5167456318007+180)
          .setTab(0, 0);
 
@@ -108,16 +108,16 @@ public final class Constants {
          .setTab(0, 2);
 
       public static final ModuleConfig kBackLeft = new ModuleConfig("Back Left")
-         .setDrivingID(16)
+         .setDrivingID(14)
          .setEncoderID(16)
-         .setSteeringID(17)
+         .setSteeringID(15)
          .setOffset(-53.349609375000014)
          .setTab(0, 4);
 
       public static final ModuleConfig kBackRight = new ModuleConfig("Back Right")
-         .setDrivingID(14)
+         .setDrivingID(17)
          .setEncoderID(14)
-         .setSteeringID(15)
+         .setSteeringID(16)
          .setOffset(-126.03515625)
          .setTab(0, 6);
    }
