@@ -4,12 +4,17 @@
 
 package frc.robot.commands;
 
+
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmJoint1;
 
 public class MoveArmjoint1ToPosition extends CommandBase {
-
+  private enum OutwardState{
+    kWaitForRatchet,
+    KRunning
+  }
   private enum Direction {
     kOutward,
     kInward
@@ -18,10 +23,8 @@ public class MoveArmjoint1ToPosition extends CommandBase {
   private final ArmJoint1 m_armJoint1;
   private final Rotation2d m_setpoint;
   private Direction m_direction;
-  
-
-
-
+  private final Timer m_timer = new Timer();
+  private OutwardState m_armstate;
 
   /** Creates a new MoveArmjoint1ToPosition. */
   public MoveArmjoint1ToPosition(ArmJoint1 armJoint1, Rotation2d setpoint) {
@@ -35,6 +38,11 @@ public class MoveArmjoint1ToPosition extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+
+    m_armstate = OutwardState.kWaitForRatchet;
+    m_timer.reset();
+    m_timer.start();
+    
     if (m_armJoint1.getAngle().minus(m_setpoint).getDegrees() > 0) {
       m_direction = Direction.kInward;
     } else {
@@ -52,8 +60,19 @@ public class MoveArmjoint1ToPosition extends CommandBase {
         m_armJoint1.inwards();
         break;
       case kOutward:
-        m_armJoint1.outwards();
-        break;
+        m_armJoint1.engageRatchet(false);
+        switch(m_armstate){
+          case kWaitForRatchet:
+            if (m_timer.advanceIfElapsed(0.25)){
+              m_armstate = OutwardState.KRunning;
+            }
+            break;
+          case KRunning:
+            m_armJoint1.outwards();
+            break;
+        }
+      break;
+        
     }
 
   }

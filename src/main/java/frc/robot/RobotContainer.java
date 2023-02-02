@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.commands.ArmJoint1Outward;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.MoveArmjoint1ToPosition;
@@ -66,7 +67,8 @@ public class RobotContainer {
       .onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do something with odometry? As it freaks out
   
     new JoystickButton(m_controller, XboxController.Button.kA.value)
-     .whileTrue(new RunCommand(()->m_armJoint1.outwards(),m_armJoint1));
+     .whileTrue(new ArmJoint1Outward(m_armJoint1));
+     
 
      new JoystickButton(m_controller, XboxController.Button.kB.value)
      .whileTrue(new RunCommand(()->m_armJoint1.inwards(),m_armJoint1));
