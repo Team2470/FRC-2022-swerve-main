@@ -5,11 +5,13 @@
 package frc.robot;
 
 import edu.wpi.first.math.controller.ControlAffinePlantInversionFeedforward;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.MoveArmjoint1ToPosition;
 import frc.robot.subsystems.ArmJoint1;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -68,6 +70,8 @@ public class RobotContainer {
 
      new JoystickButton(m_controller, XboxController.Button.kB.value)
      .whileTrue(new RunCommand(()->m_armJoint1.inwards(),m_armJoint1));
+     new JoystickButton(m_controller, XboxController.Button.kX.value)
+      .onTrue(new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(90)));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

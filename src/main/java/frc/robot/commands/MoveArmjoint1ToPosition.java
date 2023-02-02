@@ -12,8 +12,7 @@ public class MoveArmjoint1ToPosition extends CommandBase {
 
   private enum Direction {
     kOutward,
-    kInward,
-    kUnknown
+    kInward
   }
 
   private final ArmJoint1 m_armJoint1;
@@ -28,7 +27,6 @@ public class MoveArmjoint1ToPosition extends CommandBase {
   public MoveArmjoint1ToPosition(ArmJoint1 armJoint1, Rotation2d setpoint) {
     m_armJoint1 = armJoint1;
     m_setpoint = setpoint;
-    m_direction = Direction.kUnknown;
     addRequirements(armJoint1);
     // Use addRequirements() here to declare subsystem dependencies.
 
@@ -40,6 +38,7 @@ public class MoveArmjoint1ToPosition extends CommandBase {
     if (m_armJoint1.getAngle().minus(m_setpoint).getDegrees() > 0) {
       m_direction = Direction.kInward;
     } else {
+    
       m_direction = Direction.kOutward;
     }
 
@@ -49,19 +48,29 @@ public class MoveArmjoint1ToPosition extends CommandBase {
   @Override
   public void execute() {
     switch (m_direction) {
-      case kInward
+      case kInward:
         m_armJoint1.inwards();
+        break;
+      case kOutward:
+        m_armJoint1.outwards();
+        break;
     }
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_armJoint1.stop();
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if (m_direction == Direction.kInward){
+      return m_armJoint1.getAngle().getDegrees() < m_setpoint.plus(Rotation2d.fromDegrees(1)).getDegrees();
+    } else {
+      return m_armJoint1.getAngle().getDegrees() > m_setpoint.minus(Rotation2d.fromDegrees(1)).getDegrees();
+    }
   }
 }
