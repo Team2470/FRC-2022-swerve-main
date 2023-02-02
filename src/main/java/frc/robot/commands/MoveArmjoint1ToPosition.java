@@ -89,7 +89,7 @@ public class MoveArmjoint1ToPosition extends CommandBase {
     if (m_direction == Direction.kInward){
       return m_armJoint1.getAngle().getDegrees() < m_setpoint.plus(Rotation2d.fromDegrees(1)).getDegrees();
     } else {
-      return m_armJoint1.getAngle().getDegrees() > m_setpoint.minus(Rotation2d.fromDegrees(1)).getDegrees();
+      return m_armJoint1.getAngle().getDegrees() > m_setpoint.minus(Rotation2d.fromDegrees(4)).getDegrees();
     }
   }
 }
