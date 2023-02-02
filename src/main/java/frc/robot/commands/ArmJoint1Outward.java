@@ -41,7 +41,7 @@ public class ArmJoint1Outward extends CommandBase {
     m_armJoint1.engageRatchet(false);
     switch(m_armstate){
       case kWaitForRatchet:
-        if (m_timer.advanceIfElapsed(0.25)){
+        if (m_timer.advanceIfElapsed(0.1)){
           m_armstate = OutwardState.KRunning;
         }
         break;
