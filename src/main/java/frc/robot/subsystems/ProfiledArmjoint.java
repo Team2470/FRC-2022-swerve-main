@@ -15,6 +15,7 @@ import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.Constants.PidArmCfg;
 
@@ -71,12 +72,31 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
   }
 
   @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    super.periodic();
+    SmartDashboard.putNumber("encoderAngle", m_encoder.getPosition());
+    SmartDashboard.putNumber("encoderAbosoluteAngle", m_encoder.getAbsolutePosition());
+    SmartDashboard.putNumber("encoderAngle", m_encoder.getPosition());
+    SmartDashboard.putNumber("Motor Selected Sensor position", m_motor.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Motor Stator Current", m_motor.getStatorCurrent());
+    SmartDashboard.putNumber("Motor Supply Currnet", m_motor.getSupplyCurrent());
+    SmartDashboard.putNumber("Motor Error", getController().getPositionError());
+
+
+  }
+
+
+  @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
+    
     // Use the output (and optionally the setpoint) here
     double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
     m_motor.setVoltage(output + feedforward);
 
-
+    SmartDashboard.putNumber("Motor Output Power", output);
+    SmartDashboard.putNumber("Motor Setpoint Position", setpoint.position);
+    SmartDashboard.putNumber("Motor Setpoint Velocity", setpoint.velocity);
   }
 
   @Override

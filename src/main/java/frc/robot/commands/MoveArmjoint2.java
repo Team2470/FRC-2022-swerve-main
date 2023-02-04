@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ProfiledArmjoint;
 
@@ -11,7 +12,7 @@ public class MoveArmjoint2 extends CommandBase {
   private final ProfiledArmjoint m_Armjoint;
   private final double m_angle;
   /** Creates a new MoveArmjoint2. */
-  public MoveArmjoint2(ProfiledArmjoint armjoint, double  angle) {
+  public MoveArmjoint2(ProfiledArmjoint armjoint, double angle) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_Armjoint= armjoint;
     m_angle= angle;
@@ -28,8 +29,10 @@ public class MoveArmjoint2 extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
-
+  public void execute() {
+    SmartDashboard.putNumber("Arm Joint Angle Command Setpoint", m_angle);
+  }
+  
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
