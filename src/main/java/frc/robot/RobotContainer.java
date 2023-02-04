@@ -9,8 +9,10 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.MoveArmjoint2;
 import frc.robot.subsystems.ArmJoint;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.ProfiledArmjoint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Drivetrain;
@@ -30,7 +32,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final ArmJoint m_armJoint = new ArmJoint();
-
+  private final ProfiledArmjoint m_Armjoint2 = new ProfiledArmjoint(Constants.PidArmCfg.kArmjoint2);
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
 
 
@@ -41,6 +43,15 @@ public class RobotContainer {
       () -> m_armJoint.stop(),
       m_armJoint
     ));
+    m_Armjoint2.setDefaultCommand(new RunCommand(
+      () -> { 
+        m_Armjoint2.disable();
+        m_Armjoint2.stop();
+      },
+      m_Armjoint2
+    ));
+  
+
 
     // Configure the button bindings
     configureButtonBindings();
@@ -67,7 +78,24 @@ public class RobotContainer {
 
      new JoystickButton(m_controller, XboxController.Button.kB.value)
      .whileTrue(new RunCommand(()->m_armJoint.downwards(),m_armJoint));
+
+     new JoystickButton(m_controller, XboxController.Button.kX.value)
+     .whileTrue(new RunCommand(()->{
+        m_Armjoint2.disable();
+        m_Armjoint2.downwards();
+      },m_Armjoint2));
+
+      new JoystickButton(m_controller, XboxController.Button.kY.value)
+      .whileTrue(new RunCommand(()->{
+         m_Armjoint2.disable();
+         m_Armjoint2.upwards();
+       },m_Armjoint2));
+
+       new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value)
+       .whileTrue(new MoveArmjoint2(m_Armjoint2, 0));
+  
   }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

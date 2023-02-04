@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -15,42 +16,47 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
-import frc.robot.Constants;
-import frc.robot.Constants.ArmJoint2;
+import frc.robot.Constants.PidArmCfg;
 
 public class ProfiledArmjoint extends ProfiledPIDSubsystem {
   private final WPI_TalonFX m_motor;
   private final CANCoder m_encoder;
+  private final PidArmCfg m_Cfg;
+  private final ArmFeedforward m_feedforward;
 
-  private final ArmFeedforward m_feedforward = 
-    new ArmFeedforward(
-        ArmJoint2.kSVolts, ArmJoint2.KGVolts,
-        ArmJoint2.kVVoltSecondPerRad, ArmJoint2.kAVoltSecondSquaredPerRad);
 
   /** Creates a new ProfiledArmjoint. */
-  public ProfiledArmjoint() {
-
+  public ProfiledArmjoint(PidArmCfg cfg) {
+    
     super(
+
       // The ProfiledPIDController used by the subsystem
       new ProfiledPIDController(
-          Constants.ArmJoint2.kP,
-          Constants.ArmJoint2.kI,
-          Constants.ArmJoint2.kD,
+          cfg.P,
+          cfg.I,
+          cfg.D,
           // The motion profile constraints
-          new TrapezoidProfile.Constraints(Constants.ArmJoint2.kMaxVelocityRadPerSecond, Constants.ArmJoint2.kMaxAccelerationRadPerSecond)));
+          new TrapezoidProfile.Constraints(cfg.maxVelocityRadPerSecond, cfg.maxAccelerationRadPerSecond)));
     
-    m_motor = new WPI_TalonFX(Constants.ArmJoint2.kMotorID, Constants.ArmJoint2.kMotorCanbus.bus_name);
+      
+    m_Cfg = cfg;
+
+    m_feedforward = new ArmFeedforward(
+      m_Cfg.svolts, m_Cfg.gvolts,
+      m_Cfg.vVoltSecondPerRad, m_Cfg.aVoltSecondSquaredPerRad);
+
+    m_motor = new WPI_TalonFX(m_Cfg.motorID, m_Cfg.motorCanbus.bus_name);
     m_motor.configFactoryDefault();
     m_motor.setInverted(true);
     m_motor.configForwardSoftLimitEnable(true);
     m_motor.configReverseSoftLimitEnable(true);
-    m_motor.configReverseSoftLimitThreshold(Constants.ArmJoint2.kReverseSoftLimit);
-    m_motor.configForwardSoftLimitThreshold(Constants.ArmJoint2.kForwardSoftLimit);
+    m_motor.configReverseSoftLimitThreshold(m_Cfg.reverseSoftLimit);
+    m_motor.configForwardSoftLimitThreshold(m_Cfg.forwardSoftLimit);
     m_motor.setNeutralMode(NeutralMode.Brake);
     m_motor.configVoltageCompSaturation(10);
     m_motor.enableVoltageCompensation(true);
 
-    m_encoder = new CANCoder(Constants.ArmJoint2.kEncoderID, Constants.ArmJoint2.kEncoderCANBus.bus_name);
+    m_encoder = new CANCoder(m_Cfg.encoderID, m_Cfg.encoderCanbus.bus_name);
     m_encoder.configFactoryDefault();
     m_encoder.configSensorDirection(true);
     m_encoder.configMagnetOffset(90);
@@ -77,5 +83,16 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
   public double getMeasurement() {
     // Return the process variable measurement here
     return m_encoder.getPosition();
+  }
+  
+  public void upwards(){
+    m_motor.set(ControlMode.PercentOutput, .5);
+  }
+
+  public void downwards() {
+    m_motor.set(ControlMode.PercentOutput, -.5);
+  }
+  public void stop() { 
+    m_motor.neutralOutput();
   }
 }

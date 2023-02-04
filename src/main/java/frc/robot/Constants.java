@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
@@ -128,29 +129,58 @@ public final class Constants {
       public static final int kMotorID = 10;
       public static final int kEncoderID = 10;
    }
+   public static class PidArmCfg {
+      public int motorID, encoderID;
+      public CanBus motorCanbus, encoderCanbus;
+      public int reverseSoftLimit, forwardSoftLimit;
+      public double maxVelocityRadPerSecond, maxAccelerationRadPerSecond;
+      public double svolts, gvolts, vVoltSecondPerRad, aVoltSecondSquaredPerRad;
+      public double P,I,D;
+
+      public PidArmCfg setCanIDs (int motorID, int encoderID ) {
+         this.motorID = motorID;
+         this.encoderID = encoderID;
+         return this;
+      }
+
+      public PidArmCfg setCanbuses(CanBus motorCanbus, CanBus encoderCanbus ) {
+         this.motorCanbus = motorCanbus;
+         this.encoderCanbus = encoderCanbus;
+         return this;
+      }
+
+      public PidArmCfg setLimits (int reverseSoftLimit, int forwardSoftLimit) {
+         this.reverseSoftLimit = reverseSoftLimit;
+         this.forwardSoftLimit= forwardSoftLimit;
+         return this;
+      }
+      
+      public PidArmCfg setMotionProfileConstants (double maxVelocityRadPerSecond, double maxAccelerationRadPerSecond) {
+         this.maxVelocityRadPerSecond = maxVelocityRadPerSecond;
+         this.maxAccelerationRadPerSecond = maxAccelerationRadPerSecond;
+         return this;
+      }
+      public PidArmCfg setFeedforwardConstants (double svolts, double gvolts, double vVoltSecondPerRad, double aVoltSecondSquaredPerRad) {
+         this.svolts = svolts;
+         this.gvolts = gvolts;
+         this.vVoltSecondPerRad = vVoltSecondPerRad;
+         this.aVoltSecondSquaredPerRad = aVoltSecondSquaredPerRad;
+         return this;
+      }
+      public PidArmCfg setPID (double P, double I, double D) {
+         this.P = P;
+         this.I = I;
+         this.D = D;
+         return this;
+      }
+      public static final PidArmCfg kArmjoint2 = new PidArmCfg()
+         .setCanIDs(21, 21)
+         .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
+         .setLimits(695, 1289)
+         .setMotionProfileConstants(0, 0)
+         .setFeedforwardConstants(0, 0, 0, 0)
+         .setPID(0, 0, 0);
 
 
-   public static class ArmJoint2 {
-      public static final int kMotorID = 21;
-      public static final int kEncoderID = 21;
-      public static final CanBus kMotorCanbus = CanBus.kCanivore;
-      public static final CanBus kEncoderCANBus= CanBus.kCanivore;
-
-      public static final int kReverseSoftLimit = 695;
-      public static final int kForwardSoftLimit = 1289;
-
-      public static final double kMaxVelocityRadPerSecond = 0;
-      public static final double kMaxAccelerationRadPerSecond = 0;
-
-      public static final double kSVolts = 0;
-      public static final double KGVolts = 0;
-      public static final double kVVoltSecondPerRad = 0;
-      public static final double kAVoltSecondSquaredPerRad = 0;
-
-      public static final double kP = 0;
-      public static final double kI = 0;
-      public static final double kD = 0;
-
-
-   } 
+   }
 }
