@@ -128,4 +128,23 @@ public final class Constants {
    public static final int kMotorID = 10;
    public static final int kEncoderID = 10;
    }
+
+   public static class ArmJoint2 {
+      public static final int kMotorID = 21;
+      public static final int kEncoderID = 21;
+      public static final CanBus kMotorCANBus = CanBus.kCanivore; 
+      public static final CanBus kEncoderCANBus = CanBus.kCanivore;
+
+      public static final int kReverseSoftLimit = 695;
+      public static final int kForwardSoftLimit = 1289;
+
+      // These are fake gains; in actuality these must be determined individually for each robot
+      public static final double kSVolts = 1;
+      public static final double kGVolts = 1;
+      public static final double kVVoltSecondPerRad = 0.5;
+      public static final double kAVoltSecondSquaredPerRad = 0.1;
+
+      public static final double kMaxVelocityRadPerSecond = 3;
+      public static final double kMaxAccelerationRadPerSecSquared = 10;
+   }
 }
