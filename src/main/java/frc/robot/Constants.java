@@ -124,8 +124,33 @@ public final class Constants {
 
 
    public static class ArmJoint {
-   public static final int kSolenoidChannelRatchet = 0;
-   public static final int kMotorID = 10;
-   public static final int kEncoderID = 10;
+      public static final int kSolenoidChannelRatchet = 0;
+      public static final int kMotorID = 10;
+      public static final int kEncoderID = 10;
    }
+
+
+   public static class ArmJoint2 {
+      public static final int kMotorID = 21;
+      public static final int kEncoderID = 21;
+      public static final CanBus kMotorCanbus = CanBus.kCanivore;
+      public static final CanBus kEncoderCANBus= CanBus.kCanivore;
+
+      public static final int kReverseSoftLimit = 695;
+      public static final int kForwardSoftLimit = 1289;
+
+      public static final double kMaxVelocityRadPerSecond = 0;
+      public static final double kMaxAccelerationRadPerSecond = 0;
+
+      public static final double kSVolts = 0;
+      public static final double KGVolts = 0;
+      public static final double kVVoltSecondPerRad = 0;
+      public static final double kAVoltSecondSquaredPerRad = 0;
+
+      public static final double kP = 0;
+      public static final double kI = 0;
+      public static final double kD = 0;
+
+
+   } 
 }
