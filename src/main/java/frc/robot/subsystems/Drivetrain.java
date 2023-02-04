@@ -1,16 +1,21 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Drive.ModuleConfig;
-
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
@@ -18,6 +23,8 @@ import com.swervedrivespecialties.swervelib.SwerveModule;
 
 public class Drivetrain extends SubsystemBase {
    //: Helpers
+   private final SwerveDriveOdometry m_odometry;
+   private final Field2d m_field = new Field2d();
 
    //: Hardware
    private final Pigeon2 m_imu;
@@ -57,7 +64,26 @@ public class Drivetrain extends SubsystemBase {
          Constants.Drive.kBackRight,
          moduleConfig, tab
       );
-   }
+
+      // Setup odometry
+      m_odometry = new SwerveDriveOdometry(
+         Constants.Drive.kDriveKinematics,
+         getHeading(),
+         getModulePositions()
+      );
+
+      var odometryTab = tab.getLayout("Odometry", BuiltInLayouts.kList)
+         .withSize(2,2)
+         .withPosition(10,0);
+
+   odometryTab.addNumber("X (inches)", ()->Units.metersToInches(m_odometry.getPoseMeters().getX()));
+   odometryTab.addNumber("Y (inches)", ()->Units.metersToInches(m_odometry.getPoseMeters().getY()));
+   odometryTab.addNumber("Theta (degrees)", ()->m_odometry.getPoseMeters().getRotation().getDegrees());
+
+   tab.add("Field", m_field)
+      .withSize(5,4)
+      .withPosition(8,2);
+}
 
    private SwerveModule createModule(ModuleConfig config, Mk4ModuleConfiguration moduleConfig, ShuffleboardTab tab) {
       return Mk4SwerveModuleHelper.createNeo(
@@ -97,6 +123,16 @@ public class Drivetrain extends SubsystemBase {
       };
     }
 
+    public SwerveModulePosition[] getModulePositions() {
+      // Note the order of modules needs to match the order provided to DriveConstants.kDriveKinematics
+      return new SwerveModulePosition[]{
+          new SwerveModulePosition(m_swerve_modules[0].getDriveDistance(), new Rotation2d(m_swerve_modules[0].getSteerAngle())),
+          new SwerveModulePosition(m_swerve_modules[1].getDriveDistance(), new Rotation2d(m_swerve_modules[1].getSteerAngle())),
+          new SwerveModulePosition(m_swerve_modules[2].getDriveDistance(), new Rotation2d(m_swerve_modules[2].getSteerAngle())),
+          new SwerveModulePosition(m_swerve_modules[3].getDriveDistance(), new Rotation2d(m_swerve_modules[3].getSteerAngle()))
+      };
+    }
+
    public void drive(double xSpeed, double ySpeed, double rotation, boolean feildRelative) {
       ChassisSpeeds chassisSpeeds;
 
@@ -112,7 +148,14 @@ public class Drivetrain extends SubsystemBase {
       drive(0, 0, 0, false);
    }
 
-   @Override public void periodic() {}
+   @Override
+   public void periodic() {
+
+      // Upldate robote pose
+      m_odometry.update(getHeading(), getModulePositions());
+
+      m_field.setRobotPose(m_odometry.getPoseMeters());
+   }
 
    public Rotation2d getHeading() {
       return Rotation2d.fromDegrees(this.m_imu.getYaw());
@@ -121,4 +164,21 @@ public class Drivetrain extends SubsystemBase {
    public void resetHeading() {
       this.m_imu.setYaw(0);
    }
+
+  /**
+   * Return the currently-estimated pose of the robot
+   * @return the pose.
+   */
+   public Pose2d getPose() {
+      return m_odometry.getPoseMeters();
+   }
+
+   /**
+    * Resets the odometry to the specified pose
+    * @param pose the pose to switch to set the odometry to
+    */
+   public void resetOdometry(Pose2d pose) {
+      m_odometry.resetPosition(getHeading(), getModulePositions(), pose);
+   }
+   
 }
