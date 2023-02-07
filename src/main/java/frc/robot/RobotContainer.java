@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -25,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   //OI
-  private final XboxController m_controller = new XboxController(0);
+  private final CommandXboxController m_controller = new CommandXboxController(0);
 
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
@@ -57,16 +60,28 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     // Configure default commands
-    m_drivetrain.setDefaultCommand(new DriveWithController(m_drivetrain, m_controller));
+    m_drivetrain.setDefaultCommand(new DriveWithController(m_drivetrain, m_controller.getHID()));
 
-    new JoystickButton(m_controller, XboxController.Button.kStart.value)
+    new JoystickButton(m_controller.getHID(), XboxController.Button.kStart.value)
       .onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do something with odometry? As it freaks out
   
-    new JoystickButton(m_controller, XboxController.Button.kA.value)
+    new JoystickButton(m_controller.getHID(), XboxController.Button.kA.value)
      .whileTrue(new RunCommand(()->m_armJoint.upwards(),m_armJoint));
 
-     new JoystickButton(m_controller, XboxController.Button.kB.value)
+     new JoystickButton(m_controller.getHID(), XboxController.Button.kB.value)
      .whileTrue(new RunCommand(()->m_armJoint.downwards(),m_armJoint));
+
+     m_controller.rightStick().toggleOnTrue(new RunCommand(()->{
+        var latchedModuleStates = new SwerveModuleState[]{
+          new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+      };
+
+
+      m_drivetrain.setModuleStates(latchedModuleStates);
+     }, m_drivetrain));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
