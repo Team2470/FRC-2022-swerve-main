@@ -7,6 +7,9 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.controller.ControlAffinePlantInversionFeedforward;
+import com.kennedyrobotics.auto.AutoSelector;
+import com.kennedyrobotics.hardware.misc.RevDigit;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
@@ -24,9 +27,11 @@ import frc.robot.subsystems.WristJoint;
 import frc.robot.subsystems.GripperSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -47,6 +52,9 @@ public class RobotContainer {
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
   private final ProfiledArmjoint m_Wrist = new WristJoint(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngle().getDegrees());
 
+  //Auto
+  private final RevDigit m_revDigit;
+  private final AutoSelector m_autoSelector;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -67,6 +75,18 @@ public class RobotContainer {
     configureButtonBindings();
 
     m_PneumaticHub.enableCompressorAnalog(90, 120);
+
+    //Auto Selector
+    m_revDigit = new RevDigit();
+    m_revDigit.display("BWMP");
+    m_autoSelector = new AutoSelector(m_revDigit, "DFLT", new SequentialCommandGroup(
+      new PrintCommand("OOPS")
+      ));
+
+    //Initialize other autos here
+    //to do
+    
+    m_autoSelector.initialize();
   }
 
   /**
@@ -130,6 +150,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+    return m_autoSelector.selected();
   }
 }
