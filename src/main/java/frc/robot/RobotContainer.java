@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ArmJoint1Outward;
+import frc.robot.commands.ArmJoint2Inward;
+import frc.robot.commands.ArmJoint2Outward;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.MoveArmjoint1ToPosition;
@@ -47,13 +49,7 @@ public class RobotContainer {
       () -> m_armJoint1.stop(),
       m_armJoint1
     ));
-    m_Armjoint2.setDefaultCommand(new RunCommand(
-      () -> { 
-        m_Armjoint2.disable();
-        m_Armjoint2.stop();
-      },
-      m_Armjoint2
-    ));
+
   
 
 
@@ -87,16 +83,12 @@ public class RobotContainer {
       .onTrue(new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(90)));
 
      new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value)
-     .whileTrue(new RunCommand(()->{
-        m_Armjoint2.disable();
-        m_Armjoint2.downwards();
-      },m_Armjoint2));
+     .whileTrue(new ArmJoint2Outward(m_Armjoint2));
+
+
 
       new JoystickButton(m_controller, XboxController.Button.kRightBumper.value)
-      .whileTrue(new RunCommand(()->{
-         m_Armjoint2.disable();
-         m_Armjoint2.upwards();
-       },m_Armjoint2));
+      .whileTrue(new ArmJoint2Inward(m_Armjoint2));
 
        new JoystickButton(m_controller, XboxController.Button.kY.value)
        .whileTrue(new MoveArmjoint2(m_Armjoint2, 0));

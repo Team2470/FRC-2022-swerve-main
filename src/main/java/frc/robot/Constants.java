@@ -181,7 +181,7 @@ public final class Constants {
       public static final PidArmCfg kArmjoint2 = new PidArmCfg()
          .setCanIDs(21, 21)
          .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
-         .setLimits(695, 1289)
+         .setLimits(-1766, -934)
          .setMotionProfileConstants(0, 0)
          .setFeedforwardConstants(0, 0, 0, 0)
          .setPID(0, 0, 0);

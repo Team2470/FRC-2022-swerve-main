@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
@@ -14,6 +16,7 @@ import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
@@ -25,9 +28,12 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
   private final PidArmCfg m_Cfg;
   private final ArmFeedforward m_feedforward;
 
+  private final DoubleSupplier m_Armjoint1AngleSupplier;
+
+
 
   /** Creates a new ProfiledArmjoint. */
-  public ProfiledArmjoint(PidArmCfg cfg) {
+  public ProfiledArmjoint(PidArmCfg cfg, DoubleSupplier armjoint1AngleSupplier) {
     
     super(
 
@@ -42,6 +48,8 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
       
     m_Cfg = cfg;
 
+    m_Armjoint1AngleSupplier = armjoint1AngleSupplier;
+    
     m_feedforward = new ArmFeedforward(
       m_Cfg.svolts, m_Cfg.gvolts,
       m_Cfg.vVoltSecondPerRad, m_Cfg.aVoltSecondSquaredPerRad);
@@ -54,8 +62,8 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
     m_motor.configReverseSoftLimitThreshold(m_Cfg.reverseSoftLimit);
     m_motor.configForwardSoftLimitThreshold(m_Cfg.forwardSoftLimit);
     m_motor.setNeutralMode(NeutralMode.Brake);
-    m_motor.configVoltageCompSaturation(10);
-    m_motor.enableVoltageCompensation(true);
+    //m_motor.configVoltageCompSaturation(10);
+    //m_motor.enableVoltageCompensation(true);
 
     m_encoder = new CANCoder(m_Cfg.encoderID, m_Cfg.encoderCanbus.bus_name);
     m_encoder.configFactoryDefault();
@@ -91,6 +99,7 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
     
     // Use the output (and optionally the setpoint) here
+
     double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
     m_motor.setVoltage(output + feedforward);
 
@@ -99,11 +108,16 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
     SmartDashboard.putNumber("Motor Setpoint Velocity", setpoint.velocity);
   }
 
+  public Rotation2d getAngle(){
+    return Rotation2d.fromDegrees(m_encoder.getPosition());
+  }
+
   @Override
   public double getMeasurement() {
     // Return the process variable measurement here
-    return m_encoder.getPosition();
+    return 180 - m_Armjoint1AngleSupplier.getAsDouble() - getAngle().getDegrees();
   }
+  
   
   public void upwards(){
     m_motor.set(ControlMode.PercentOutput, .5);

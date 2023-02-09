@@ -66,6 +66,7 @@ public class ArmJoint1 extends SubsystemBase {
   public Rotation2d getAngle(){
     return Rotation2d.fromDegrees(m_encoder.getPosition());
   }
+  
 
   public void outwards(){
     engageRatchet(false);
