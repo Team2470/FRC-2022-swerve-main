@@ -46,7 +46,7 @@ public final class Constants {
       public static final double kDriveGearReduction = SdsModuleConfigurations.MK4_L2.getDriveReduction();
 
       public static final double kMaxDriveVelocityMetersPerSecond = 
-         DCMotor.getNEO(1).freeSpeedRadPerSec / (2*Math.PI) * kDriveGearReduction * kWheelDiameterMeters * (kDriveVoltageCompensation/12.0);
+         DCMotor.getNEO(1).freeSpeedRadPerSec / (2) * kDriveGearReduction * kWheelDiameterMeters * (kDriveVoltageCompensation/12.0);
 
       public static final double kMaxAngularVelocityRadiansPerSecond = 
          kMaxDriveVelocityMetersPerSecond / Math.hypot(kTrackWidthMeters / 2.0, kWheelBaseLengthMeters / 2.0);

@@ -84,8 +84,12 @@ public class RobotContainer {
       ));
 
     //Initialize other autos here
-    //to do
+    m_autoSelector.registerCommand("Auto Crap - Community", "CRAP", new SequentialCommandGroup(
+      new RunCommand(() -> m_drivetrain.drive(1, 0, 0, false)).withTimeout(1.5), 
+      new InstantCommand(() -> m_drivetrain.stop())
+    ));
     
+
     m_autoSelector.initialize();
   }
 
