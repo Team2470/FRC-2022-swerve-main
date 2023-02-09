@@ -23,9 +23,9 @@ public class DriveWithController extends CommandBase {
     private boolean fieldOrient;
     private boolean lastMovingState = false;
     private SwerveModuleState[] latchedModuleStates;
-    private final SlewRateLimiter xFilter = new SlewRateLimiter(4);
-    private final SlewRateLimiter yFilter = new SlewRateLimiter(4);
-    private final SlewRateLimiter rotateFilter = new SlewRateLimiter(4);
+    private final SlewRateLimiter xFilter = new SlewRateLimiter(5);
+    private final SlewRateLimiter yFilter = new SlewRateLimiter(5);
+    private final SlewRateLimiter rotateFilter = new SlewRateLimiter(5);
 
     // Keep track of the last 5 module angles
     private static final int kAngleHistoryMilliseconds = 100;
