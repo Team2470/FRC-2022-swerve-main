@@ -68,7 +68,7 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
     m_encoder = new CANCoder(m_Cfg.encoderID, m_Cfg.encoderCanbus.bus_name);
     m_encoder.configFactoryDefault();
     m_encoder.configSensorDirection(true);
-    m_encoder.configMagnetOffset(90);
+    m_encoder.configMagnetOffset(-52.91015625 - 74.1796875);
     m_encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_encoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
 
@@ -83,13 +83,11 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
   public void periodic() {
     // This method will be called once per scheduler run
     super.periodic();
-    SmartDashboard.putNumber("encoderAngle", m_encoder.getPosition());
     SmartDashboard.putNumber("encoderAbosoluteAngle", m_encoder.getAbsolutePosition());
     SmartDashboard.putNumber("encoderAngle", m_encoder.getPosition());
     SmartDashboard.putNumber("Motor Selected Sensor position", m_motor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Motor Stator Current", m_motor.getStatorCurrent());
-    SmartDashboard.putNumber("Motor Supply Currnet", m_motor.getSupplyCurrent());
     SmartDashboard.putNumber("Motor Error", getController().getPositionError());
+    SmartDashboard.putNumber("Angle From Ground", getAngleFromGround().getDegrees());
 
 
   }
@@ -101,9 +99,10 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
     // Use the output (and optionally the setpoint) here
 
     double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
-    m_motor.setVoltage(output + feedforward);
+    m_motor.setVoltage(-output-feedforward);
 
     SmartDashboard.putNumber("Motor Output Power", output);
+    SmartDashboard.putNumber("Motor feedforward", feedforward);
     SmartDashboard.putNumber("Motor Setpoint Position", setpoint.position);
     SmartDashboard.putNumber("Motor Setpoint Velocity", setpoint.velocity);
   }
@@ -112,10 +111,14 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
     return Rotation2d.fromDegrees(m_encoder.getPosition());
   }
 
+  public Rotation2d getAngleFromGround(){
+    return Rotation2d.fromDegrees(180 - m_Armjoint1AngleSupplier.getAsDouble() - getAngle().getDegrees());
+  }
+
   @Override
   public double getMeasurement() {
-    // Return the process variable measurement here
-    return 180 - m_Armjoint1AngleSupplier.getAsDouble() - getAngle().getDegrees();
+    // Return the process variable measurement here\
+    return getAngleFromGround().getDegrees();
   }
   
   

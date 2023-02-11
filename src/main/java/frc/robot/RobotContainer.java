@@ -91,7 +91,7 @@ public class RobotContainer {
       .whileTrue(new ArmJoint2Inward(m_Armjoint2));
 
        new JoystickButton(m_controller, XboxController.Button.kY.value)
-       .whileTrue(new MoveArmjoint2(m_Armjoint2, 0));
+       .onTrue(new MoveArmjoint2(m_Armjoint2, 0));
   
   }
 

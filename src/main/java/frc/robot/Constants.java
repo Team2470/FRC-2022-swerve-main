@@ -181,10 +181,10 @@ public final class Constants {
       public static final PidArmCfg kArmjoint2 = new PidArmCfg()
          .setCanIDs(21, 21)
          .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
-         .setLimits(-1766, -934)
-         .setMotionProfileConstants(0, 0)
-         .setFeedforwardConstants(0, 0, 0, 0)
-         .setPID(0, 0, 0);
+         .setLimits(1000, 1800) //back  1600 min 3400
+         .setMotionProfileConstants(5, 2)
+         .setFeedforwardConstants(0, 0.31, 5.39, 0)
+         .setPID(.1, .01, 0);
 
 
    }

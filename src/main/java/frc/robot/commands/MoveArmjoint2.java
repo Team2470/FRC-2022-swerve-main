@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ProfiledArmjoint;
@@ -37,11 +38,20 @@ public class MoveArmjoint2 extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_Armjoint.disable();
+    m_Armjoint.stop();
+  }
+
+  
+  public Rotation2d getError() {
+    return m_Armjoint.getAngleFromGround().minus(Rotation2d.fromDegrees(m_angle));
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    double threshold = 2;
+    double error = Math.abs(getError().getDegrees());
+    SmartDashboard.putNumber("MoveArmJoint2 error", error);
+    return error <= threshold;
   }
 }
