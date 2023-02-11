@@ -4,7 +4,8 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
+import java.util.HashMap;
+
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
@@ -16,6 +17,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -36,6 +39,11 @@ public final class Constants {
          this.bus_name = value;
       }
    }
+
+   public static final HashMap<String, Command> eventMap = new HashMap<String, Command>() {{
+      put("marker1", new PrintCommand("Passed Marker #1"));
+      put("armRaise", new PrintCommand("Arm Raised to x degreese")); //: TODO: put in actual degree
+   }};
 
    public static class Drive {
       //: Physical constants (motors, sensors, ...)

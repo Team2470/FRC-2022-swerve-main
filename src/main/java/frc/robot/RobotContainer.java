@@ -224,13 +224,6 @@ public class RobotContainer {
 
 	public Command createPathPlanner() {
 		List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("FullAuto", new PathConstraints(4, 3));
-
-		//: TODO: create a constant map for the events
-		//: NOTE: this is only an example
-		HashMap<String, Command> eventMap = new HashMap();
-		eventMap.put("marker1", new PrintCommand("Passed Marker #1"));
-		eventMap.put("armRaise", new PrintCommand("Arm Raised to x degreese")); //: TODO: put in actual degree
-
 		SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
 			m_drivetrain::getPose,
 			m_drivetrain::resetOdometry,
@@ -240,7 +233,7 @@ public class RobotContainer {
 			new PIDConstants(0.5, 0, 0),
 			
 			m_drivetrain::setModuleStates,
-			eventMap,
+			Constants.eventMap,
 			true, //: The path automatically mirrors depending on alliance color
 			m_drivetrain
 		);
