@@ -28,7 +28,7 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
   private final PidArmCfg m_Cfg;
   private final ArmFeedforward m_feedforward;
 
-  private final DoubleSupplier m_Armjoint1AngleSupplier;
+  protected final DoubleSupplier m_Armjoint1AngleSupplier;
 
 
 

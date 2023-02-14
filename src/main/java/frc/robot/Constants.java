@@ -186,6 +186,14 @@ public final class Constants {
          .setFeedforwardConstants(0, 0.31, 5.39, 0)
          .setPID(.1, .01, 0);
 
+      public static final PidArmCfg kWrist = new PidArmCfg()
+         .setCanIDs(22, 22)
+         .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
+         .setLimits(1000, 1800) //back  1600 min 3400
+         .setMotionProfileConstants(5, 2)
+         .setFeedforwardConstants(0, 0.12, 1.44, 0)
+         .setPID(.1, .01, 0);
+
 
    }
 }

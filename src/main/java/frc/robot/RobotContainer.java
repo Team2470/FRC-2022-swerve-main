@@ -19,6 +19,7 @@ import frc.robot.subsystems.ArmJoint1;
 import frc.robot.commands.MoveArmjoint2;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.ProfiledArmjoint;
+import frc.robot.subsystems.WristJoint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Drivetrain;
@@ -40,6 +41,7 @@ public class RobotContainer {
   private final ArmJoint1 m_armJoint1 = new ArmJoint1();
   private final ProfiledArmjoint m_Armjoint2 = new ProfiledArmjoint(Constants.PidArmCfg.kArmjoint2, () -> m_armJoint1.getAngle().getDegrees());
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
+  private final ProfiledArmjoint m_Wrist = new WristJoint(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngle().getDegrees());
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -90,8 +92,14 @@ public class RobotContainer {
       new JoystickButton(m_controller, XboxController.Button.kRightBumper.value)
       .whileTrue(new ArmJoint2Inward(m_Armjoint2));
 
-       new JoystickButton(m_controller, XboxController.Button.kY.value)
+      new JoystickButton(m_controller, XboxController.Button.kY.value)
        .onTrue(new MoveArmjoint2(m_Armjoint2, 0));
+
+      new JoystickButton(m_controller, XboxController.Button.kBack.value)
+       .onTrue(new ArmJoint2Outward(m_Wrist));
+      new JoystickButton(m_controller, XboxController.Button.kStart.value)
+       .onTrue(new ArmJoint2Inward(m_Wrist));
+      
   
   }
 
