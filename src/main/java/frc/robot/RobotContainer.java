@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ArmJoint1Outward;
@@ -57,6 +58,7 @@ import frc.robot.subsystems.WristJoint;
 public class RobotContainer {
   //OI
   private final CommandXboxController m_controller = new CommandXboxController(0);
+  private final CommandJoystick m_buttonPad = new CommandJoystick(0);
 
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
@@ -118,8 +120,7 @@ public class RobotContainer {
     // Configure default commands
     m_drivetrain.setDefaultCommand(new DriveWithController(m_drivetrain, m_controller.getHID()));
 
-    new JoystickButton(m_controller.getHID(), XboxController.Button.kStart.value)
-      .onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do something with odometry? As it freaks out
+    m_controller.start().onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do something with odometry? As it freaks out
   
      m_controller.rightStick().toggleOnTrue(new RunCommand(()->{
         var latchedModuleStates = new SwerveModuleState[]{
@@ -133,33 +134,20 @@ public class RobotContainer {
       m_drivetrain.setModuleStates(latchedModuleStates);
      }, m_drivetrain));
     
-     new JoystickButton(m_controller.getHID(), XboxController.Button.kA.value)
-    .whileTrue(new ArmJoint1Outward(m_armJoint1));
-     
-
-     new JoystickButton(m_controller.getHID(), XboxController.Button.kB.value)
-     .whileTrue(new RunCommand(()->m_armJoint1.inwards(),m_armJoint1));
-     new JoystickButton(m_controller.getHID(), XboxController.Button.kX.value)
-      .onTrue(new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(90)));
-
-     new JoystickButton(m_controller.getHID(), XboxController.Button.kLeftBumper.value)
-     .whileTrue(new ArmJoint2Outward(m_Armjoint2));
+     m_controller.a().whileTrue(new ArmJoint1Outward(m_armJoint1));
+     m_controller.b().whileTrue(new RunCommand(()->m_armJoint1.inwards(),m_armJoint1));
+     m_controller.x().onTrue(new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(90)));
+     m_controller.leftBumper().whileTrue(new ArmJoint2Outward(m_Armjoint2));
 
 
+      m_controller.rightBumper().whileTrue(new ArmJoint2Inward(m_Armjoint2));
 
-      new JoystickButton(m_controller.getHID(), XboxController.Button.kRightBumper.value)
-      .whileTrue(new ArmJoint2Inward(m_Armjoint2));
+      m_controller.y().onTrue(new MoveArmjoint2(m_Armjoint2, 0));
 
-      new JoystickButton(m_controller.getHID(), XboxController.Button.kY.value)
-       .onTrue(new MoveArmjoint2(m_Armjoint2, 0));
+      m_controller.back().onTrue(new ArmJoint2Outward(m_Wrist));
+      m_controller.start().onTrue(new ArmJoint2Inward(m_Wrist));
 
-      new JoystickButton(m_controller.getHID(), XboxController.Button.kBack.value)
-       .onTrue(new ArmJoint2Outward(m_Wrist));
-      new JoystickButton(m_controller.getHID(), XboxController.Button.kStart.value)
-       .onTrue(new ArmJoint2Inward(m_Wrist));
-
-      new JoystickButton(m_controller.getHID(), XboxController.Button.kX.value)
-      .toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
+      m_controller.povDown().toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
 
   }
   /**
