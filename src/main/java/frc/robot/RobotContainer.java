@@ -6,13 +6,21 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.controller.ControlAffinePlantInversionFeedforward;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.commands.ArmJoint1Outward;
+import frc.robot.commands.ArmJoint2Inward;
+import frc.robot.commands.ArmJoint2Outward;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ArmJoint;
+import frc.robot.commands.MoveArmjoint1ToPosition;
+import frc.robot.subsystems.ArmJoint1;
+import frc.robot.commands.MoveArmjoint2;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.ProfiledArmjoint;
+import frc.robot.subsystems.WristJoint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Drivetrain;
@@ -32,23 +40,27 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
-  private final ArmJoint m_armJoint = new ArmJoint();
-
+  private final ArmJoint1 m_armJoint1 = new ArmJoint1();
+  private final ProfiledArmjoint m_Armjoint2 = new ProfiledArmjoint(Constants.PidArmCfg.kArmjoint2, () -> m_armJoint1.getAngle().getDegrees());
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
+  private final ProfiledArmjoint m_Wrist = new WristJoint(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngle().getDegrees());
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     //Configure default commands
-    m_armJoint.setDefaultCommand(new RunCommand(
-      () -> m_armJoint.stop(),
-      m_armJoint
+    m_armJoint1.setDefaultCommand(new RunCommand(
+      () -> m_armJoint1.stop(),
+      m_armJoint1
     ));
+
+  
+
 
     // Configure the button bindings
     configureButtonBindings();
 
-    m_PneumaticHub.enableCompressorDigital();
+    m_PneumaticHub.enableCompressorAnalog(90, 120);
   }
 
   /**
@@ -65,12 +77,6 @@ public class RobotContainer {
     new JoystickButton(m_controller.getHID(), XboxController.Button.kStart.value)
       .onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do something with odometry? As it freaks out
   
-    new JoystickButton(m_controller.getHID(), XboxController.Button.kA.value)
-     .whileTrue(new RunCommand(()->m_armJoint.upwards(),m_armJoint));
-
-     new JoystickButton(m_controller.getHID(), XboxController.Button.kB.value)
-     .whileTrue(new RunCommand(()->m_armJoint.downwards(),m_armJoint));
-
      m_controller.rightStick().toggleOnTrue(new RunCommand(()->{
         var latchedModuleStates = new SwerveModuleState[]{
           new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
@@ -82,7 +88,33 @@ public class RobotContainer {
 
       m_drivetrain.setModuleStates(latchedModuleStates);
      }, m_drivetrain));
-  }
+    new JoystickButton(m_controller.getHID(), XboxController.Button.kA.value)
+     .whileTrue(new ArmJoint1Outward(m_armJoint1));
+     
+
+     new JoystickButton(m_controller.getHID(), XboxController.Button.kB.value)
+     .whileTrue(new RunCommand(()->m_armJoint1.inwards(),m_armJoint1));
+     new JoystickButton(m_controller.getHID(), XboxController.Button.kX.value)
+      .onTrue(new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(90)));
+
+     new JoystickButton(m_controller.getHID(), XboxController.Button.kLeftBumper.value)
+     .whileTrue(new ArmJoint2Outward(m_Armjoint2));
+
+
+
+      new JoystickButton(m_controller.getHID(), XboxController.Button.kRightBumper.value)
+      .whileTrue(new ArmJoint2Inward(m_Armjoint2));
+
+      new JoystickButton(m_controller.getHID(), XboxController.Button.kY.value)
+       .onTrue(new MoveArmjoint2(m_Armjoint2, 0));
+
+      new JoystickButton(m_controller.getHID(), XboxController.Button.kBack.value)
+       .onTrue(new ArmJoint2Outward(m_Wrist));
+      new JoystickButton(m_controller.getHID(), XboxController.Button.kStart.value)
+       .onTrue(new ArmJoint2Inward(m_Wrist));
+      
+    }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
