@@ -193,7 +193,8 @@ public final class Constants {
          .setMotionProfileConstants(5, 2)
          .setFeedforwardConstants(0, 0.12, 1.44, 0)
          .setPID(.1, .01, 0);
-
-
+   }
+   public static class Gripper {
+      public static final int kSolenoidChannelGripper = 1;
    }
 }

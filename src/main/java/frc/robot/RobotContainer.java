@@ -21,6 +21,7 @@ import frc.robot.commands.MoveArmjoint2;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.ProfiledArmjoint;
 import frc.robot.subsystems.WristJoint;
+import frc.robot.subsystems.GripperSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Drivetrain;
@@ -42,6 +43,7 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final ArmJoint1 m_armJoint1 = new ArmJoint1();
   private final ProfiledArmjoint m_Armjoint2 = new ProfiledArmjoint(Constants.PidArmCfg.kArmjoint2, () -> m_armJoint1.getAngle().getDegrees());
+  private final GripperSubsystem m_Gripper = new GripperSubsystem();
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
   private final ProfiledArmjoint m_Wrist = new WristJoint(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngle().getDegrees());
 
@@ -54,7 +56,11 @@ public class RobotContainer {
       m_armJoint1
     ));
 
-  
+    m_Gripper.setDefaultCommand(new RunCommand(
+      () -> m_Gripper.openGripper(),
+      m_Gripper
+    ));
+    
 
 
     // Configure the button bindings
@@ -112,9 +118,11 @@ public class RobotContainer {
        .onTrue(new ArmJoint2Outward(m_Wrist));
       new JoystickButton(m_controller.getHID(), XboxController.Button.kStart.value)
        .onTrue(new ArmJoint2Inward(m_Wrist));
-      
-    }
 
+      new JoystickButton(m_controller.getHID(), XboxController.Button.kX.value)
+      .toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
+
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
