@@ -4,10 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.controller.ControlAffinePlantInversionFeedforward;
-import java.util.HashMap;
 import java.util.List;
 
 import com.kennedyrobotics.auto.AutoSelector;
@@ -24,6 +20,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -31,27 +28,25 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ArmJoint1Outward;
 import frc.robot.commands.ArmJoint2Inward;
 import frc.robot.commands.ArmJoint2Outward;
 import frc.robot.commands.DriveWithController;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.MoveArmjoint1ToPosition;
-import frc.robot.subsystems.ArmJoint1;
 import frc.robot.commands.MoveArmjoint2;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.ArmJoint1;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.GripperSubsystem;
 import frc.robot.subsystems.ProfiledArmjoint;
 import frc.robot.subsystems.WristJoint;
-import frc.robot.subsystems.GripperSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import frc.robot.subsystems.Drivetrain;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
