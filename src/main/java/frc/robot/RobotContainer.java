@@ -41,7 +41,7 @@ public class RobotContainer {
   private final ArmJoint1 m_armJoint1 = new ArmJoint1();
   private final ProfiledArmjoint m_Armjoint2 = new ProfiledArmjoint(Constants.PidArmCfg.kArmjoint2, () -> m_armJoint1.getAngle().getDegrees());
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
-  private final ProfiledArmjoint m_Wrist = new WristJoint(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngle().getDegrees());
+  private final ProfiledArmjoint m_Wrist = new WristJoint(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngleFromGround().getDegrees());
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -72,8 +72,8 @@ public class RobotContainer {
     // Configure default commands
     m_drivetrain.setDefaultCommand(new DriveWithController(m_drivetrain, m_controller));
 
-    new JoystickButton(m_controller, XboxController.Button.kStart.value)
-      .onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do something with odometry? As it freaks out
+    // new JoystickButton(m_controller, XboxController.Button.kStart.value)
+    //   .onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do something with odometry? As it freaks out
   
     new JoystickButton(m_controller, XboxController.Button.kA.value)
      .whileTrue(new ArmJoint1Outward(m_armJoint1));
@@ -84,21 +84,20 @@ public class RobotContainer {
      new JoystickButton(m_controller, XboxController.Button.kX.value)
       .onTrue(new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(90)));
 
-     new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value)
-     .whileTrue(new ArmJoint2Outward(m_Armjoint2));
 
+    //  new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value)
+    //  .whileTrue(new ArmJoint2Outward(m_Armjoint2));
 
-
-      new JoystickButton(m_controller, XboxController.Button.kRightBumper.value)
-      .whileTrue(new ArmJoint2Inward(m_Armjoint2));
+    //   new JoystickButton(m_controller, XboxController.Button.kRightBumper.value)
+    //   .whileTrue(new ArmJoint2Inward(m_Armjoint2));
 
       new JoystickButton(m_controller, XboxController.Button.kY.value)
        .onTrue(new MoveArmjoint2(m_Armjoint2, 0));
 
-      new JoystickButton(m_controller, XboxController.Button.kBack.value)
-       .onTrue(new ArmJoint2Outward(m_Wrist));
-      new JoystickButton(m_controller, XboxController.Button.kStart.value)
-       .onTrue(new ArmJoint2Inward(m_Wrist));
+      new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value)
+       .whileTrue(new ArmJoint2Outward(m_Wrist));
+      new JoystickButton(m_controller, XboxController.Button.kRightBumper.value)
+       .whileTrue(new ArmJoint2Inward(m_Wrist));
       
   
   }

@@ -67,8 +67,8 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
 
     m_encoder = new CANCoder(m_Cfg.encoderID, m_Cfg.encoderCanbus.bus_name);
     m_encoder.configFactoryDefault();
-    m_encoder.configSensorDirection(true);
-    m_encoder.configMagnetOffset(-52.91015625 - 74.1796875);
+    m_encoder.configSensorDirection(m_Cfg.encoderDirection);
+    m_encoder.configMagnetOffset(m_Cfg.encoderOffset);
     m_encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_encoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
 
@@ -83,11 +83,12 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
   public void periodic() {
     // This method will be called once per scheduler run
     super.periodic();
-    SmartDashboard.putNumber("encoderAbosoluteAngle", m_encoder.getAbsolutePosition());
-    SmartDashboard.putNumber("encoderAngle", m_encoder.getPosition());
-    SmartDashboard.putNumber("Motor Selected Sensor position", m_motor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Motor Error", getController().getPositionError());
-    SmartDashboard.putNumber("Angle From Ground", getAngleFromGround().getDegrees());
+    SmartDashboard.putNumber(m_Cfg.name + " encoderAbosoluteAngle", m_encoder.getAbsolutePosition());
+    SmartDashboard.putNumber(m_Cfg.name + " encoderAngle", m_encoder.getPosition());
+    SmartDashboard.putNumber(m_Cfg.name + " Motor Selected Sensor position", m_motor.getSelectedSensorPosition());
+    SmartDashboard.putNumber(m_Cfg.name + " Motor Error", getController().getPositionError());
+    SmartDashboard.putNumber(m_Cfg.name + " Angle From Ground", getAngleFromGround().getDegrees());
+    SmartDashboard.putNumber(m_Cfg.name + " Angle From Joint", getAngle().getDegrees());
 
 
   }
@@ -101,10 +102,10 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
     double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
     m_motor.setVoltage(-output-feedforward);
 
-    SmartDashboard.putNumber("Motor Output Power", output);
-    SmartDashboard.putNumber("Motor feedforward", feedforward);
-    SmartDashboard.putNumber("Motor Setpoint Position", setpoint.position);
-    SmartDashboard.putNumber("Motor Setpoint Velocity", setpoint.velocity);
+    SmartDashboard.putNumber(m_Cfg.name + " Motor Output Power", output);
+    SmartDashboard.putNumber(m_Cfg.name + " Motor feedforward", feedforward);
+    SmartDashboard.putNumber(m_Cfg.name + " Motor Setpoint Position", setpoint.position);
+    SmartDashboard.putNumber(m_Cfg.name + " Motor Setpoint Velocity", setpoint.velocity);
   }
 
   public Rotation2d getAngle(){
