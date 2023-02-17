@@ -200,6 +200,8 @@ public final class Constants {
       }
 
 
+
+
       public static final PidArmCfg kArmjoint2 = new PidArmCfg()
          .setCanIDs(21, 21)
          .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
@@ -212,16 +214,19 @@ public final class Constants {
          .setEncoderDirection(true);
 
 
+
       public static final PidArmCfg kWrist = new PidArmCfg()
          .setCanIDs(22, 22)
          .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
-         .setLimits(-900, 1245) //back  1600 min 3400
+         .setLimits(-900, 1000) //back  1600 min 3400
          .setMotionProfileConstants(5, 2)
-         .setFeedforwardConstants(0, 0.12, 1.44, 0)
+         .setFeedforwardConstants(0, 0.1, 3.05, 0)
          .setPID(.1, .01, 0)
          .setName("Wrist")
-         .setEncoderOffset(-23.994140625 - 78)
+         .setEncoderOffset(-23.994140625 -78 + 60)
          .setEncoderDirection(false);
+
+
          
 
 

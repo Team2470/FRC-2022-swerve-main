@@ -35,7 +35,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   //OI
   private final XboxController m_controller = new XboxController(0);
-
+  private final XboxController m_testController = new XboxController(1);
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final ArmJoint1 m_armJoint1 = new ArmJoint1();
@@ -92,14 +92,21 @@ public class RobotContainer {
     //   .whileTrue(new ArmJoint2Inward(m_Armjoint2));
 
       new JoystickButton(m_controller, XboxController.Button.kY.value)
-       .onTrue(new MoveArmjoint2(m_Armjoint2, 0));
+       .onTrue(new MoveArmjoint2(m_Wrist, 0));
 
       new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value)
        .whileTrue(new ArmJoint2Outward(m_Wrist));
       new JoystickButton(m_controller, XboxController.Button.kRightBumper.value)
        .whileTrue(new ArmJoint2Inward(m_Wrist));
       
-  
+
+       new JoystickButton(m_testController, XboxController.Button.kY.value)
+       .onTrue(new MoveArmjoint2(m_Armjoint2, 0));
+
+      new JoystickButton(m_testController, XboxController.Button.kLeftBumper.value)
+       .whileTrue(new ArmJoint2Outward(m_Armjoint2));
+      new JoystickButton(m_testController, XboxController.Button.kRightBumper.value)
+       .whileTrue(new ArmJoint2Inward(m_Armjoint2));
   }
 
   /**

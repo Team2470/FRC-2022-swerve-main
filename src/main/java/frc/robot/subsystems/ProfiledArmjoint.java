@@ -100,7 +100,7 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
     // Use the output (and optionally the setpoint) here
 
     double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
-    m_motor.setVoltage(-output-feedforward);
+    m_motor.setVoltage(output+feedforward);
 
     SmartDashboard.putNumber(m_Cfg.name + " Motor Output Power", output);
     SmartDashboard.putNumber(m_Cfg.name + " Motor feedforward", feedforward);
@@ -113,7 +113,7 @@ public class ProfiledArmjoint extends ProfiledPIDSubsystem {
   }
 
   public Rotation2d getAngleFromGround(){
-    return Rotation2d.fromDegrees(180 - m_Armjoint1AngleSupplier.getAsDouble() - getAngle().getDegrees());
+    return Rotation2d.fromDegrees(180 - m_Armjoint1AngleSupplier.getAsDouble() - getAngle().getDegrees()).unaryMinus();
   }
 
   @Override
