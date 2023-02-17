@@ -19,7 +19,7 @@ public class WristJoint extends ProfiledArmjoint {
 
   @Override
   public Rotation2d getAngleFromGround(){
-    return Rotation2d.fromDegrees( getAngle().getDegrees() - m_Armjoint1AngleSupplier.getAsDouble());
+    return Rotation2d.fromDegrees( getAngle().getDegrees() + m_Armjoint1AngleSupplier.getAsDouble());
   }
 
 }

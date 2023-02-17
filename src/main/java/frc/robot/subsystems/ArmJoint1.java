@@ -56,6 +56,7 @@ public class ArmJoint1 extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Arm Joint Angle", getAngle().getDegrees());
+    SmartDashboard.putNumber("ArmJoint1 Sensor Position", m_motor.getSelectedSensorPosition());
   }
 
    
@@ -70,12 +71,12 @@ public class ArmJoint1 extends SubsystemBase {
 
   public void outwards(){
     engageRatchet(false);
-    m_motor.set(ControlMode.PercentOutput, .5);
+    m_motor.set(ControlMode.PercentOutput, .1);
   }
 
   public void inwards() {
     engageRatchet(true);
-m_motor.set(ControlMode.PercentOutput, -.5);
+m_motor.set(ControlMode.PercentOutput, -.1);
   }
 
   public void stop() {

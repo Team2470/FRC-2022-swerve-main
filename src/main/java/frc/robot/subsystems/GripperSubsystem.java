@@ -20,11 +20,11 @@ public class GripperSubsystem extends SubsystemBase {
   }
 
   public void openGripper(){
-    m_gripperSolenoid.set(true);
+    m_gripperSolenoid.set(false);
   }
   
   public void closeGripper(){
-    m_gripperSolenoid.set(false);
+    m_gripperSolenoid.set(true);
   }
 
   @Override

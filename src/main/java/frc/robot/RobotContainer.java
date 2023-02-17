@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.List;
 
+import com.ctre.phoenix.motion.BuffTrajPointStreamJNI;
 import com.kennedyrobotics.auto.AutoSelector;
 import com.kennedyrobotics.hardware.misc.RevDigit;
 import com.pathplanner.lib.PathConstraints;
@@ -43,6 +44,7 @@ import frc.robot.commands.ArmJoint2Outward;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.MoveArmjoint1ToPosition;
 import frc.robot.commands.MoveArmjoint2;
+import frc.robot.commands.MoveArmsToStartingPosition;
 import frc.robot.subsystems.ArmJoint1;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.GripperSubsystem;
@@ -58,14 +60,14 @@ import frc.robot.subsystems.WristJoint;
 public class RobotContainer {
   //OI
   private final CommandXboxController m_controller = new CommandXboxController(0);
-  private final CommandJoystick m_buttonPad = new CommandJoystick(0);
+  private final CommandJoystick m_buttonPad = new CommandJoystick(1);
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final ArmJoint1 m_armJoint1 = new ArmJoint1();
   private final ProfiledArmjoint m_Armjoint2 = new ProfiledArmjoint(Constants.PidArmCfg.kArmjoint2, () -> m_armJoint1.getAngle().getDegrees());
   private final GripperSubsystem m_Gripper = new GripperSubsystem();
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
-  private final ProfiledArmjoint m_Wrist = new WristJoint(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngleFromGround().getDegrees());
+  private final WristJoint m_Wrist = new WristJoint(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngleFromGround().getDegrees());
 
 	//Auto
 	private final RevDigit m_revDigit;
@@ -133,27 +135,22 @@ public class RobotContainer {
       m_drivetrain.setModuleStates(latchedModuleStates);
      }, m_drivetrain));
 
-    //  new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value)
-    //  .whileTrue(new ArmJoint2Outward(m_Armjoint2));
+     m_controller.a().toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
 
 
-      new JoystickButton(m_controller.getHID(), XboxController.Button.kY.value)
-       .onTrue(new MoveArmjoint2(m_Wrist, 0));
+     m_buttonPad.button(1).whileTrue(new ArmJoint1Outward(m_armJoint1));
+     m_buttonPad.button(5).whileTrue(new RunCommand(()->m_armJoint1.inwards(), m_armJoint1));
+     m_buttonPad.button(9).onTrue(new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)));
 
-      new JoystickButton(m_controller.getHID(), XboxController.Button.kLeftBumper.value)
-       .whileTrue(new ArmJoint2Outward(m_Wrist));
-      new JoystickButton(m_controller.getHID(), XboxController.Button.kRightBumper.value)
-       .whileTrue(new ArmJoint2Inward(m_Wrist));
-      
+     m_buttonPad.button(2).whileTrue(new ArmJoint2Outward(m_Armjoint2));
+     m_buttonPad.button(6).whileTrue(new ArmJoint2Inward(m_Armjoint2));
+     m_buttonPad.button(10).onTrue(new MoveArmjoint2(m_Armjoint2, 0));
 
-       new JoystickButton(m_buttonPad.getHID(), XboxController.Button.kY.value)
-       .onTrue(new MoveArmjoint2(m_Armjoint2, 0));
+     m_buttonPad.button(3).whileTrue(new ArmJoint2Outward(m_Wrist));
+     m_buttonPad.button(7).whileTrue(new ArmJoint2Inward(m_Wrist));
+     m_buttonPad.button(11).onTrue(new MoveArmjoint2(m_Wrist, 0));
 
-      m_controller.povDown().toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
-      new JoystickButton(m_buttonPad.getHID(), XboxController.Button.kLeftBumper.value)
-       .whileTrue(new ArmJoint2Outward(m_Armjoint2));
-      new JoystickButton(m_buttonPad.getHID(), XboxController.Button.kRightBumper.value)
-       .whileTrue(new ArmJoint2Inward(m_Armjoint2));
+	 m_buttonPad.button(12).onTrue(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

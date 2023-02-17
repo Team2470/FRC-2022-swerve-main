@@ -111,7 +111,7 @@ public final class Constants {
          .setDrivingID(12)
          .setEncoderID(12)
          .setSteeringID(13)
-         .setOffset(-121.9921875)
+         .setOffset(-121.9921875-53.26171875)
          .setTab(0, 2);
 
       public static final ModuleConfig kBackLeft = new ModuleConfig("Back Left")
@@ -137,7 +137,7 @@ public final class Constants {
       public static final CanBus kMotorCANBus = CanBus.kCanivore; 
       public static final CanBus kEncoderCANBus = CanBus.kCanivore;
 
-      public static final int kReverseSoftLimit = 695;
+      public static final int kReverseSoftLimit = 550;
       public static final int kForwardSoftLimit = 1289;
    }
 
@@ -228,7 +228,7 @@ public final class Constants {
       public static final PidArmCfg kArmjoint2 = new PidArmCfg()
          .setCanIDs(21, 21)
          .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
-         .setLimits(1000, 1800) //back  1600 min 3400
+         .setLimits(1000, 1960) //back  1600 min 3400
          .setMotionProfileConstants(5, 2)
          .setFeedforwardConstants(0, 0.31, 5.39, 0)
          .setPID(.1, .01, 0)
@@ -241,7 +241,7 @@ public final class Constants {
       public static final PidArmCfg kWrist = new PidArmCfg()
          .setCanIDs(22, 22)
          .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
-         .setLimits(-900, 1000) //back  1600 min 3400
+         .setLimits(-1550, 1000) //back  1600 min 3400
          .setMotionProfileConstants(5, 2)
          .setFeedforwardConstants(0, 0.1, 3.05, 0)
          .setPID(.1, .01, 0)
@@ -250,6 +250,6 @@ public final class Constants {
          .setEncoderDirection(false);
    }
    public static class Gripper {
-      public static final int kSolenoidChannelGripper = 1;
+      public static final int kSolenoidChannelGripper = 6;
    }
 }
