@@ -59,14 +59,13 @@ public class RobotContainer {
   //OI
   private final CommandXboxController m_controller = new CommandXboxController(0);
   private final CommandJoystick m_buttonPad = new CommandJoystick(0);
-
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final ArmJoint1 m_armJoint1 = new ArmJoint1();
   private final ProfiledArmjoint m_Armjoint2 = new ProfiledArmjoint(Constants.PidArmCfg.kArmjoint2, () -> m_armJoint1.getAngle().getDegrees());
   private final GripperSubsystem m_Gripper = new GripperSubsystem();
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
-  private final ProfiledArmjoint m_Wrist = new WristJoint(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngle().getDegrees());
+  private final ProfiledArmjoint m_Wrist = new WristJoint(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngleFromGround().getDegrees());
 
 	//Auto
 	private final RevDigit m_revDigit;
@@ -133,22 +132,28 @@ public class RobotContainer {
 
       m_drivetrain.setModuleStates(latchedModuleStates);
      }, m_drivetrain));
-    
-     m_controller.a().whileTrue(new ArmJoint1Outward(m_armJoint1));
-     m_controller.b().whileTrue(new RunCommand(()->m_armJoint1.inwards(),m_armJoint1));
-     m_controller.x().onTrue(new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(90)));
-     m_controller.leftBumper().whileTrue(new ArmJoint2Outward(m_Armjoint2));
+
+    //  new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value)
+    //  .whileTrue(new ArmJoint2Outward(m_Armjoint2));
 
 
-      m_controller.rightBumper().whileTrue(new ArmJoint2Inward(m_Armjoint2));
+      new JoystickButton(m_controller.getHID(), XboxController.Button.kY.value)
+       .onTrue(new MoveArmjoint2(m_Wrist, 0));
 
-      m_controller.y().onTrue(new MoveArmjoint2(m_Armjoint2, 0));
+      new JoystickButton(m_controller.getHID(), XboxController.Button.kLeftBumper.value)
+       .whileTrue(new ArmJoint2Outward(m_Wrist));
+      new JoystickButton(m_controller.getHID(), XboxController.Button.kRightBumper.value)
+       .whileTrue(new ArmJoint2Inward(m_Wrist));
+      
 
-      m_controller.back().onTrue(new ArmJoint2Outward(m_Wrist));
-      m_controller.start().onTrue(new ArmJoint2Inward(m_Wrist));
+       new JoystickButton(m_buttonPad.getHID(), XboxController.Button.kY.value)
+       .onTrue(new MoveArmjoint2(m_Armjoint2, 0));
 
       m_controller.povDown().toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
-
+      new JoystickButton(m_buttonPad.getHID(), XboxController.Button.kLeftBumper.value)
+       .whileTrue(new ArmJoint2Outward(m_Armjoint2));
+      new JoystickButton(m_buttonPad.getHID(), XboxController.Button.kRightBumper.value)
+       .whileTrue(new ArmJoint2Inward(m_Armjoint2));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

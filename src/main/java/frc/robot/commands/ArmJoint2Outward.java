@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ProfiledArmjoint;
 
@@ -25,12 +26,16 @@ public class ArmJoint2Outward extends CommandBase {
   public void execute() {
     m_Armjoint.disable();
     m_Armjoint.downwards();
+    
+    SmartDashboard.putNumber("Outward execute",0);
   }
+  
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     m_Armjoint.disable();    
     m_Armjoint.stop();
+    SmartDashboard.putNumber("Outward end",0);
   }
 
   // Returns true when the command should end.

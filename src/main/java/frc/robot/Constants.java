@@ -164,6 +164,9 @@ public final class Constants {
       public double maxVelocityRadPerSecond, maxAccelerationRadPerSecond;
       public double svolts, gvolts, vVoltSecondPerRad, aVoltSecondSquaredPerRad;
       public double P,I,D;
+      public String name;
+      public double encoderOffset;
+      public boolean encoderDirection;
 
       public PidArmCfg setCanIDs (int motorID, int encoderID ) {
          this.motorID = motorID;
@@ -201,21 +204,50 @@ public final class Constants {
          this.D = D;
          return this;
       }
+
+      public PidArmCfg setName(String name){
+         this.name = name;
+         return this;
+
+      }
+
+      public PidArmCfg setEncoderOffset(double encoderOffset) {
+         this.encoderOffset = encoderOffset;
+         return this;
+      }
+
+
+      public PidArmCfg setEncoderDirection(boolean direction) {
+         this.encoderDirection = direction;
+         return this;
+      }
+
+
+
+
       public static final PidArmCfg kArmjoint2 = new PidArmCfg()
          .setCanIDs(21, 21)
          .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
          .setLimits(1000, 1800) //back  1600 min 3400
          .setMotionProfileConstants(5, 2)
          .setFeedforwardConstants(0, 0.31, 5.39, 0)
-         .setPID(.1, .01, 0);
+         .setPID(.1, .01, 0)
+         .setName("armJoint2")
+         .setEncoderOffset(-52.91015625 - 74.1796875)
+         .setEncoderDirection(true);
+
+
 
       public static final PidArmCfg kWrist = new PidArmCfg()
          .setCanIDs(22, 22)
          .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
-         .setLimits(1000, 1800) //back  1600 min 3400
+         .setLimits(-900, 1000) //back  1600 min 3400
          .setMotionProfileConstants(5, 2)
-         .setFeedforwardConstants(0, 0.12, 1.44, 0)
-         .setPID(.1, .01, 0);
+         .setFeedforwardConstants(0, 0.1, 3.05, 0)
+         .setPID(.1, .01, 0)
+         .setName("Wrist")
+         .setEncoderOffset(-23.994140625 -78 + 60)
+         .setEncoderDirection(false);
    }
    public static class Gripper {
       public static final int kSolenoidChannelGripper = 1;
