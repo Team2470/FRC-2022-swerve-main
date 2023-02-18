@@ -113,6 +113,8 @@ public class RobotContainer {
 			new RunCommand(() -> m_drivetrain.drive(1, 0, 0, false), m_drivetrain).withTimeout(1.5), 
 			new InstantCommand(() -> m_drivetrain.stop())
 		));
+
+    m_autoSelector.registerCommand("Drive2Dock", "DOCK", createDriveToDock());
 		
 		m_autoSelector.initialize();
 	}
@@ -215,15 +217,18 @@ public class RobotContainer {
 		);		
 	}
 
-	public Command createPathPlanner() {
-		List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("FullAuto", new PathConstraints(4, 3));
+	public Command createDriveToDock() {
+		List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
+      "Drive2Dock", new PathConstraints(4, 3)
+    ); 
+    
 		SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
 			m_drivetrain::getPose,
 			m_drivetrain::resetOdometry,
 			Constants.Drive.kDriveKinematics,
 
-			new PIDConstants(5.0, 0, 0),
-			new PIDConstants(0.5, 0, 0),
+			new PIDConstants(5.0, 0, 0), //: PID constants for translation error
+			new PIDConstants(1.0, 0, 0), //: Theta rotation
 			
 			m_drivetrain::setModuleStates,
 			Constants.eventMap,
