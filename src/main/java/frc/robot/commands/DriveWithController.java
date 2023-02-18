@@ -45,7 +45,7 @@ public class DriveWithController extends CommandBase {
 
     @Override
     public void initialize() {
-        fieldOrient = false;
+        fieldOrient = true;
         lastMovingState = false;
 
         // Flush buffers with current module angles
@@ -103,14 +103,16 @@ public class DriveWithController extends CommandBase {
             xMove = Math.copySign(xMove * xMove, xMove);
             yMove = Math.copySign(yMove * yMove, yMove);
             rotate = Math.copySign(rotate * rotate, rotate);
-
-            // TODO add an option, to easily nerf in this command
-            // xMove *= 0.3;
-            // yMove *= 0.3;
-            // rotate *= 0.25;
-            xMove *= 1.0;
-            yMove *= 1.0;
-            rotate *= 0.5;
+            
+            if (controller.getRightBumper()){
+                xMove *= 0.3;
+                yMove *= 0.3;
+                rotate *= 0.25;
+            } else {
+                xMove *= 1.0;
+                yMove *= 1.0;
+                rotate *= 0.5;
+            }
 
             // Now we need to map the percentages to Meters (or Radians) per second, as that is what the drive train
             // subsystem accepts
