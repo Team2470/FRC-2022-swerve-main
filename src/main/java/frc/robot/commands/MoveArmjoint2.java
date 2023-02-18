@@ -49,6 +49,9 @@ public class MoveArmjoint2 extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    double threshold = 2;
+    double error = Math.abs(getError().getDegrees());
+    SmartDashboard.putNumber("MoveArmJoint2 error", error);
+    return error <= threshold;
   }
 }

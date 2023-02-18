@@ -45,6 +45,7 @@ import frc.robot.commands.DriveWithController;
 import frc.robot.commands.MoveArmjoint1ToPosition;
 import frc.robot.commands.MoveArmjoint2;
 import frc.robot.commands.MoveArmsToPickUpPosition;
+import frc.robot.commands.MoveArmsToSecondConePosition;
 import frc.robot.commands.MoveArmsToStartingPosition;
 import frc.robot.commands.MoveWristJoint2;
 import frc.robot.commands.WristJointInward2;
@@ -155,8 +156,9 @@ public class RobotContainer {
      m_buttonPad.button(7).whileTrue(new WristJointInward2(m_Wrist));
      m_buttonPad.button(11).onTrue(new MoveWristJoint2(m_Wrist, 0));
 
-	//  m_buttonPad.button(8).onTrue(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
-	//  m_buttonPad.button(12).onTrue(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist));
+	 m_buttonPad.button(8).onTrue(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
+	 m_buttonPad.button(12).onTrue(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist));
+	 m_buttonPad.button(4).onTrue(new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
