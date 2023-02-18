@@ -125,55 +125,50 @@ public class RobotContainer {
 		* edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
 		* edu.wpi.first.wpilibj2.command.button.JoystickButton}.
 		*/
-  private void configureButtonBindings() {
+  	private void configureButtonBindings() {
     // Configure default commands
-    m_drivetrain.setDefaultCommand(new DriveWithController(m_drivetrain, m_controller.getHID()));
+    	m_drivetrain.setDefaultCommand(new DriveWithController(m_drivetrain, m_controller.getHID()));
 
-    m_controller.start().onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do something with odometry? As it freaks out
+    	m_controller.start().onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do something with odometry? As it freaks out
   
-     m_controller.rightStick().toggleOnTrue(new RunCommand(()->{
-        var latchedModuleStates = new SwerveModuleState[]{
-          new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
-          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
-          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
-          new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
-      };
+		m_controller.rightStick().toggleOnTrue(new RunCommand(()->{
+        	var latchedModuleStates = new SwerveModuleState[]{
+				new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+				new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+				new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+				new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+			};
 
+      	m_drivetrain.setModuleStates(latchedModuleStates);
+		}, m_drivetrain));
 
-      m_drivetrain.setModuleStates(latchedModuleStates);
-     }, m_drivetrain));
+		m_controller.y().toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
 
-     m_controller.y().toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
+		m_buttonPad.button(1).whileTrue(new ArmJoint1Outward(m_armJoint1));
+		m_buttonPad.button(5).whileTrue(new RunCommand(()->m_armJoint1.inwards(), m_armJoint1));
+		m_buttonPad.button(9).onTrue(new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)));
 
+		m_buttonPad.button(2).whileTrue(new ArmJoint2Outward(m_Armjoint2));
+		m_buttonPad.button(6).whileTrue(new ArmJoint2Inward(m_Armjoint2));
+		m_buttonPad.button(10).onTrue(new MoveArmjoint2(m_Armjoint2, 0));
 
-     m_buttonPad.button(1).whileTrue(new ArmJoint1Outward(m_armJoint1));
-     m_buttonPad.button(5).whileTrue(new RunCommand(()->m_armJoint1.inwards(), m_armJoint1));
-     m_buttonPad.button(9).onTrue(new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)));
+		m_buttonPad.button(3).whileTrue(new WristJointOutward2(m_Wrist));
+		m_buttonPad.button(7).whileTrue(new WristJointInward2(m_Wrist));
+		m_buttonPad.button(11).onTrue(new MoveWristJoint2(m_Wrist, 0));
 
-     m_buttonPad.button(2).whileTrue(new ArmJoint2Outward(m_Armjoint2));
-     m_buttonPad.button(6).whileTrue(new ArmJoint2Inward(m_Armjoint2));
-     m_buttonPad.button(10).onTrue(new MoveArmjoint2(m_Armjoint2, 0));
-
-     m_buttonPad.button(3).whileTrue(new WristJointOutward2(m_Wrist));
-     m_buttonPad.button(7).whileTrue(new WristJointInward2(m_Wrist));
-     m_buttonPad.button(11).onTrue(new MoveWristJoint2(m_Wrist, 0));
-
-	 m_buttonPad.button(8).onTrue(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
-	 m_buttonPad.button(12).onTrue(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist));
-	 m_buttonPad.button(4).onTrue(new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist));
+		m_buttonPad.button(8).onTrue(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
+		m_buttonPad.button(12).onTrue(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist));
+		m_buttonPad.button(4).onTrue(new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return m_autoSelector.selected();
-  }
-
-
-
+  	public Command getAutonomousCommand() {
+    	// An ExampleCommand will run in autonomous
+    	return m_autoSelector.selected();
+  	}
 	public Command makeWPILibSwerveExamople() {
 		TrajectoryConfig config = 
 			new TrajectoryConfig(1, 1)
@@ -202,7 +197,7 @@ public class RobotContainer {
 
 			//:  Position Controllers
 			new PIDController(3, 0, 0),
-			new PIDController(3, 0, 0),
+			new PIDController(3, 0, 0), 
 
 			thetaController,
 			m_drivetrain::setModuleStates,
@@ -219,8 +214,8 @@ public class RobotContainer {
 
 	public Command createDriveToDock() {
 		List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
-      "Drive2Dock", new PathConstraints(4, 3)
-    ); 
+      	"Drive2Dock", new PathConstraints(4, 5)
+		); 
     
 		SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
 			m_drivetrain::getPose,
@@ -238,8 +233,7 @@ public class RobotContainer {
 		
 		return autoBuilder.fullAuto(pathGroup);
 	}
-  public void autonomousInit(){
-    m_drivetrain.resetHeading();
-  }
+  	public void autonomousInit(){
+    	m_drivetrain.resetHeading();
+  	}
 }
-
