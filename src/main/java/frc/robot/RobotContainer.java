@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.ctre.phoenix.motion.BuffTrajPointStreamJNI;
@@ -226,7 +227,17 @@ public class RobotContainer {
 			new PIDConstants(1.0, 0, 0), //: Theta rotation
 			
 			m_drivetrain::setModuleStates,
-			Constants.eventMap,
+			new HashMap<String, Command>() {{
+				put("Stop", new RunCommand(()->{
+					var latchedModuleStates = new SwerveModuleState[]{
+						new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+						new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+						new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+						new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+				 	};
+				 	m_drivetrain.setModuleStates(latchedModuleStates);
+			 	}, m_drivetrain));
+			}},
 			true, //: The path automatically mirrors depending on alliance color
 			m_drivetrain
 		);
