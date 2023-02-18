@@ -44,13 +44,18 @@ import frc.robot.commands.ArmJoint2Outward;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.MoveArmjoint1ToPosition;
 import frc.robot.commands.MoveArmjoint2;
+import frc.robot.commands.MoveArmsToPickUpPosition;
+import frc.robot.commands.MoveArmsToSecondConePosition;
 import frc.robot.commands.MoveArmsToStartingPosition;
+import frc.robot.commands.MoveWristJoint2;
+import frc.robot.commands.WristJointInward2;
+import frc.robot.commands.WristJointOutward2;
 import frc.robot.subsystems.ArmJoint1;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.GripperSubsystem;
 import frc.robot.subsystems.ProfiledArmjoint;
 import frc.robot.subsystems.WristJoint;
-import pabeles.concurrency.ConcurrencyOps.Reset;
+import frc.robot.subsystems.WristJointV2;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -68,7 +73,7 @@ public class RobotContainer {
   private final ProfiledArmjoint m_Armjoint2 = new ProfiledArmjoint(Constants.PidArmCfg.kArmjoint2, () -> m_armJoint1.getAngle().getDegrees());
   private final GripperSubsystem m_Gripper = new GripperSubsystem();
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
-  private final WristJoint m_Wrist = new WristJoint(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngleFromGround().getDegrees());
+  private final WristJointV2 m_Wrist = new WristJointV2(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngleFromGround().getDegrees());
 
 	//Auto
 	private final RevDigit m_revDigit;
@@ -136,7 +141,7 @@ public class RobotContainer {
       m_drivetrain.setModuleStates(latchedModuleStates);
      }, m_drivetrain));
 
-     m_controller.a().toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
+     m_controller.y().toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
 
 
      m_buttonPad.button(1).whileTrue(new ArmJoint1Outward(m_armJoint1));
@@ -147,11 +152,13 @@ public class RobotContainer {
      m_buttonPad.button(6).whileTrue(new ArmJoint2Inward(m_Armjoint2));
      m_buttonPad.button(10).onTrue(new MoveArmjoint2(m_Armjoint2, 0));
 
-     m_buttonPad.button(3).whileTrue(new ArmJoint2Outward(m_Wrist));
-     m_buttonPad.button(7).whileTrue(new ArmJoint2Inward(m_Wrist));
-     m_buttonPad.button(11).onTrue(new MoveArmjoint2(m_Wrist, 0));
+     m_buttonPad.button(3).whileTrue(new WristJointOutward2(m_Wrist));
+     m_buttonPad.button(7).whileTrue(new WristJointInward2(m_Wrist));
+     m_buttonPad.button(11).onTrue(new MoveWristJoint2(m_Wrist, 0));
 
-	 m_buttonPad.button(12).onTrue(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
+	 m_buttonPad.button(8).onTrue(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
+	 m_buttonPad.button(12).onTrue(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist));
+	 m_buttonPad.button(4).onTrue(new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -230,3 +237,4 @@ public class RobotContainer {
     m_drivetrain.resetHeading();
   }
 }
+
