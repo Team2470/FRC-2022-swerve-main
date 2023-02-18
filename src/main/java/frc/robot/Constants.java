@@ -242,9 +242,9 @@ public final class Constants {
          .setCanIDs(22, 22)
          .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
          .setLimits(-1550, 1000) //back  1600 min 3400
-         .setMotionProfileConstants(5, 2)
+         .setMotionProfileConstants(3.14, 3.14)
          .setFeedforwardConstants(0, 0.1, 3.05, 0)
-         .setPID(.1, .01, 0)
+         .setPID(0.2, 0, 0)
          .setName("Wrist")
          .setEncoderOffset(-23.994140625 -78 + 60)
          .setEncoderDirection(false);

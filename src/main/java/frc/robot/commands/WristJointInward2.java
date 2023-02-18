@@ -4,46 +4,36 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ProfiledArmjoint;
+import frc.robot.subsystems.WristJointV2;
 
-public class MoveArmjoint2 extends CommandBase {
-  private final ProfiledArmjoint m_Armjoint;
-  private final double m_angle;
-  /** Creates a new MoveArmjoint2. */
-  public MoveArmjoint2(ProfiledArmjoint armjoint, double angle) {
+public class WristJointInward2 extends CommandBase {
+  private final WristJointV2 m_Armjoint;
+  /** Creates a new ArmJoint2Inward. */
+  public WristJointInward2(WristJointV2 armjoint) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_Armjoint= armjoint;
-    m_angle= angle;
+    m_Armjoint = armjoint;
     addRequirements(m_Armjoint);
-
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    m_Armjoint.setGoal(m_angle);
-    m_Armjoint.enable();
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putNumber("Arm Joint Angle Command Setpoint", m_angle);
+    m_Armjoint.disable();
+    m_Armjoint.upwards();
   }
-  
+
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     m_Armjoint.disable();
     m_Armjoint.stop();
-  }
 
-  
-  public Rotation2d getError() {
-    return m_Armjoint.getAngleFromGround().minus(Rotation2d.fromDegrees(m_angle));
   }
 
   // Returns true when the command should end.
