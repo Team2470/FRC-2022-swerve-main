@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.ArmJoint1;
@@ -26,7 +27,8 @@ public class MoveArmsToSecondConePosition extends SequentialCommandGroup {
       new MoveArmjoint2(Armjoint2, -31),
       new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(80)),
       new MoveArmjoint2(Armjoint2, -35),
-      new MoveWristJoint2(Wrist, 0)
+      //new MoveWristJoint2(Wrist, 0)
+      new ScheduleCommand(new MoveWristJoint2(Wrist, 0))  
 
      
     );
