@@ -114,7 +114,7 @@ public class RobotContainer {
 			new InstantCommand(() -> m_drivetrain.stop())
 		));
 
-    m_autoSelector.registerCommand("Drive2Dock", "DOCK", createDriveToDock());
+    	m_autoSelector.registerCommand("DriveDock", "DOCK", createDriveToDock());
 		
 		m_autoSelector.initialize();
 	}
@@ -214,7 +214,7 @@ public class RobotContainer {
 
 	public Command createDriveToDock() {
 		List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
-      	"Drive2Dock", new PathConstraints(4, 5)
+      	"DriveDock", new PathConstraints(4, 10)
 		); 
     
 		SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
