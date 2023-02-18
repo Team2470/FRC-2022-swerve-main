@@ -24,13 +24,15 @@ public class MoveArmsToSecondConePosition extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new MoveArmjoint2(Armjoint2, -31),
-      new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(80)),
-      new MoveArmjoint2(Armjoint2, -35),
+      new ParallelCommandGroup(
+        new ScheduleCommand(new MoveWristJoint2(Wrist, 0)),  
+        new SequentialCommandGroup(
+          new MoveArmjoint2(Armjoint2, -31),
+          new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(80)),
+          new MoveArmjoint2(Armjoint2, -35)
+        )
+      )
       //new MoveWristJoint2(Wrist, 0)
-      new ScheduleCommand(new MoveWristJoint2(Wrist, 0))  
-
-     
     );
   }
 }

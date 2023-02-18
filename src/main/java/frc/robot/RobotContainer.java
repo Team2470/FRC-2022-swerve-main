@@ -106,7 +106,7 @@ public class RobotContainer {
 		m_revDigit.display("BWMP");
 		m_autoSelector = new AutoSelector(m_revDigit, "DFLT", new SequentialCommandGroup(
 			new PrintCommand("OOPS")
-			));
+    ));
 
 		//Initialize other autos here
 		m_autoSelector.registerCommand("Auto Crap - Community", "CRAP", new SequentialCommandGroup(
