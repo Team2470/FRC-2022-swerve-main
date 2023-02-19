@@ -17,6 +17,7 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.server.PathPlannerServer;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -27,6 +28,9 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
@@ -76,12 +80,17 @@ public class RobotContainer {
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
   private final WristJointV2 m_Wrist = new WristJointV2(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngleFromGround().getDegrees());
 
+  private final NetworkTable m_cameraTable = NetworkTableInstance.getDefault().getTable("CameraPublisher");
+  private final NetworkTableEntry m_cameraSelector = m_cameraTable.getEntry("selector");
 	//Auto
 	private final RevDigit m_revDigit;
 	private final AutoSelector m_autoSelector;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+	CameraServer.startAutomaticCapture();
+
     //Configure default commands
     m_armJoint1.setDefaultCommand(new RunCommand(
       () -> m_armJoint1.stop(),
@@ -93,7 +102,7 @@ public class RobotContainer {
       m_Gripper
     ));
     
-
+	m_cameraSelector.setDouble(0.0);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -111,7 +120,7 @@ public class RobotContainer {
 
 		//Initialize other autos here
 		m_autoSelector.registerCommand("Auto Crap - Community", "CRAP", new SequentialCommandGroup(
-			new RunCommand(() -> m_drivetrain.drive(1, 0, 0, false), m_drivetrain).withTimeout(1.5), 
+			new RunCommand(() -> m_drivetrain.drive(1, 0, 0, false), m_drivetrain).withTimeout(3), 
 			new InstantCommand(() -> m_drivetrain.stop())
 		));
 
@@ -145,6 +154,9 @@ public class RobotContainer {
 
 		m_controller.y().toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
 
+		m_controller.x().onTrue(
+			new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(false))
+		);
 		m_buttonPad.button(1).whileTrue(
 			new ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		);

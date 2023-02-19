@@ -84,11 +84,8 @@ public class DriveWithController extends CommandBase {
         rotate = MathUtil.applyDeadband(rotate, kDeadband);
 
         // Check to for changes between robot and field centric drive modes
-        if (controller.getAButton()) {
-            fieldOrient = false;
-        } else if (controller.getBButton()) {
-            fieldOrient = true;
-        }
+
+        fieldOrient = !controller.getAButton();
 
         // Determine if the robot should be moving,
         boolean moving = xMove != 0 || yMove != 0 || rotate != 0;
