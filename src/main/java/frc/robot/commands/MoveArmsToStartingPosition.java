@@ -5,10 +5,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.ArmJoint1;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ProfiledArmjoint;
 import frc.robot.subsystems.WristJoint;
 import frc.robot.subsystems.WristJointV2;
@@ -24,18 +26,13 @@ public class MoveArmsToStartingPosition extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new ParallelCommandGroup(
-      new MoveWristJoint2(Wrist, -95),
-      new SequentialCommandGroup(
-        new WaitUntilCommand(()->(Wrist.getAngleFromGround().getDegrees() < 0)),
-        new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(50)),
-        new MoveArmjoint2(Armjoint2, 41)   
+        new MoveWristJoint2(Wrist, -95),
+        new SequentialCommandGroup(
+          new WaitUntilCommand(()->(Wrist.getAngleFromGround().getDegrees() < 0)),
+          new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(50)),
+          new MoveArmjoint2(Armjoint2, 41)   
+          ) 
       )
-     
-      )
-
- 
-
-
     );
   }
 }

@@ -145,21 +145,48 @@ public class RobotContainer {
 
 		m_controller.y().toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
 
-		m_buttonPad.button(1).whileTrue(new ArmJoint1Outward(m_armJoint1));
-		m_buttonPad.button(5).whileTrue(new RunCommand(()->m_armJoint1.inwards(), m_armJoint1));
-		m_buttonPad.button(9).onTrue(new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)));
+		m_buttonPad.button(1).whileTrue(
+			new ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		);
+		m_buttonPad.button(5).whileTrue(
+			new RunCommand(()->m_armJoint1.inwards(), m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		);
+		m_buttonPad.button(9).onTrue(
+			new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		);
 
-		m_buttonPad.button(2).whileTrue(new ArmJoint2Outward(m_Armjoint2));
-		m_buttonPad.button(6).whileTrue(new ArmJoint2Inward(m_Armjoint2));
-		m_buttonPad.button(10).onTrue(new MoveArmjoint2(m_Armjoint2, 0));
+		m_buttonPad.button(2).whileTrue(
+			new ArmJoint2Outward(m_Armjoint2).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		);
+		m_buttonPad.button(6).whileTrue(
+			new ArmJoint2Inward(m_Armjoint2).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		);
+		m_buttonPad.button(10).onTrue(
+			new MoveArmjoint2(m_Armjoint2, 0).beforeStarting(()->m_drivetrain.setSlowMode(true))
+			.beforeStarting(()->m_drivetrain.setSlowMode(true))
+		);
 
-		m_buttonPad.button(3).whileTrue(new WristJointOutward2(m_Wrist));
-		m_buttonPad.button(7).whileTrue(new WristJointInward2(m_Wrist));
-		m_buttonPad.button(11).onTrue(new MoveWristJoint2(m_Wrist, 0));
+		m_buttonPad.button(3).whileTrue(
+			new WristJointOutward2(m_Wrist)
+			.beforeStarting(()->m_drivetrain.setSlowMode(true))
+		);
+		m_buttonPad.button(7).whileTrue(
+			new WristJointInward2(m_Wrist)
+			.beforeStarting(()->m_drivetrain.setSlowMode(true))
+		);
+		m_buttonPad.button(11).onTrue(
+			new MoveWristJoint2(m_Wrist, 0).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		);
 
-		m_buttonPad.button(8).onTrue(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
-		m_buttonPad.button(12).onTrue(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist));
-		m_buttonPad.button(4).onTrue(new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist));
+		m_buttonPad.button(8).onTrue(
+			new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(false))
+		);
+		m_buttonPad.button(12).onTrue(
+			new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		);
+		m_buttonPad.button(4).onTrue(
+			new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		);
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -246,5 +273,9 @@ public class RobotContainer {
 	}
   	public void autonomousInit(){
     	m_drivetrain.resetHeading();
+  	}
+
+	public void teleopInit(){
+		m_drivetrain.setSlowMode(false);
   	}
 }

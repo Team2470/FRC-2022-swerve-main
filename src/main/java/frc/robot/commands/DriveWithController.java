@@ -104,7 +104,7 @@ public class DriveWithController extends CommandBase {
             yMove = Math.copySign(yMove * yMove, yMove);
             rotate = Math.copySign(rotate * rotate, rotate);
             
-            if (controller.getRightBumper()){
+            if (drive.getSlowMode() || controller.getRightBumper()){
                 xMove *= 0.3;
                 yMove *= 0.3;
                 rotate *= 0.25;
