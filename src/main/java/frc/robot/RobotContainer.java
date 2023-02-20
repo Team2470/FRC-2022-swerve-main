@@ -154,9 +154,9 @@ public class RobotContainer {
 
 		m_controller.y().toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
 
-		m_controller.x().onTrue(
-			new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(false))
-		);
+		// m_controller.x().onTrue(
+		// 	new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(false))
+		// );
 		m_buttonPad.button(1).whileTrue(
 			new ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		);
@@ -254,7 +254,7 @@ public class RobotContainer {
 
 	public Command createDriveToDock() {
 		List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
-      	"DriveDock", new PathConstraints(4, 10)
+      	"DriveDockv3", new PathConstraints(2, 2)
 		); 
     
 		SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
