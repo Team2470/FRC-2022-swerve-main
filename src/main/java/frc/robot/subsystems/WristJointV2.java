@@ -111,11 +111,11 @@ public class WristJointV2 extends PIDSubsystem {
   
   
   public void upwards(){
-    m_motor.set(ControlMode.PercentOutput, .5);
+    m_motor.set(ControlMode.PercentOutput, .7);
   }
 
   public void downwards() {
-    m_motor.set(ControlMode.PercentOutput, -.5);
+    m_motor.set(ControlMode.PercentOutput, -.7);
   }
   public void stop() { 
     m_motor.neutralOutput();
