@@ -92,7 +92,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-	CameraServer.startAutomaticCapture();
+	//CameraServer.startAutomaticCapture();
 
     //Configure default commands
     m_armJoint1.setDefaultCommand(new RunCommand(
@@ -197,8 +197,8 @@ public class RobotContainer {
 			new ParallelCommandGroup(
 				new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist),
 				new SequentialCommandGroup(
-					new WaitUntilCommand(()->(m_armJoint1.getAngle().getDegrees() < 50 && m_Armjoint2.getAngleFromGround().getDegrees() > 0)),
-					new RunCommand(()->m_drivetrain.setSlowMode(false), m_drivetrain)
+					new WaitUntilCommand(()->(m_armJoint1.getAngle().getDegrees() < 55 && m_Armjoint2.getAngleFromGround().getDegrees() > 0)),
+					new RunCommand(()->m_drivetrain.setSlowMode(false))
 				)
 			)
 
@@ -301,4 +301,8 @@ public class RobotContainer {
 	public void teleopInit(){
 		m_drivetrain.setSlowMode(false);
   	}
+
+	public void disabledPeriodic(){
+		m_drivetrain.resetSteerEncoders();
+	}
 }

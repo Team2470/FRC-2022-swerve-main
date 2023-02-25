@@ -33,7 +33,7 @@ public class MoveArmsToStartingPosition extends SequentialCommandGroup {
           new ParallelCommandGroup(
             new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(50)),
             new SequentialCommandGroup(
-              new WaitUntilCommand(()->(armJoint1.getAngle().getDegrees() < 60)),
+              new WaitUntilCommand(()->(armJoint1.getAngle().getDegrees() < 75)),
               new MoveArmjoint2(Armjoint2, 41)   
             )
           )

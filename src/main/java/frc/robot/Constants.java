@@ -111,7 +111,7 @@ public final class Constants {
          .setDrivingID(12)
          .setEncoderID(12)
          .setSteeringID(13)
-         .setOffset(-301.728+180)
+         .setOffset(41.01563430557424-82-180)
          .setTab(0, 2);
 
       public static final ModuleConfig kBackLeft = new ModuleConfig("Back Left")
@@ -231,7 +231,7 @@ public final class Constants {
          .setLimits(0, 1960) //back  1600 min 3400
          .setMotionProfileConstants(3.14, 3.14)
          .setFeedforwardConstants(0, 0.31, 5.39, 0)
-         .setPID(.1, 0, 0)
+         .setPID(.3, 0, 0)
          .setName("armJoint2")
          .setEncoderOffset(-52.91015625 - 74.1796875)
          .setEncoderDirection(true);
@@ -250,6 +250,7 @@ public final class Constants {
          .setEncoderDirection(false);
    }
    public static class Gripper {
-      public static final int kSolenoidChannelGripper = 6;
+      public static final int kSolenoidChannelGripperOpen = 1;
+      public static final int kSolenoidChannelGripperClose = 0;
    }
 }
