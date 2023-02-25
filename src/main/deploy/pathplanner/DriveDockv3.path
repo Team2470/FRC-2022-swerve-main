@@ -19,7 +19,7 @@
         "names": [
           "start"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "after",
         "waitTime": 0
       }
