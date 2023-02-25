@@ -18,20 +18,21 @@ import frc.robot.subsystems.WristJointV2;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class MoveArmsToCone3 extends SequentialCommandGroup {
+public class MoveArmsToHumanPlayer extends SequentialCommandGroup {
 
   /** Creates a new MoveArmsToStartingPosition. */
-  public MoveArmsToCone3(ArmJoint1 armJoint1,  Armjoint2V2 Armjoint2, WristJointV2 Wrist) {
+  public MoveArmsToHumanPlayer(ArmJoint1 armJoint1,  Armjoint2V2 Armjoint2, WristJointV2 Wrist) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new ParallelCommandGroup(
-        new MoveArmjoint2(Armjoint2, -39),
+        new ScheduleCommand(new MoveWristJoint2(Wrist, 0)),
+        new MoveArmjoint2(Armjoint2, -28),
         new SequentialCommandGroup(
-          new WaitUntilCommand(()->(Armjoint2.getAngleFromGround().getDegrees() < -35)),
-          new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(103)),
-          new MoveWristJoint2(Wrist, -25)
+          new WaitUntilCommand(()-> Armjoint2.getAngleFromGround().getDegrees() < -10),
+          new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(80))
         )
+      //new MoveWristJoint2(Wrist, 0)
       )
     );
   }
