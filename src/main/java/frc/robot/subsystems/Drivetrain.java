@@ -55,9 +55,7 @@ public class Drivetrain extends SubsystemBase {
          .withSize(2, 2).withPosition(8, 0);
       
       imuShuffleboard.addNumber
-         ( "Heading", () -> getOdomHeading().getDegrees() );
-         imuShuffleboard.addNumber
-         ( "IMU Heading", () -> getIMUHeading().getDegrees() );
+         ( "Heading", () -> getHeading().getDegrees() );
 
       SASModuleConfiguration moduleConfig = new SASModuleConfiguration();
       moduleConfig.setNominalVoltage(Constants.Drive.kDriveVoltageCompensation);
@@ -83,7 +81,7 @@ public class Drivetrain extends SubsystemBase {
       // Setup odometry
       m_odometry = new SwerveDriveOdometry(
          Constants.Drive.kDriveKinematics,
-         getIMUHeading(),
+         getHeading(),
          getModulePositions()
       );
 
@@ -159,11 +157,10 @@ public class Drivetrain extends SubsystemBase {
    public void drive(double xSpeed, double ySpeed, double rotation, boolean feildRelative) {
       ChassisSpeeds chassisSpeeds;
 
-      if (feildRelative) {
-         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, getOdomHeading());
-      } else { 
-         chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotation); 
-      }
+      if (feildRelative)
+         { chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, getHeading());}
+      else
+         { chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotation); }
 
       setModuleStates(Constants.Drive.kDriveKinematics.toSwerveModuleStates(chassisSpeeds));
    }
@@ -176,17 +173,17 @@ public class Drivetrain extends SubsystemBase {
    public void periodic() {
 
       // Upldate robote pose
-      m_odometry.update(getIMUHeading(), getModulePositions());
+      m_odometry.update(getHeading(), getModulePositions());
 
       m_field.setRobotPose(m_odometry.getPoseMeters());
    }
 
-   public Rotation2d getOdomHeading() {
-      return m_odometry.getPoseMeters().getRotation();
+   public Rotation2d getHeading() {
+      return Rotation2d.fromDegrees(this.m_imu.getYaw());
    }
 
-   public Rotation2d getIMUHeading() {
-      return Rotation2d.fromDegrees(this.m_imu.getYaw());
+   public void resetHeading() {
+      this.m_imu.setYaw(0);
    }
 
   /**
@@ -202,11 +199,7 @@ public class Drivetrain extends SubsystemBase {
     * @param pose the pose to switch to set the odometry to
     */
    public void resetOdometry(Pose2d pose) {
-      m_odometry.resetPosition(getIMUHeading(), getModulePositions(), pose);
-   }
-
-   public void resetOdometry() {
-      resetOdometry(new Pose2d());
+      m_odometry.resetPosition(getHeading(), getModulePositions(), pose);
    }
    
 }
