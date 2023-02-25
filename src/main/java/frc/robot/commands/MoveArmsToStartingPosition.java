@@ -31,7 +31,7 @@ public class MoveArmsToStartingPosition extends SequentialCommandGroup {
         new SequentialCommandGroup(
           new WaitUntilCommand(()->(Wrist.getAngleFromGround().getDegrees() < 0)),
           new ParallelCommandGroup(
-            new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(50)),
+            new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(50)).repeatedly(),
             new SequentialCommandGroup(
               new WaitUntilCommand(()->(armJoint1.getAngle().getDegrees() < 75)),
               new MoveArmjoint2(Armjoint2, 41)   

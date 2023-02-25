@@ -51,6 +51,9 @@ import frc.robot.commands.ArmJoint2Outward;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.MoveArmjoint1ToPosition;
 import frc.robot.commands.MoveArmjoint2;
+import frc.robot.commands.MoveArmsToCone3;
+import frc.robot.commands.MoveArmsToCube2;
+import frc.robot.commands.MoveArmsToCubeCone1;
 import frc.robot.commands.MoveArmsToPickUpPosition;
 import frc.robot.commands.MoveArmsToSecondConePosition;
 import frc.robot.commands.MoveArmsToStartingPosition;
@@ -161,19 +164,26 @@ public class RobotContainer {
 		// m_controller.x().onTrue(
 		// 	new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(false))
 		// );
-		m_buttonPad.button(1).whileTrue(
-			new ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// m_buttonPad.button(1).whileTrue(
+		// 	new ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// );
+		m_buttonPad.button(1).onTrue(
+			new MoveArmsToCube2(m_armJoint1, m_Armjoint2, m_Wrist)
 		);
-		m_buttonPad.button(5).whileTrue(
-			new RunCommand(()->m_armJoint1.inwards(), m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// m_buttonPad.button(5).whileTrue(
+		// 	new RunCommand(()->m_armJoint1.inwards(), m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// );
+		m_buttonPad.button(5).onTrue(
+			new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)
 		);
 		m_buttonPad.button(9).onTrue(
-			new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true))
+			new MoveArmsToCone3(m_armJoint1, m_Armjoint2, m_Wrist)
 		);
 
 		m_buttonPad.button(2).whileTrue(
 			new ArmJoint2Outward(m_Armjoint2).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		);
+
 		m_buttonPad.button(6).whileTrue(
 			new ArmJoint2Inward(m_Armjoint2).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		);
@@ -205,8 +215,9 @@ public class RobotContainer {
 
 		);
 		m_buttonPad.button(12).onTrue(
-			new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
-			.andThen(new RunCommand(()->m_Gripper.openGripper(), m_Gripper))
+			new RunCommand(()->m_Gripper.openGripper(), m_Gripper).alongWith(
+				new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
+			)
 		);
 		m_buttonPad.button(4).onTrue(
 			new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))

@@ -17,8 +17,11 @@ public class MoveArmjoint1ToPosition extends CommandBase {
   }
   private enum Direction {
     kOutward,
-    kInward
+    kInward,
+    kNone
   }
+
+  private final double kTollerance = 2.5;
 
   private final ArmJoint1 m_armJoint1;
   private final Rotation2d m_setpoint;
@@ -43,11 +46,12 @@ public class MoveArmjoint1ToPosition extends CommandBase {
     m_timer.reset();
     m_timer.start();
     
-    if (m_armJoint1.getAngle().minus(m_setpoint).getDegrees() > 0) {
+    if (m_armJoint1.getAngle().minus(m_setpoint).getDegrees() > kTollerance) {
       m_direction = Direction.kInward;
-    } else {
-    
+    } else if(m_armJoint1.getAngle().minus(m_setpoint).getDegrees() < -kTollerance) {
       m_direction = Direction.kOutward;
+    } else {
+      m_direction = Direction.kNone;
     }
 
   }
@@ -72,6 +76,10 @@ public class MoveArmjoint1ToPosition extends CommandBase {
             break;
         }
       break;
+      case kNone:
+        m_armJoint1.stop();
+        break;
+
         
     }
 
@@ -87,9 +95,9 @@ public class MoveArmjoint1ToPosition extends CommandBase {
   @Override
   public boolean isFinished() {
     if (m_direction == Direction.kInward){
-      return m_armJoint1.getAngle().getDegrees() < m_setpoint.plus(Rotation2d.fromDegrees(2.5)).getDegrees();
+      return m_armJoint1.getAngle().getDegrees() < m_setpoint.plus(Rotation2d.fromDegrees(kTollerance)).getDegrees();
     } else {
-      return m_armJoint1.getAngle().getDegrees() > m_setpoint.minus(Rotation2d.fromDegrees(2.5)).getDegrees();
+      return m_armJoint1.getAngle().getDegrees() > m_setpoint.minus(Rotation2d.fromDegrees(kTollerance)).getDegrees();
     }
   }
 }

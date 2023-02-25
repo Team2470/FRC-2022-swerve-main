@@ -18,30 +18,18 @@ import frc.robot.subsystems.WristJointV2;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class MoveArmsToPickUpPosition extends SequentialCommandGroup {
+public class MoveArmsToCube2 extends SequentialCommandGroup {
 
   /** Creates a new MoveArmsToStartingPosition. */
-  public MoveArmsToPickUpPosition(ArmJoint1 armJoint1,  Armjoint2V2 Armjoint2, WristJointV2 Wrist) {
+  public MoveArmsToCube2(ArmJoint1 armJoint1,  Armjoint2V2 Armjoint2, WristJointV2 Wrist) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new ParallelCommandGroup(
-       new ScheduleCommand(new MoveWristJoint2(Wrist, -45)),
-       new SequentialCommandGroup(
-          new WaitUntilCommand(()->(Wrist.getAngleFromGround().getDegrees() < 10)),
-          new ParallelCommandGroup(
-            new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(50)).repeatedly(),
-            new SequentialCommandGroup(
-              new WaitUntilCommand(()->(armJoint1.getAngle().getDegrees() < 60)),
-              new MoveArmjoint2(Armjoint2, 41)
-            ),
-            new SequentialCommandGroup(
-              new WaitUntilCommand(()->(armJoint1.getAngle().getDegrees() < 60)),
-               new ScheduleCommand(new MoveWristJoint2(Wrist, 0))    
-            )
-          )
-       )
-      )
+			new ParallelCommandGroup(
+			new MoveWristJoint2(Wrist, 0),
+			new MoveArmjoint2(Armjoint2, -16)
+			)
+        
     );
   }
 }
