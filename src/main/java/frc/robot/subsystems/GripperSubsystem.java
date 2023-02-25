@@ -4,27 +4,29 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class GripperSubsystem extends SubsystemBase {
 
-    private final Solenoid m_gripperSolenoid;
+    private final DoubleSolenoid m_gripperSolenoid;
 
   /** Creates a new GripperSubsystem. */
   public GripperSubsystem() {
-    m_gripperSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.Gripper.kSolenoidChannelGripper);
+    m_gripperSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, Constants.Gripper.kSolenoidChannelGripperOpen, Constants.Gripper.kSolenoidChannelGripperClose);
 
   }
 
   public void openGripper(){
-    m_gripperSolenoid.set(false);
+    m_gripperSolenoid.set(Value.kForward);
   }
   
   public void closeGripper(){
-    m_gripperSolenoid.set(true);
+    m_gripperSolenoid.set(Value.kReverse);
   }
 
   @Override

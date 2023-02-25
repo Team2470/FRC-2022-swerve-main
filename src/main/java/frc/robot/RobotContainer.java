@@ -58,6 +58,7 @@ import frc.robot.commands.MoveWristJoint2;
 import frc.robot.commands.WristJointInward2;
 import frc.robot.commands.WristJointOutward2;
 import frc.robot.subsystems.ArmJoint1;
+import frc.robot.subsystems.Armjoint2V2;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.GripperSubsystem;
 import frc.robot.subsystems.ProfiledArmjoint;
@@ -77,7 +78,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final ArmJoint1 m_armJoint1 = new ArmJoint1();
-  private final ProfiledArmjoint m_Armjoint2 = new ProfiledArmjoint(Constants.PidArmCfg.kArmjoint2, () -> m_armJoint1.getAngle().getDegrees());
+  private final Armjoint2V2 m_Armjoint2 = new Armjoint2V2(Constants.PidArmCfg.kArmjoint2, () -> m_armJoint1.getAngle().getDegrees());
   private final GripperSubsystem m_Gripper = new GripperSubsystem();
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
   private final WristJointV2 m_Wrist = new WristJointV2(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngleFromGround().getDegrees());
@@ -91,7 +92,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-	CameraServer.startAutomaticCapture();
+	//CameraServer.startAutomaticCapture();
 
     //Configure default commands
     m_armJoint1.setDefaultCommand(new RunCommand(
@@ -196,14 +197,15 @@ public class RobotContainer {
 			new ParallelCommandGroup(
 				new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist),
 				new SequentialCommandGroup(
-					new WaitUntilCommand(()->(m_armJoint1.getAngle().getDegrees() < 50)),
-					new RunCommand(()->m_drivetrain.setSlowMode(false), m_drivetrain)
+					new WaitUntilCommand(()->(m_armJoint1.getAngle().getDegrees() < 55 && m_Armjoint2.getAngleFromGround().getDegrees() > 0)),
+					new RunCommand(()->m_drivetrain.setSlowMode(false))
 				)
 			)
 
 		);
 		m_buttonPad.button(12).onTrue(
 			new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
+			.andThen(new RunCommand(()->m_Gripper.openGripper(), m_Gripper))
 		);
 		m_buttonPad.button(4).onTrue(
 			new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
@@ -376,5 +378,9 @@ public class RobotContainer {
 		   m_drivetrain
 	   );
 	   return autoBuilder.fullAuto(pathGroup);
+	}
+
+	public void disabledPeriodic(){
+		m_drivetrain.resetSteerEncoders();
 	}
 }

@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Drive.ModuleConfig;
+
+import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
@@ -119,6 +121,12 @@ public class Drivetrain extends SubsystemBase {
                Constants.Drive.kDriveVoltageCompensation,
             states[i].angle.getRadians()
          );
+      }
+   }
+
+   public void resetSteerEncoders(){
+      for (int i = 0; i < 4; i++){
+         ((CANCoder)m_swerve_modules[i].getSteerEncoder().getInternal()).setPositionToAbsolute();
       }
    }
 

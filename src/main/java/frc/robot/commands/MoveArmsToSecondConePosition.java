@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.ArmJoint1;
+import frc.robot.subsystems.Armjoint2V2;
 import frc.robot.subsystems.ProfiledArmjoint;
 import frc.robot.subsystems.WristJoint;
 import frc.robot.subsystems.WristJointV2;
@@ -20,7 +21,7 @@ import frc.robot.subsystems.WristJointV2;
 public class MoveArmsToSecondConePosition extends SequentialCommandGroup {
 
   /** Creates a new MoveArmsToStartingPosition. */
-  public MoveArmsToSecondConePosition(ArmJoint1 armJoint1,  ProfiledArmjoint Armjoint2, WristJointV2 Wrist) {
+  public MoveArmsToSecondConePosition(ArmJoint1 armJoint1,  Armjoint2V2 Armjoint2, WristJointV2 Wrist) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
