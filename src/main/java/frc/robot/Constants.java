@@ -229,9 +229,9 @@ public final class Constants {
          .setCanIDs(21, 21)
          .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
          .setLimits(0, 1960) //back  1600 min 3400
-         .setMotionProfileConstants(5, 2)
+         .setMotionProfileConstants(3.14, 3.14)
          .setFeedforwardConstants(0, 0.31, 5.39, 0)
-         .setPID(.1, .01, 0)
+         .setPID(.1, 0, 0)
          .setName("armJoint2")
          .setEncoderOffset(-52.91015625 - 74.1796875)
          .setEncoderDirection(true);

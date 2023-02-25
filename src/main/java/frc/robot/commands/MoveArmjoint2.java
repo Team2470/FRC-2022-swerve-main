@@ -7,13 +7,14 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Armjoint2V2;
 import frc.robot.subsystems.ProfiledArmjoint;
 
 public class MoveArmjoint2 extends CommandBase {
-  private final ProfiledArmjoint m_Armjoint;
+  private final Armjoint2V2 m_Armjoint;
   private final double m_angle;
   /** Creates a new MoveArmjoint2. */
-  public MoveArmjoint2(ProfiledArmjoint armjoint, double angle) {
+  public MoveArmjoint2(Armjoint2V2 armjoint, double angle) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_Armjoint= armjoint;
     m_angle= angle;
@@ -24,7 +25,7 @@ public class MoveArmjoint2 extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_Armjoint.setGoal(m_angle);
+    m_Armjoint.setSetpoint(m_angle);
     m_Armjoint.enable();
   }
 

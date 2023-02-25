@@ -5,12 +5,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Armjoint2V2;
 import frc.robot.subsystems.ProfiledArmjoint;
 
 public class ArmJoint2Inward extends CommandBase {
-  private final ProfiledArmjoint m_Armjoint;
+  private final Armjoint2V2 m_Armjoint;
   /** Creates a new ArmJoint2Inward. */
-  public ArmJoint2Inward(ProfiledArmjoint armjoint) {
+  public ArmJoint2Inward(Armjoint2V2 armjoint) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_Armjoint = armjoint;
     addRequirements(m_Armjoint);
