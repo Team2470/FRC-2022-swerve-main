@@ -53,7 +53,7 @@ public class Drivetrain extends SubsystemBase {
          .withSize(2, 2).withPosition(8, 0);
       
       imuShuffleboard.addNumber
-         ( "Heading", () -> getHeading().getDegrees() );
+         ( "Heading", () -> getIMUHeading().getDegrees() );
 
       Mk4ModuleConfiguration moduleConfig = Mk4ModuleConfiguration.getDefaultSteerNEO();
       moduleConfig.setNominalVoltage(Constants.Drive.kDriveVoltageCompensation);
@@ -79,7 +79,7 @@ public class Drivetrain extends SubsystemBase {
       // Setup odometry
       m_odometry = new SwerveDriveOdometry(
          Constants.Drive.kDriveKinematics,
-         getHeading(),
+         getIMUHeading(),
          getModulePositions()
       );
 
@@ -154,7 +154,7 @@ public class Drivetrain extends SubsystemBase {
       ChassisSpeeds chassisSpeeds;
 
       if (feildRelative)
-         { chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, getHeading());}
+         { chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, getOdomHeading());}
       else
          { chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotation); }
 
@@ -169,17 +169,22 @@ public class Drivetrain extends SubsystemBase {
    public void periodic() {
 
       // Upldate robote pose
-      m_odometry.update(getHeading(), getModulePositions());
+      m_odometry.update(getIMUHeading(), getModulePositions());
 
       m_field.setRobotPose(m_odometry.getPoseMeters());
    }
 
-   public Rotation2d getHeading() {
+   public Rotation2d getIMUHeading() {
       return Rotation2d.fromDegrees(this.m_imu.getYaw());
+   }
+
+   public Rotation2d getOdomHeading() {
+      return m_odometry.getPoseMeters().getRotation();
    }
 
    public void resetHeading() {
       this.m_imu.setYaw(0);
+      resetOdometry(new Pose2d());
    }
 
   /**
@@ -195,7 +200,7 @@ public class Drivetrain extends SubsystemBase {
     * @param pose the pose to switch to set the odometry to
     */
    public void resetOdometry(Pose2d pose) {
-      m_odometry.resetPosition(getHeading(), getModulePositions(), pose);
+      m_odometry.resetPosition(getIMUHeading(), getModulePositions(), pose);
    }
    
 }
