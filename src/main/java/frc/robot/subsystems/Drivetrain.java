@@ -19,6 +19,8 @@ import frc.robot.Constants.Drive.ModuleConfig;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.kennedyrobotics.swerve.SASModuleConfiguration;
+import com.kennedyrobotics.swerve.SASModuleHelper;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
@@ -55,9 +57,9 @@ public class Drivetrain extends SubsystemBase {
       imuShuffleboard.addNumber
          ( "Heading", () -> getHeading().getDegrees() );
 
-      Mk4ModuleConfiguration moduleConfig = Mk4ModuleConfiguration.getDefaultSteerNEO();
+      SASModuleConfiguration moduleConfig = new SASModuleConfiguration();
       moduleConfig.setNominalVoltage(Constants.Drive.kDriveVoltageCompensation);
-
+     
       //: Swerve setup
       this.m_swerve_modules[0] = this.createModule(
          Constants.Drive.kFrontLeft,
@@ -96,14 +98,14 @@ public class Drivetrain extends SubsystemBase {
       .withPosition(8,2);
 }
 
-   private SwerveModule createModule(ModuleConfig config, Mk4ModuleConfiguration moduleConfig, ShuffleboardTab tab) {
-      return Mk4SwerveModuleHelper.createNeo(
+   private SwerveModule createModule(ModuleConfig config, SASModuleConfiguration moduleConfig, ShuffleboardTab tab) {
+      return SASModuleHelper.createV2(
          tab.getLayout(config.name, BuiltInLayouts.kList)
             .withSize(2, 6).withPosition(config.col, config.line),
          
-         moduleConfig, Mk4SwerveModuleHelper.GearRatio.L2,
+         moduleConfig, SASModuleHelper.GearRatio.V2,
          config.drivingID, config.steeringID, //: drving & steering IDs
-         config.encoderID, config.offset.getRadians() //: encoder ID and offset (rotation)
+         config.offset //: encoder ID and offset (rotation)
       );
    }
 

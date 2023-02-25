@@ -77,11 +77,11 @@ public class RobotContainer {
   private final CommandJoystick m_buttonPad = new CommandJoystick(1);
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
-  private final ArmJoint1 m_armJoint1 = new ArmJoint1();
-  private final Armjoint2V2 m_Armjoint2 = new Armjoint2V2(Constants.PidArmCfg.kArmjoint2, () -> m_armJoint1.getAngle().getDegrees());
+  // private final ArmJoint1 m_armJoint1 = new ArmJoint1();
+  // private final Armjoint2V2 m_Armjoint2 = new Armjoint2V2(Constants.PidArmCfg.kArmjoint2, () -> m_armJoint1.getAngle().getDegrees());
   private final GripperSubsystem m_Gripper = new GripperSubsystem();
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
-  private final WristJointV2 m_Wrist = new WristJointV2(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngleFromGround().getDegrees());
+  // private final WristJointV2 m_Wrist = new WristJointV2(Constants.PidArmCfg.kWrist, () -> m_Armjoint2.getAngleFromGround().getDegrees());
 
   private final NetworkTable m_cameraTable = NetworkTableInstance.getDefault().getTable("CameraPublisher");
   private final NetworkTableEntry m_cameraSelector = m_cameraTable.getEntry("selector");
@@ -95,10 +95,10 @@ public class RobotContainer {
 	//CameraServer.startAutomaticCapture();
 
     //Configure default commands
-    m_armJoint1.setDefaultCommand(new RunCommand(
-      () -> m_armJoint1.stop(),
-      m_armJoint1
-    ));
+    // m_armJoint1.setDefaultCommand(new RunCommand(
+    //   () -> m_armJoint1.stop(),
+    //   m_armJoint1
+    // ));
 
     m_Gripper.setDefaultCommand(new RunCommand(
       () -> m_Gripper.openGripper(),
@@ -161,56 +161,56 @@ public class RobotContainer {
 		// m_controller.x().onTrue(
 		// 	new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(false))
 		// );
-		m_buttonPad.button(1).whileTrue(
-			new ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
-		);
-		m_buttonPad.button(5).whileTrue(
-			new RunCommand(()->m_armJoint1.inwards(), m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
-		);
-		m_buttonPad.button(9).onTrue(
-			new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true))
-		);
+		// m_buttonPad.button(1).whileTrue(
+		// 	new ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// );
+		// m_buttonPad.button(5).whileTrue(
+		// 	new RunCommand(()->m_armJoint1.inwards(), m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// );
+		// m_buttonPad.button(9).onTrue(
+		// 	new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// );
 
-		m_buttonPad.button(2).whileTrue(
-			new ArmJoint2Outward(m_Armjoint2).beforeStarting(()->m_drivetrain.setSlowMode(true))
-		);
-		m_buttonPad.button(6).whileTrue(
-			new ArmJoint2Inward(m_Armjoint2).beforeStarting(()->m_drivetrain.setSlowMode(true))
-		);
-		m_buttonPad.button(10).onTrue(
-			new MoveArmjoint2(m_Armjoint2, 0).beforeStarting(()->m_drivetrain.setSlowMode(true))
-			.beforeStarting(()->m_drivetrain.setSlowMode(true))
-		);
+		// m_buttonPad.button(2).whileTrue(
+		// 	new ArmJoint2Outward(m_Armjoint2).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// );
+		// m_buttonPad.button(6).whileTrue(
+		// 	new ArmJoint2Inward(m_Armjoint2).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// );
+		// m_buttonPad.button(10).onTrue(
+		// 	new MoveArmjoint2(m_Armjoint2, 0).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// 	.beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// );
 
-		m_buttonPad.button(3).whileTrue(
-			new WristJointOutward2(m_Wrist)
-			.beforeStarting(()->m_drivetrain.setSlowMode(true))
-		);
-		m_buttonPad.button(7).whileTrue(
-			new WristJointInward2(m_Wrist)
-			.beforeStarting(()->m_drivetrain.setSlowMode(true))
-		);
-		m_buttonPad.button(11).onTrue(
-			new MoveWristJoint2(m_Wrist, 0).beforeStarting(()->m_drivetrain.setSlowMode(true))
-		);
+		// m_buttonPad.button(3).whileTrue(
+		// 	new WristJointOutward2(m_Wrist)
+		// 	.beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// );
+		// m_buttonPad.button(7).whileTrue(
+		// 	new WristJointInward2(m_Wrist)
+		// 	.beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// );
+		// m_buttonPad.button(11).onTrue(
+		// 	new MoveWristJoint2(m_Wrist, 0).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// );
 
-		m_buttonPad.button(8).onTrue(
-			new ParallelCommandGroup(
-				new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist),
-				new SequentialCommandGroup(
-					new WaitUntilCommand(()->(m_armJoint1.getAngle().getDegrees() < 55 && m_Armjoint2.getAngleFromGround().getDegrees() > 0)),
-					new RunCommand(()->m_drivetrain.setSlowMode(false))
-				)
-			)
+		// m_buttonPad.button(8).onTrue(
+		// 	new ParallelCommandGroup(
+		// 		new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist),
+		// 		new SequentialCommandGroup(
+		// 			new WaitUntilCommand(()->(m_armJoint1.getAngle().getDegrees() < 55 && m_Armjoint2.getAngleFromGround().getDegrees() > 0)),
+		// 			new RunCommand(()->m_drivetrain.setSlowMode(false))
+		// 		)
+		// 	)
 
-		);
-		m_buttonPad.button(12).onTrue(
-			new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
-			.andThen(new RunCommand(()->m_Gripper.openGripper(), m_Gripper))
-		);
-		m_buttonPad.button(4).onTrue(
-			new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
-		);
+		// );
+		// m_buttonPad.button(12).onTrue(
+		// 	new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// 	.andThen(new RunCommand(()->m_Gripper.openGripper(), m_Gripper))
+		// );
+		// m_buttonPad.button(4).onTrue(
+		// 	new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
+		// );
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -267,9 +267,9 @@ public class RobotContainer {
 	public Command krateAleksDriveToDoor() {
 		 final HashMap<String, Command> eventMap = new HashMap<String, Command>() {{
 			put("start", new SequentialCommandGroup(new Command[] {
-				new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true)),
-				new RunCommand(()->m_Gripper.closeGripper(), m_Gripper),
-				new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true)),
+				// new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true)),
+				// new RunCommand(()->m_Gripper.closeGripper(), m_Gripper),
+				// new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true)),
 			}));
 		 }};
 	  

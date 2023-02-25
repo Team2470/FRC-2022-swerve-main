@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.HashMap;
 
+import com.kennedyrobotics.swerve.SASModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -46,10 +47,10 @@ public final class Constants {
       //: Physical constants (motors, sensors, ...)
       public static final double kDriveVoltageCompensation = 10;
       public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
-      public static final double kWheelBaseLengthMeters = Units.inchesToMeters(25.5);
-      public static final double kTrackWidthMeters = Units.inchesToMeters(20.5);
+      public static final double kWheelBaseLengthMeters = Units.inchesToMeters(21.5);
+      public static final double kTrackWidthMeters = Units.inchesToMeters(26);
 
-      public static final double kDriveGearReduction = SdsModuleConfigurations.MK4_L2.getDriveReduction();
+      public static final double kDriveGearReduction = SASModuleHelper.GearRatio.V2.getConfiguration().getDriveReduction();
 
       public static final double kMaxDriveVelocityMetersPerSecond = 
          DCMotor.getNEO(1).freeSpeedRadPerSec / (2) * kDriveGearReduction * kWheelDiameterMeters * (kDriveVoltageCompensation/12.0);
@@ -101,31 +102,27 @@ public final class Constants {
       }
       //: specific module config
       public static final ModuleConfig kFrontLeft = new ModuleConfig("Front Left")
-         .setDrivingID(11)
-         .setEncoderID(10)
-         .setSteeringID(10)
-         .setOffset(-112.5167456318007+180)
+         .setDrivingID(10)
+         .setSteeringID(11)
+         .setOffset(-102)
          .setTab(0, 0);
 
       public static final ModuleConfig kFrontRight = new ModuleConfig("Front Right")
-         .setDrivingID(12)
-         .setEncoderID(12)
-         .setSteeringID(13)
-         .setOffset(41.01563430557424-82-180)
+         .setDrivingID(14)
+         .setSteeringID(15)
+         .setOffset(-129)
          .setTab(0, 2);
 
       public static final ModuleConfig kBackLeft = new ModuleConfig("Back Left")
-         .setDrivingID(14)
-         .setEncoderID(16)
-         .setSteeringID(15)
-         .setOffset(-53.349609375000014)
+         .setDrivingID(12)
+         .setSteeringID(13)
+         .setOffset(70)
          .setTab(0, 4);
 
       public static final ModuleConfig kBackRight = new ModuleConfig("Back Right")
-         .setDrivingID(17)
-         .setEncoderID(14)
-         .setSteeringID(16)
-         .setOffset(-126.03515625)
+         .setDrivingID(16)
+         .setSteeringID(17)
+         .setOffset(-65)
          .setTab(0, 6);
    }
 
