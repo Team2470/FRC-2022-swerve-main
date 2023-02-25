@@ -261,7 +261,16 @@ public class RobotContainer {
 		);		
 	}
 
-	public Command createDriveToDock() {
+	public Command krateAleksDriveToDoor() {
+		 final HashMap<String, Command> eventMap = new HashMap<String, Command>() {{
+			put("start", new SequentialCommandGroup(new Command[] {
+				new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true)),
+				new RunCommand(()->m_Gripper.closeGripper(), m_Gripper),
+				new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true)),
+			}));
+		 }};
+	  
+
 		List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
       	"DriveDockv3", new PathConstraints(2, 2)
 		); 
@@ -293,10 +302,79 @@ public class RobotContainer {
 		return autoBuilder.fullAuto(pathGroup);
 	}
   	public void autonomousInit(){
+		
     	m_drivetrain.resetHeading();
   	}
 
 	public void teleopInit(){
 		m_drivetrain.setSlowMode(false);
   	}
+	public Command createDriveToDock() {
+		final HashMap<String, Command> eventMap = new HashMap<String, Command>() {{
+		   put("marker1", new PrintCommand("Passed Marker #1"));
+		   put("armRaise", new PrintCommand("Arm Raised to x degreese")); //: TODO: put in actual degree
+		}};
+	 
+
+	   List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
+		 "DriveDockv3", new PathConstraints(2, 2)
+	   ); 
+   
+	   SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+		   m_drivetrain::getPose,
+		   m_drivetrain::resetOdometry,
+		   Constants.Drive.kDriveKinematics,
+
+		   new PIDConstants(5.0, 0, 0), //: PID constants for translation error
+		   new PIDConstants(1.0, 0, 0), //: Theta rotation
+		   
+		   m_drivetrain::setModuleStates,
+		   new HashMap<String, Command>() {{
+			   put("Stop", new RunCommand(()->{
+				   var latchedModuleStates = new SwerveModuleState[]{
+					   new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+					   new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+					   new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+					   new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+					};
+					m_drivetrain.setModuleStates(latchedModuleStates);
+				}, m_drivetrain));
+		   }},
+		   true, //: The path automatically mirrors depending on alliance color
+		   m_drivetrain
+	   );
+	   return autoBuilder.fullAuto(pathGroup);
+	}
+	public Command createDrieDoc() {
+		final HashMap<String, Command> eventMap = new HashMap<String, Command>() {{}};
+	 
+	   List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
+		 "Die", new PathConstraints(2, 2)
+	   ); 
+   
+	   SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+		   m_drivetrain::getPose,
+		   m_drivetrain::resetOdometry,
+		   Constants.Drive.kDriveKinematics,
+
+		   new PIDConstants(5.0, 0, 0), //: PID constants for translation error
+		   new PIDConstants(1.0, 0, 0), //: Theta rotation
+		   
+		   m_drivetrain::setModuleStates,
+		   new HashMap<String, Command>() {{
+			   put("Stop", new RunCommand(() -> {
+				   var latchedModuleStates = new SwerveModuleState[]{
+					   new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+					   new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+					   new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+					   new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+					};
+					m_drivetrain.setModuleStates(latchedModuleStates);
+				}, m_drivetrain));
+		   }},
+		   true, //: The path automatically mirrors depending on alliance color
+		   m_drivetrain
+	   );
+	   return autoBuilder.fullAuto(pathGroup);
+	}
 }
