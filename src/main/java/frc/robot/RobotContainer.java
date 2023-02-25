@@ -143,7 +143,7 @@ public class RobotContainer {
     // Configure default commands
     	m_drivetrain.setDefaultCommand(new DriveWithController(m_drivetrain, m_controller.getHID()));
 
-    	m_controller.start().onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do something with odometry? As it freaks out
+    	m_controller.start().onTrue(new InstantCommand(m_drivetrain::resetOdometry));
   
 		m_controller.rightStick().toggleOnTrue(new RunCommand(()->{
         	var latchedModuleStates = new SwerveModuleState[]{
@@ -306,7 +306,7 @@ public class RobotContainer {
 	}
   	public void autonomousInit(){
 		
-    	m_drivetrain.resetHeading();
+    	m_drivetrain.resetOdometry();
   	}
 
 	public void teleopInit(){
