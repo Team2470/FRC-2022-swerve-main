@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 public final class Constants {
    public enum CanBus {
       kRoboRIO("rio"),
-      kCanivore("Canivore0");
+      kCanivore("canivore");
 
       public final String bus_name;
       private CanBus(String value) {
@@ -66,7 +66,7 @@ public final class Constants {
             new Translation2d(-kWheelBaseLengthMeters / 2, -kTrackWidthMeters / 2));
       //: IMU constants
       public static final int kPigeonID = 0;
-      public static final CanBus kPigeonCANBus = CanBus.kRoboRIO;
+      public static final CanBus kPigeonCANBus = CanBus.kCanivore;
 
       public static class ModuleConfig {
          public int line, col;

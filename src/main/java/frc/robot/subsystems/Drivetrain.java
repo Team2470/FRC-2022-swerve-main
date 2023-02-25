@@ -130,7 +130,9 @@ public class Drivetrain extends SubsystemBase {
 
    public void resetSteerEncoders(){
       for (int i = 0; i < 4; i++){
-         ((CANCoder)m_swerve_modules[i].getSteerEncoder().getInternal()).setPositionToAbsolute();
+         if (m_swerve_modules[i].getSteerEncoder().getInternal() instanceof CANCoder) {
+            ((CANCoder)m_swerve_modules[i].getSteerEncoder().getInternal()).setPositionToAbsolute();
+         }
       }
    }
 
