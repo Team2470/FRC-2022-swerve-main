@@ -128,6 +128,7 @@ public class RobotContainer {
 		));
 
     	m_autoSelector.registerCommand("DriveDock", "DOCK", createDriveToDock());
+		m_autoSelector.registerCommand("Drie", "DRIE", createDrieDoc());
 		
 		m_autoSelector.initialize();
 	}
@@ -351,7 +352,7 @@ public class RobotContainer {
 		final HashMap<String, Command> eventMap = new HashMap<String, Command>() {{}};
 	 
 	   List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
-		 "Die", new PathConstraints(2, 2)
+		 "Drie", new PathConstraints(2, 2)
 	   ); 
    
 	   SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
