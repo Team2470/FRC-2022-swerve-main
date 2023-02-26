@@ -129,23 +129,31 @@ public class RobotContainer {
 
 		//Initialize other autos here
 		m_autoSelector.registerCommand("Auto Crap - Community", "CRAP", new SequentialCommandGroup(
-			new RunCommand(() -> m_drivetrain.drive(1, 0, 0, false), m_drivetrain).withTimeout(3), 
-			new InstantCommand(() -> m_drivetrain.stop())
+			new RunCommand(() -> m_drivetrain.drive(1.25, 0, 0, false), m_drivetrain).withInterrupt(() -> !m_drivetrain.isRoll()),
+			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false), m_drivetrain).withInterrupt(m_drivetrain::isRoll), 
+			XStop()
 		));
 
 		m_autoSelector.registerCommand("Alek", "ALEK", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 			put("start", new SequentialCommandGroup(new Command[] {
-				new WaitCommand(5),
-				new PrintCommand("its been 5 secounds")
 				// new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true)),
 				// new RunCommand(()->m_Gripper.closeGripper(), m_Gripper),
 				// new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true)),
 			}));
-			put("stop", XStop());
+			put("stop", new SequentialCommandGroup(
+				new RunCommand(() -> m_drivetrain.drive(1.25, 0, 0, false), m_drivetrain).withInterrupt(() -> !m_drivetrain.isRoll()),
+				new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false), m_drivetrain).withInterrupt(m_drivetrain::isRoll), 
+				XStop())
+			);
 		}}, "DriveDockv3", new PathConstraints(2, 2)));
 
-		m_autoSelector.registerCommand("Test Distance", "TEST", createAutoPath(
-			m_drivetrain, new HashMap<String, Command>(), "TestDistance", new PathConstraints(3, 4))
+		m_autoSelector.registerCommand("Drive 2 Ramp", "RAMP", new SequentialCommandGroup(
+			createAutoPath(
+				m_drivetrain, new HashMap<String, Command>(), "Drive2Ramp", new PathConstraints(3, 4)
+			),
+			new RunCommand(() -> m_drivetrain.drive(-0.25, 0, 0, false), m_drivetrain).withInterrupt(m_drivetrain::isRoll),
+			XStop()
+			)
 		);
 
 		m_autoSelector.initialize();
@@ -155,7 +163,7 @@ public class RobotContainer {
 		* Use this method to define your button->command mappings. Buttons can be created by
 		* instantiating a {@link GenericHID} or one of its subclasses ({@link
 		* edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-		* edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+		* edu.wpi.first.wpilibj2.command.button.JoystickButton}.  
 		*/
   	private void configureButtonBindings() {
     // Configure default commands
