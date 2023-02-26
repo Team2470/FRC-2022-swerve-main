@@ -56,6 +56,13 @@ public class Drivetrain extends SubsystemBase {
       
       imuShuffleboard.addNumber
          ( "Heading", () -> getIMUHeading().getDegrees() );
+      imuShuffleboard.addNumber
+         ( "Pitch", () -> m_imu.getPitch() );
+      imuShuffleboard.addNumber
+         ( "Roll", () -> m_imu.getRoll() );
+      imuShuffleboard.addBoolean
+         ( "Level", () -> isRoll() );
+      
 
       SASModuleConfiguration moduleConfig = new SASModuleConfiguration();
       moduleConfig.setNominalVoltage(Constants.Drive.kDriveVoltageCompensation);
@@ -184,6 +191,10 @@ public class Drivetrain extends SubsystemBase {
 
    public Rotation2d getOdomHeading() {
       return m_odometry.getPoseMeters().getRotation();
+   }
+
+   public boolean isRoll() {
+      return Math.abs(m_imu.getRoll()) < 8.5;
    }
 
    public void resetHeading() {
