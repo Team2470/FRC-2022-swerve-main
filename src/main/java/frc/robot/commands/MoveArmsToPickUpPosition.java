@@ -30,10 +30,10 @@ public class MoveArmsToPickUpPosition extends SequentialCommandGroup {
        new SequentialCommandGroup(
           new WaitUntilCommand(()->(Wrist.getAngleFromGround().getDegrees() < 10)),
           new ParallelCommandGroup(
-            new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(50)).repeatedly(),
+            new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(48)).repeatedly(),
             new SequentialCommandGroup(
               new WaitUntilCommand(()->(armJoint1.getAngle().getDegrees() < 60)),
-              new MoveArmjoint2(Armjoint2, 41)
+              new MoveArmjoint2(Armjoint2, 43)
             ),
             new SequentialCommandGroup(
               new WaitUntilCommand(()->(armJoint1.getAngle().getDegrees() < 60)),

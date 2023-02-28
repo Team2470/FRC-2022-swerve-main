@@ -27,10 +27,10 @@ public class MoveArmsToHumanPlayer extends SequentialCommandGroup {
     addCommands(
       new ParallelCommandGroup(
         new ScheduleCommand(new MoveWristJoint2(Wrist, 0)),
-        new MoveArmjoint2(Armjoint2, -28),
+        new MoveArmjoint2(Armjoint2, -22),
         new SequentialCommandGroup(
           new WaitUntilCommand(()-> Armjoint2.getAngleFromGround().getDegrees() < -10),
-          new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(80))
+          new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(78))
         )
       //new MoveWristJoint2(Wrist, 0)
       )

@@ -35,12 +35,15 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -159,7 +162,18 @@ public class RobotContainer {
       	m_drivetrain.setModuleStates(latchedModuleStates);
 		}, m_drivetrain));
 
-		m_controller.y().toggleOnTrue(new RunCommand(()->m_Gripper.closeGripper(),m_Gripper));
+		m_controller.y().toggleOnTrue(new ParallelCommandGroup(
+			new RunCommand(()->m_Gripper.closeGripper(),m_Gripper),
+			new SequentialCommandGroup(
+				new WaitCommand(0.5),
+				new ConditionalCommand(
+					new ScheduleCommand(new MoveWristJoint2(m_Wrist, -95)), 
+					new PrintCommand("no game piece not closing grabber"),
+					()->m_Gripper.isGamePieceDetected())
+
+			)
+		));
+		
 
 		// m_controller.x().onTrue(
 		// 	new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(false))
