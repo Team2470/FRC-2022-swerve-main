@@ -4,21 +4,27 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class GripperSubsystem extends SubsystemBase {
 
     private final DoubleSolenoid m_gripperSolenoid;
-
+    private final DigitalInput m_gamePieceSensor;
   /** Creates a new GripperSubsystem. */
   public GripperSubsystem() {
     m_gripperSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, Constants.Gripper.kSolenoidChannelGripperOpen, Constants.Gripper.kSolenoidChannelGripperClose);
+    m_gamePieceSensor = new DigitalInput(Constants.Gripper.kGamePieceSensorDIO);
+  }
 
+  public boolean isGamePieceDetected(){
+    return !m_gamePieceSensor.get();
   }
 
   public void openGripper(){
@@ -32,5 +38,7 @@ public class GripperSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Gripper Game Piece Detected", isGamePieceDetected());
+
   }
 }

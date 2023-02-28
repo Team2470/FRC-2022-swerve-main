@@ -252,5 +252,6 @@ public final class Constants {
    public static class Gripper {
       public static final int kSolenoidChannelGripperOpen = 1;
       public static final int kSolenoidChannelGripperClose = 0;
+      public static final int kGamePieceSensorDIO = 1;
    }
 }
