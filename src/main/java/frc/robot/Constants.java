@@ -167,6 +167,7 @@ public final class Constants {
       public String name;
       public double encoderOffset;
       public boolean encoderDirection;
+      public double outPutVoltage;
 
       public PidArmCfg setCanIDs (int motorID, int encoderID ) {
          this.motorID = motorID;
@@ -222,6 +223,11 @@ public final class Constants {
          return this;
       }
 
+      public PidArmCfg setOutputVoltage(double outPutVoltage) {
+         this.outPutVoltage = outPutVoltage;
+         return this;
+      }
+
 
 
 
@@ -234,7 +240,9 @@ public final class Constants {
          .setPID(.3, 0, 0)
          .setName("armJoint2")
          .setEncoderOffset(-52.91015625 - 74.1796875)
-         .setEncoderDirection(true);
+         .setEncoderDirection(true)
+         .setOutputVoltage(8);
+
 
 
 
@@ -247,7 +255,8 @@ public final class Constants {
          .setPID(0.2, 0, 0)
          .setName("Wrist")
          .setEncoderOffset(-23.994140625 -78 + 60)
-         .setEncoderDirection(false);
+         .setEncoderDirection(false)
+         .setOutputVoltage(12);
    }
    public static class Gripper {
       public static final int kSolenoidChannelGripperOpen = 1;

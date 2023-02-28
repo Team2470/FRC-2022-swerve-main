@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
+import frc.robot.Constants;
 import frc.robot.Constants.PidArmCfg;
 
 public class Armjoint2V2 extends PIDSubsystem {
@@ -30,7 +31,7 @@ public class Armjoint2V2 extends PIDSubsystem {
   private final ArmFeedforward m_feedforward;
 
   protected final DoubleSupplier m_Armjoint1AngleSupplier;
-  public Armjoint2V2(PidArmCfg cfg, DoubleSupplier armjoint1AngleSupplier) {
+  public Armjoint2V2(PidArmCfg cfg, DoubleSupplier armjoint1AngleSupplier ) {
     super(
         // The PIDController used by the subsystem
         new PIDController(
@@ -116,6 +117,11 @@ public class Armjoint2V2 extends PIDSubsystem {
   public void useOutput(double output, double setpoint) {
     double feedforward = m_feedforward.calculate(setpoint, 0);
     double outPutVoltage = output;
+
+    if (outPutVoltage > m_Cfg.outPutVoltage ) {
+      outPutVoltage =  m_Cfg.outPutVoltage;
+    }
+
     m_motor.setVoltage(outPutVoltage);
     SmartDashboard.putNumber(m_Cfg.name + " Motor Output Voltage", outPutVoltage);
     SmartDashboard.putNumber(m_Cfg.name + " Motor Pid Output", output);
