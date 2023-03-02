@@ -58,8 +58,7 @@ public class Drivetrain extends SubsystemBase {
          ( "Pitch", () -> m_imu.getPitch() );
       imuShuffleboard.addNumber
          ( "Roll", () -> m_imu.getRoll() );
-      imuShuffleboard.addBoolean
-         ( "Level", () -> isRoll() );
+
       
 
       Mk4ModuleConfiguration moduleConfig = Mk4ModuleConfiguration.getDefaultSteerNEO();
@@ -189,8 +188,8 @@ public class Drivetrain extends SubsystemBase {
       return m_odometry.getPoseMeters().getRotation();
    }
 
-   public double getRoll() {
-      return m_imu.getRoll();
+   public boolean isRoll() {
+      return Math.abs(m_imu.getRoll()) < 8.5;
    }
 
    public void resetHeading() {
