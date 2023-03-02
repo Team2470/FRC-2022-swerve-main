@@ -140,18 +140,17 @@ public class RobotContainer {
 				// new RunCommand(()->m_Gripper.closeGripper(), m_Gripper),
 				// new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true)),
 			}));
-			put("stop", new SequentialCommandGroup(
-				new RunCommand(() -> m_drivetrain.drive(1.25, 0, 0, false), m_drivetrain).withInterrupt(() -> !m_drivetrain.isRoll()),
-				new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false), m_drivetrain).withInterrupt(m_drivetrain::isRoll), 
-				XStop())
-			);
+			// put("stop", new SequentialCommandGroup(
+			// 	new RunCommand(() -> m_drivetrain.drive(1.25, 0, 0, false), m_drivetrain).withInterrupt(() -> !m_drivetrain.isRoll()),
+			// 	new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false), m_drivetrain).withInterrupt(m_drivetrain::isRoll), 
+			// 	XStop())
+			// );
 		}}, "DriveDockv3", new PathConstraints(2, 2)));
 
 		m_autoSelector.registerCommand("Drive 2 Ramp", "RAMP", new SequentialCommandGroup(
 			createAutoPath(
 				m_drivetrain, new HashMap<String, Command>(), "Drive2Ramp", new PathConstraints(3, 4)
 			),
-			new RunCommand(() -> m_drivetrain.drive(-0.25, 0, 0, false), m_drivetrain).withInterrupt(m_drivetrain::isRoll),
 			XStop()
 			)
 		);
@@ -310,14 +309,15 @@ public class RobotContainer {
 		);		
 	}
 
-	public Command krateAleksDriveToDoor() {
-		 final HashMap<String, Command> eventMap = new HashMap<String, Command>() {{
-			put("start", new SequentialCommandGroup(new Command[] {
-				new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true)),
-				new RunCommand(()->m_Gripper.closeGripper(), m_Gripper),
-				new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true)),
-			}));
-		 }};
+	// public Command krateAleksDriveToDoor() {
+	// 	 final HashMap<String, Command> eventMap = new HashMap<String, Command>() {{
+	// 		put("start", new SequentialCommandGroup(new Command[] {
+	// 			new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true)),
+	// 			new RunCommand(()->m_Gripper.closeGripper(), m_Gripper),
+	// 			new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true)),
+	// 		}));
+	// 	 }};
+	// }
 	  
   	public void autonomousInit() {
     	m_drivetrain.resetHeading();
@@ -349,7 +349,7 @@ public class RobotContainer {
          drivetrain::resetOdometry,
          Constants.Drive.kDriveKinematics,
 
-         new PIDConstants(4.1, 0, 0), //: PID constants for translation error
+         new PIDConstants(5.0, 0, 0), //: PID constants for translation error
          new PIDConstants(1.0, 0, 0), //: Theta rotation,
 
          drivetrain::setModuleStates,
