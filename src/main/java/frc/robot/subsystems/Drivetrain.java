@@ -178,6 +178,8 @@ public class Drivetrain extends SubsystemBase {
       m_odometry.update(getIMUHeading(), getModulePositions());
 
       m_field.setRobotPose(m_odometry.getPoseMeters());
+
+      SmartDashboard.putBoolean("Slow Mode", m_slowMode);
    }
 
    public Rotation2d getIMUHeading() {
