@@ -31,7 +31,8 @@ public class Armjoint2V2 extends PIDSubsystem {
   private final ArmFeedforward m_feedforward;
 
   protected final DoubleSupplier m_Armjoint1AngleSupplier;
-  public Armjoint2V2(PidArmCfg cfg, DoubleSupplier armjoint1AngleSupplier ) {
+  protected final DoubleSupplier m_baseHeightSupplier;
+  public Armjoint2V2(PidArmCfg cfg, DoubleSupplier armjoint1AngleSupplier, DoubleSupplier baseHeightSupplier) {
     super(
         // The PIDController used by the subsystem
         new PIDController(
@@ -42,6 +43,7 @@ public class Armjoint2V2 extends PIDSubsystem {
         m_Cfg = cfg;
 
         m_Armjoint1AngleSupplier = armjoint1AngleSupplier;
+        m_baseHeightSupplier = baseHeightSupplier;
 
         m_feedforward = new ArmFeedforward(
           m_Cfg.svolts, m_Cfg.gvolts,
@@ -131,6 +133,12 @@ public class Armjoint2V2 extends PIDSubsystem {
 
   public void resetAbsolutePosition(){
     m_encoder.setPositionToAbsolute();
+  }
+
+  public double getHeightInches() {
+    double height = 0;
+
+    return height + m_baseHeightSupplier.getAsDouble();
   }
 
 }

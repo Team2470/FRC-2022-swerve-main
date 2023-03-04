@@ -22,4 +22,9 @@ public class WristJoint extends ProfiledArmjoint {
     return Rotation2d.fromDegrees( getAngle().getDegrees() + m_Armjoint1AngleSupplier.getAsDouble());
   }
 
+  public double getHeightInches() {
+    
+    return 0;
+  }
+
 }

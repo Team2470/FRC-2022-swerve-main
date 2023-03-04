@@ -28,8 +28,9 @@ public class WristJointV2 extends PIDSubsystem {
   private final ArmFeedforward m_feedforward;
 
   protected final DoubleSupplier m_Armjoint1AngleSupplier;
+  protected final DoubleSupplier m_baseHeightSupplier;
   /** Creates a new WristJointV2. */
-  public WristJointV2(PidArmCfg cfg, DoubleSupplier armjoint1AngleSupplier) {
+  public WristJointV2(PidArmCfg cfg, DoubleSupplier armjoint1AngleSupplier, DoubleSupplier baseHeightSupplier) {
     super(
         // The PIDController used by the subsystem
         new PIDController(
@@ -41,6 +42,7 @@ public class WristJointV2 extends PIDSubsystem {
     m_Cfg = cfg;
 
     m_Armjoint1AngleSupplier = armjoint1AngleSupplier;
+    m_baseHeightSupplier = baseHeightSupplier;
     
     m_feedforward = new ArmFeedforward(
       m_Cfg.svolts, m_Cfg.gvolts,
@@ -123,5 +125,11 @@ public class WristJointV2 extends PIDSubsystem {
 
   public void resetAbsolutePosition(){
     m_encoder.setPositionToAbsolute();
+  }
+
+
+  public double getHeightInches() {
+    double height = 0;
+    return height + m_baseHeightSupplier.getAsDouble();
   }
 }

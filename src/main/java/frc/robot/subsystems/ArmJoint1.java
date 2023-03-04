@@ -87,4 +87,10 @@ public class ArmJoint1 extends SubsystemBase {
   public void resetAbsolutePosition(){
     m_encoder.setPositionToAbsolute();
   }
+
+  public double getHeightInches() {
+    
+
+    return 0;
+  }
 }
