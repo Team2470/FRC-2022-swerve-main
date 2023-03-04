@@ -83,4 +83,8 @@ public class ArmJoint1 extends SubsystemBase {
     engageRatchet(true);
     m_motor.neutralOutput();
   }
+
+  public void resetAbsolutePosition(){
+    m_encoder.setPositionToAbsolute();
+  }
 }

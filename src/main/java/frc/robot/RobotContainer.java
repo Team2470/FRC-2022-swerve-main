@@ -57,6 +57,7 @@ import frc.robot.commands.MoveArmjoint2;
 import frc.robot.commands.MoveArmsToCone3;
 import frc.robot.commands.MoveArmsToCube2;
 import frc.robot.commands.MoveArmsToCubeCone1;
+import frc.robot.commands.MoveArmsToHumanPlayer;
 import frc.robot.commands.MoveArmsToPickUpPosition;
 import frc.robot.commands.MoveArmsToSecondConePosition;
 import frc.robot.commands.MoveArmsToStartingPosition;
@@ -201,16 +202,16 @@ public class RobotContainer {
 		// 	new ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		// );
 		m_buttonPad.button(5).onTrue(
-			new MoveArmsToCube2(m_armJoint1, m_Armjoint2, m_Wrist)
+			new MoveArmsToCube2(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		);
 		// m_buttonPad.button(5).whileTrue(
 		// 	new RunCommand(()->m_armJoint1.inwards(), m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		// );
 		m_buttonPad.button(9).onTrue(
-			new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)
+			new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		);
 		m_buttonPad.button(1).onTrue(
-			new MoveArmsToCone3(m_armJoint1, m_Armjoint2, m_Wrist)
+			new MoveArmsToCone3(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		);
 
 		m_buttonPad.button(2).whileTrue(
@@ -221,7 +222,7 @@ public class RobotContainer {
 			new ArmJoint2Inward(m_Armjoint2).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		);
 		m_buttonPad.button(10).onTrue(
-			new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist)
+			new MoveArmsToHumanPlayer(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		
 		);
 
@@ -241,7 +242,7 @@ public class RobotContainer {
 			new ParallelCommandGroup(
 				new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist),
 				new SequentialCommandGroup(
-					new WaitUntilCommand(()->(m_armJoint1.getAngle().getDegrees() < 55 && m_Armjoint2.getAngleFromGround().getDegrees() > 0)),
+					new WaitUntilCommand(()->(m_armJoint1.getAngle().getDegrees() < 60 && m_Armjoint2.getAngleFromGround().getDegrees() > 0)),
 					new RunCommand(()->m_drivetrain.setSlowMode(false))
 				)
 			)
@@ -362,5 +363,8 @@ public class RobotContainer {
 
 	public void disabledPeriodic() {
 		m_drivetrain.resetSteerEncoders();
+		m_Wrist.resetAbsolutePosition();
+		m_armJoint1.resetAbsolutePosition();
+		m_Armjoint2.resetAbsolutePosition();
 	}
 }

@@ -129,5 +129,8 @@ public class Armjoint2V2 extends PIDSubsystem {
     SmartDashboard.putNumber(m_Cfg.name + " Motor feedforward", feedforward);
   }
 
+  public void resetAbsolutePosition(){
+    m_encoder.setPositionToAbsolute();
+  }
 
 }

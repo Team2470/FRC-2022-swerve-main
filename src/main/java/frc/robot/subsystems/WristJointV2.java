@@ -120,4 +120,8 @@ public class WristJointV2 extends PIDSubsystem {
   public void stop() { 
     m_motor.neutralOutput();
   }
+
+  public void resetAbsolutePosition(){
+    m_encoder.setPositionToAbsolute();
+  }
 }
