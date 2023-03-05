@@ -110,10 +110,10 @@ public class RobotContainer {
       m_armJoint1
     ));
 
-		m_Gripper.setDefaultCommand(new RunCommand(
-			() -> m_Gripper.openGripper(),
-			m_Gripper
-		));
+		// m_Gripper.setDefaultCommand(new RunCommand(
+		// 	() -> m_Gripper.openGripper(),
+		// 	m_Gripper
+		// ));
 		
 		m_cameraSelector.setDouble(0.0);
 

@@ -27,9 +27,8 @@ public class MoveArmsToSecondConePosition extends SequentialCommandGroup {
     addCommands(
       new ParallelCommandGroup(
         new ScheduleCommand(new MoveWristJoint2(Wrist, 0)),
-        new MoveArmjoint2(Armjoint2, -20),
+        new MoveArmjoint2(Armjoint2, -25),
         new SequentialCommandGroup(
-          new WaitUntilCommand(()-> Armjoint2.getAngleFromGround().getDegrees() < -6),
           new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(72))
         )
       //new MoveWristJoint2(Wrist, 0)
