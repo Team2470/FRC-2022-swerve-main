@@ -148,14 +148,12 @@ public class DriveWithController extends CommandBase {
         lastMovingState = moving;
     }
 
-    @Override
+    @Override 
     public boolean isFinished() {
         return false;
     }
 
-    @Override
-    public void end(boolean interrupted) {
+    @Override public void end(boolean interrupted) {
         drive.stop();
     }
-
 }

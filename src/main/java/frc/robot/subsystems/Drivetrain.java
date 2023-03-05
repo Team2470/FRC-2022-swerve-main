@@ -188,12 +188,15 @@ public class Drivetrain extends SubsystemBase {
       return m_odometry.getPoseMeters().getRotation();
    }
 
-   public boolean isRoll() {
-      return Math.abs(m_imu.getRoll()) < 8.5;
+   public boolean isLevel() {
+      return Math.abs(m_imu.getRoll()) < 5;
+   }
+   public double getRoll() {
+      return m_imu.getRoll();
    }
 
    public void resetHeading() {
-      this.m_imu.setYaw(0);
+      // this.m_imu.setYaw(0);
       resetOdometry(new Pose2d());
    }
 

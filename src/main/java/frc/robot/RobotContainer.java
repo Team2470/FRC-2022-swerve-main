@@ -51,6 +51,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ArmJoint1Outward;
 import frc.robot.commands.ArmJoint2Inward;
 import frc.robot.commands.ArmJoint2Outward;
+import frc.robot.commands.BalanceOnChargeStation;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.MoveArmjoint1ToPosition;
 import frc.robot.commands.MoveArmjoint2;
@@ -130,8 +131,8 @@ public class RobotContainer {
 
 		//Initialize other autos here
 		m_autoSelector.registerCommand("Auto Crap - Community", "CRAP", new SequentialCommandGroup(
-			new RunCommand(() -> m_drivetrain.drive(1.25, 0, 0, false), m_drivetrain).withInterrupt(() -> !m_drivetrain.isRoll()),
-			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false), m_drivetrain).withInterrupt(m_drivetrain::isRoll), 
+			new RunCommand(() -> m_drivetrain.drive(1.25, 0, 0, false), m_drivetrain).withInterrupt(() -> !m_drivetrain.isLevel()),
+			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false), m_drivetrain).withInterrupt(m_drivetrain::isLevel), 
 			XStop()
 		));
 
@@ -141,19 +142,18 @@ public class RobotContainer {
 				// new RunCommand(()->m_Gripper.closeGripper(), m_Gripper),
 				// new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true)),
 			}));
-			// put("stop", new SequentialCommandGroup(
-			// 	new RunCommand(() -> m_drivetrain.drive(1.25, 0, 0, false), m_drivetrain).withInterrupt(() -> !m_drivetrain.isRoll()),
-			// 	new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false), m_drivetrain).withInterrupt(m_drivetrain::isRoll), 
-			// 	XStop())
-			// );
+			put("stop", new SequentialCommandGroup(
+				new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
+				new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain).withTimeout(1.5),
+				new BalanceOnChargeStation(m_drivetrain), 
+				XStop())
+			);
 		}}, "DriveDockv3", new PathConstraints(2, 2)));
 
 		m_autoSelector.registerCommand("Drive 2 Ramp", "RAMP", new SequentialCommandGroup(
 			createAutoPath(
-				m_drivetrain, new HashMap<String, Command>(), "Drive2Ramp", new PathConstraints(3, 4)
-			),
-			XStop()
-			)
+				m_drivetrain, new HashMap<String, Command>(), "Drive2Ramp", new PathConstraints(1, 1)
+			), XStop() )
 		);
 
 		m_autoSelector.initialize();
