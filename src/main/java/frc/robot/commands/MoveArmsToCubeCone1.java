@@ -26,6 +26,7 @@ public class MoveArmsToCubeCone1 extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
 			new ParallelCommandGroup(
+        // TODO move arm 1
 			new MoveWristJoint2(Wrist, 0),
 			new MoveArmjoint2(Armjoint2, 28)
 			)

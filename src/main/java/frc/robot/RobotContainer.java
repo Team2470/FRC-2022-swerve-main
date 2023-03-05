@@ -108,10 +108,10 @@ public class RobotContainer {
       m_armJoint1
     ));
 
-		m_Gripper.setDefaultCommand(new RunCommand(
-			() -> m_Gripper.openGripper(),
-			m_Gripper
-		));
+		// m_Gripper.setDefaultCommand(new RunCommand(
+		// 	() -> m_Gripper.openGripper(),
+		// 	m_Gripper
+		// ));
 		
 		m_cameraSelector.setDouble(0.0);
 
@@ -137,10 +137,14 @@ public class RobotContainer {
 		));
 
 		m_autoSelector.registerCommand("Alek", "ALEK", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
-			put("start", new SequentialCommandGroup(new Command[] {
-				// new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true)),
-				// new RunCommand(()->m_Gripper.closeGripper(), m_Gripper),
-				// new MoveArmjoint1ToPosition(m_armJoint1, Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true)),
+			put("start", new ParallelCommandGroup(new Command[] {
+				new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)),
+				new SequentialCommandGroup(
+					new WaitUntilCommand(()->m_Wrist.getAngleFromGround().getDegrees() > -5),
+					new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
+					new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist))
+				)
+		
 			}));
 			put("stop", new SequentialCommandGroup(
 				new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
