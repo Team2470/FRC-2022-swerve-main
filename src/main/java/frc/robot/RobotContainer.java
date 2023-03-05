@@ -48,11 +48,13 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ArmJoint1Outward;
 import frc.robot.commands.ArmJoint2Inward;
 import frc.robot.commands.ArmJoint2Outward;
 import frc.robot.commands.BalanceOnChargeStation;
 import frc.robot.commands.DriveWithController;
+import frc.robot.commands.GripperCloseAndWristUp;
 import frc.robot.commands.MoveArmjoint1ToPosition;
 import frc.robot.commands.MoveArmjoint2;
 import frc.robot.commands.MoveArmsToCone3;
@@ -186,19 +188,12 @@ public class RobotContainer {
       	m_drivetrain.setModuleStates(latchedModuleStates);
 		}, m_drivetrain));
 
-		m_controller.y().toggleOnTrue(new ParallelCommandGroup(
-			new RunCommand(()->m_Gripper.closeGripper(),m_Gripper),
-			new SequentialCommandGroup(
-				new WaitCommand(0.5),
-				new ConditionalCommand(
-					new ScheduleCommand(new MoveWristJoint2(m_Wrist, -95)), 
-					new PrintCommand("no game piece not closing grabber"),
-					()->m_Gripper.isGamePieceDetected())
+		m_controller.y().onTrue(new RunCommand(()->m_Gripper.openGripper(), m_Gripper));
 
-			)
-		));
+		m_controller.rightBumper().onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
+
+		new Trigger(()->m_Gripper.isGamePieceDetected()).onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
 		
-
 		// m_controller.x().onTrue(
 		// 	new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(false))
 		// );
@@ -226,8 +221,9 @@ public class RobotContainer {
 			new ArmJoint2Inward(m_Armjoint2).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		);
 		m_buttonPad.button(10).onTrue(
-			new MoveArmsToHumanPlayer(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
-		
+			 new ScheduleCommand(new RunCommand(()->m_Gripper.openGripper(), m_Gripper)).alongWith(
+				new MoveArmsToHumanPlayer(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
+			)
 		);
 
 		m_buttonPad.button(3).whileTrue(
@@ -253,7 +249,7 @@ public class RobotContainer {
 
 		);
 		m_buttonPad.button(12).onTrue(
-			new RunCommand(()->m_Gripper.openGripper(), m_Gripper).alongWith(
+			 new ScheduleCommand(new RunCommand(()->m_Gripper.openGripper(), m_Gripper)).alongWith(
 				new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
 			)
 		);
@@ -261,6 +257,7 @@ public class RobotContainer {
 			new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		);
   }
+  	
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

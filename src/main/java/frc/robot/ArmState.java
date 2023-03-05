@@ -5,4 +5,8 @@
 package frc.robot;
 
 /** Add your docs here. */
-public class ArmState {}
+public enum ArmState {
+    kPickUp,
+    kDriveMode,
+    kScoringAndHumanPlayer
+}
