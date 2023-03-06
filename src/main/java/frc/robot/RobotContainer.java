@@ -141,7 +141,11 @@ public class RobotContainer {
 
 		m_autoSelector.registerCommand("Auto21 18pts", "2118", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 			put("start", new ParallelCommandGroup(new Command[] {
-				new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)),
+				new InstantCommand(()->m_Gripper.closeGripper()),
+				new SequentialCommandGroup(
+					new WaitCommand(0.25),
+					new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))
+				),
 				new SequentialCommandGroup(
 					new WaitUntilCommand(()->m_Wrist.getAngleFromGround().getDegrees() > -5),
 					new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
@@ -159,7 +163,11 @@ public class RobotContainer {
 
 		m_autoSelector.registerCommand("Drop and set blue left", "DSBL", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 			put("start", new ParallelCommandGroup(new Command[] {
-				new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)),
+				new InstantCommand(()->m_Gripper.closeGripper()),
+				new SequentialCommandGroup(
+					new WaitCommand(0.25),
+					new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))
+				),
 				new SequentialCommandGroup(
 					new WaitUntilCommand(()->m_Wrist.getAngleFromGround().getDegrees() > -5),
 					new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
@@ -171,7 +179,11 @@ public class RobotContainer {
 
 		m_autoSelector.registerCommand("Drop and set blue right", "DSBR", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 			put("start", new ParallelCommandGroup(new Command[] {
-				new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)),
+				new InstantCommand(()->m_Gripper.closeGripper()),
+				new SequentialCommandGroup(
+					new WaitCommand(0.25),
+					new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))
+				),
 				new SequentialCommandGroup(
 					new WaitUntilCommand(()->m_Wrist.getAngleFromGround().getDegrees() > -5),
 					new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
@@ -183,7 +195,11 @@ public class RobotContainer {
 
 		m_autoSelector.registerCommand("Drop and set red right", "DSRR", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 			put("start", new ParallelCommandGroup(new Command[] {
-				new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)),
+				new InstantCommand(()->m_Gripper.closeGripper()),
+				new SequentialCommandGroup(
+					new WaitCommand(0.25),
+					new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))
+				),
 				new SequentialCommandGroup(
 					new WaitUntilCommand(()->m_Wrist.getAngleFromGround().getDegrees() > -5),
 					new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
@@ -195,7 +211,11 @@ public class RobotContainer {
 
 		m_autoSelector.registerCommand("Drop and set red left", "DSRL", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 			put("start", new ParallelCommandGroup(new Command[] {
-				new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)),
+				new InstantCommand(()->m_Gripper.closeGripper()),
+				new SequentialCommandGroup(
+					new WaitCommand(0.25),
+					new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))
+				),
 				new SequentialCommandGroup(
 					new WaitUntilCommand(()->m_Wrist.getAngleFromGround().getDegrees() > -5),
 					new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
