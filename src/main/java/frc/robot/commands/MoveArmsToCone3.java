@@ -27,9 +27,8 @@ public class MoveArmsToCone3 extends SequentialCommandGroup {
     addCommands(
       new ParallelCommandGroup(
         new MoveArmjoint2(Armjoint2, -39),
+        new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(103)),
         new SequentialCommandGroup(
-          new WaitUntilCommand(()->(Armjoint2.getAngleFromGround().getDegrees() < -35)),
-          new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(103)),
           new MoveWristJoint2(Wrist, -25)
         )
       )
