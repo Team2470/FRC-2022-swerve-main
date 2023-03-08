@@ -35,7 +35,7 @@ public class MoveArmsToStartingPosition extends SequentialCommandGroup {
             new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(48)).repeatedly(),
             new MoveArmjoint2(Armjoint2, 43) 
           )
-          )
+        )
       )
     );
   }
