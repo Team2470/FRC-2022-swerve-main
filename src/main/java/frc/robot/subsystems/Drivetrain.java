@@ -47,6 +47,7 @@ public class Drivetrain extends SubsystemBase {
          Constants.Drive.kPigeonID, 
          Constants.Drive.kPigeonCANBus.bus_name
       );
+      m_imu.configEnableCompass(false);
 
       ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
       var imuShuffleboard = tab.getLayout("IMU", BuiltInLayouts.kList)
