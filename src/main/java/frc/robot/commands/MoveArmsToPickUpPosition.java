@@ -26,21 +26,18 @@ public class MoveArmsToPickUpPosition extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new ParallelCommandGroup(
-       new ScheduleCommand(new MoveWristJoint2(Wrist, -45)),
-       new SequentialCommandGroup(
-          new WaitUntilCommand(()->(Wrist.getAngleFromGround().getDegrees() < 10)),
+        new ScheduleCommand(new MoveWristJoint2(Wrist, -45)),
+        new SequentialCommandGroup(
+          new WaitUntilCommand(()->(Wrist.getAngleFromGround().getDegrees() < 0)),
           new ParallelCommandGroup(
             new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(48)).repeatedly(),
-            new SequentialCommandGroup(
-              new WaitUntilCommand(()->(armJoint1.getAngle().getDegrees() < 60)),
-              new MoveArmjoint2(Armjoint2, 43)
-            ),
-            new SequentialCommandGroup(
-              new WaitUntilCommand(()->(armJoint1.getAngle().getDegrees() < 60)),
-               new ScheduleCommand(new MoveWristJoint2(Wrist, 0))    
-            )
+            new MoveArmjoint2(Armjoint2, 43) 
           )
-       )
+        ),
+        new SequentialCommandGroup(
+          new WaitUntilCommand(()->(armJoint1.getAngle().getDegrees() < 60)),
+           new ScheduleCommand(new MoveWristJoint2(Wrist, 0))    
+        )
       )
     );
   }
