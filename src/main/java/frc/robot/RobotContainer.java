@@ -59,6 +59,7 @@ import frc.robot.commands.GripperCloseAndWristUp;
 import frc.robot.commands.MoveArmjoint1ToPosition;
 import frc.robot.commands.MoveArmjoint2;
 import frc.robot.commands.MoveArmsToCone3;
+import frc.robot.commands.MoveArmsToCone3NoStradle;
 import frc.robot.commands.MoveArmsToCube2;
 import frc.robot.commands.MoveArmsToCubeCone1;
 import frc.robot.commands.MoveArmsToHumanPlayer;
@@ -290,7 +291,7 @@ public class RobotContainer {
 			new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		);
 		m_buttonPad.button(1).onTrue(
-			new MoveArmsToCone3(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
+			new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true))
 		);
 
 		m_buttonPad.button(2).whileTrue(
