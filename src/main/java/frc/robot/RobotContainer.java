@@ -268,10 +268,24 @@ public class RobotContainer {
 
 		new Trigger(
 			()->{
-				boolean arm1AtScoreLow = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) < 5; 
-				boolean arm2AtScoreLow = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - 32) < 5; 
-				boolean wristAtScoreLow = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5; 
-				return m_Gripper.isGamePieceDetected() && RobotState.isTeleop() && !(arm1AtScoreLow && arm2AtScoreLow && wristAtScoreLow);
+				// boolean arm1AtScoreLow = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) < 5; 
+				// boolean arm2AtScoreLow = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - 32) < 5; 
+				// boolean wristAtScoreLow = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5; 
+				// boolean armAtScoreLow = arm1AtScoreLow && arm2AtScoreLow && wristAtScoreLow;
+
+				boolean arm1AtPickupFloor = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) < 5; 
+				boolean arm2AtPickupFloor = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - 41) < 5; 
+				boolean wristAtPickupFloor = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5; 
+				boolean armAtPickupFloor = arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
+
+
+				boolean arm1AtHP = Math.abs(m_armJoint1.getAngle().getDegrees() - 77) < 5; 
+				boolean arm2AtHP = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -22) < 5; 
+				boolean wristAtHP = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5; 
+				boolean armAtHP = arm1AtHP && arm2AtHP && wristAtHP;
+
+
+				return m_Gripper.isGamePieceDetected() && RobotState.isTeleop() && (armAtPickupFloor || armAtHP);
 			}
 		).onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
 		
