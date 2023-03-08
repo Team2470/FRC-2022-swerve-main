@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -27,10 +28,11 @@ public class GripperCloseAndWristUp extends ParallelCommandGroup {
   public GripperCloseAndWristUp(ArmJoint1 m_armJoint1, Armjoint2V2 m_Armjoint2,GripperSubsystem m_Gripper, WristJointV2 m_Wrist, Drivetrain m_drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     addCommands(
-      // new SequentialCommandGroup(
-      //   new WaitUntilCommand(()->(m_armJoint1.getAngle().getDegrees() < 60 && m_Armjoint2.getAngleFromGround().getDegrees() < 50)),
-			// 		new RunCommand(()->m_drivetrain.setSlowMode(false))
-			// 	),
+      new ConditionalCommand(
+        new InstantCommand(()->m_drivetrain.setSlowMode(false)), 
+        new PrintCommand("Nothing todo"), 
+        ()->(m_armJoint1.getAngle().getDegrees() < 60 && m_Armjoint2.getAngleFromGround().getDegrees() < 50)
+      ),
       new RunCommand(()->m_Gripper.closeGripper(),m_Gripper),
   			new SequentialCommandGroup(
           new WaitCommand(0.5),
