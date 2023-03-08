@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.ArmJoint1;
 import frc.robot.subsystems.Armjoint2V2;
@@ -26,11 +27,15 @@ public class MoveArmsToCone3NoStradle extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new ParallelCommandGroup(
-        new MoveArmjoint2(Armjoint2, -39),
-        new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(125)),
         new SequentialCommandGroup(
-          new MoveWristJoint2(Wrist, -25)
-        )
+          new WaitCommand(0.5),
+          new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(125))
+        ),
+        new SequentialCommandGroup(
+          new MoveArmjoint2(Armjoint2, -60).repeatedly().until(()->armJoint1.getAngle().getDegrees() > 120),
+          new MoveArmjoint2(Armjoint2, -39)
+        ),
+        new MoveWristJoint2(Wrist, -25)
       )
     );
   }
