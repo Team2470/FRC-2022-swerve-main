@@ -193,37 +193,37 @@ public class RobotContainer {
 			}));
 		}}, "Drop and set BR", new PathConstraints(2, 2)));
 
-		m_autoSelector.registerCommand("Drop and set red right", "DSRR", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
-			put("start", new ParallelCommandGroup(new Command[] {
-				new InstantCommand(()->m_Gripper.closeGripper()),
-				new SequentialCommandGroup(
-					new WaitCommand(0.25),
-					new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))
-				),
-				new SequentialCommandGroup(
-					new WaitUntilCommand(()->m_Wrist.getAngleFromGround().getDegrees() > -5),
-					new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
-					new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist))
-				)
+		// m_autoSelector.registerCommand("Drop and set red right", "DSRR", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
+		// 	put("start", new ParallelCommandGroup(new Command[] {
+		// 		new InstantCommand(()->m_Gripper.closeGripper()),
+		// 		new SequentialCommandGroup(
+		// 			new WaitCommand(0.25),
+		// 			new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))
+		// 		),
+		// 		new SequentialCommandGroup(
+		// 			new WaitUntilCommand(()->m_Wrist.getAngleFromGround().getDegrees() > -5),
+		// 			new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
+		// 			new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist))
+		// 		)
 		
-			}));
-		}}, "Drop and set RR", new PathConstraints(2, 2)));
+		// 	}));
+		// }}, "Drop and set RR", new PathConstraints(2, 2)));
 
-		m_autoSelector.registerCommand("Drop and set red left", "DSRL", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
-			put("start", new ParallelCommandGroup(new Command[] {
-				new InstantCommand(()->m_Gripper.closeGripper()),
-				new SequentialCommandGroup(
-					new WaitCommand(0.25),
-					new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))
-				),
-				new SequentialCommandGroup(
-					new WaitUntilCommand(()->m_Wrist.getAngleFromGround().getDegrees() > -5),
-					new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
-					new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist))
-				)
+		// m_autoSelector.registerCommand("Drop and set red left", "DSRL", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
+		// 	put("start", new ParallelCommandGroup(new Command[] {
+		// 		new InstantCommand(()->m_Gripper.closeGripper()),
+		// 		new SequentialCommandGroup(
+		// 			new WaitCommand(0.25),
+		// 			new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))
+		// 		),
+		// 		new SequentialCommandGroup(
+		// 			new WaitUntilCommand(()->m_Wrist.getAngleFromGround().getDegrees() > -5),
+		// 			new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
+		// 			new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist))
+		// 		)
 		
-			}));
-		}}, "Drop and set RL", new PathConstraints(2, 2)));
+		// 	}));
+		// }}, "Drop and set RL", new PathConstraints(2, 2)));
 
 
 
