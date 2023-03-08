@@ -265,7 +265,14 @@ public class RobotContainer {
 
 		m_controller.rightBumper().onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
 
-		new Trigger(()->m_Gripper.isGamePieceDetected() && RobotState.isTeleop()).onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
+		new Trigger(
+			()->{
+				boolean arm1AtScoreLow = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) < 5; 
+				boolean arm2AtScoreLow = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - 32) < 5; 
+				boolean wristAtScoreLow = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5; 
+				return m_Gripper.isGamePieceDetected() && RobotState.isTeleop() && !(arm1AtScoreLow && arm2AtScoreLow && wristAtScoreLow);
+			}
+		).onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
 		
 		// m_controller.x().onTrue(
 		// 	new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(false))
