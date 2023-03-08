@@ -35,7 +35,7 @@ public class MoveArmsToCone3NoStradle extends SequentialCommandGroup {
           new MoveArmjoint2(Armjoint2, -60).repeatedly().until(()->armJoint1.getAngle().getDegrees() > 120),
           new MoveArmjoint2(Armjoint2, -39)
         ),
-        new MoveWristJoint2(Wrist, -25)
+        new ScheduleCommand(new MoveWristJoint2(Wrist, -25))
       )
     );
   }

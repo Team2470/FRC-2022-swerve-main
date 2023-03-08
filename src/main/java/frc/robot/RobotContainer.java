@@ -226,7 +226,24 @@ public class RobotContainer {
 		// 	}));
 		// }}, "Drop and set RL", new PathConstraints(2, 2)));
 
+		m_autoSelector.registerCommand("Ryan Test Auto", "RTS", new SequentialCommandGroup(
+			new InstantCommand(()->m_Gripper.closeGripper()),
+			new SequentialCommandGroup(
+				new WaitCommand(0.25),
+				new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist))
+			),
+			new SequentialCommandGroup(
+				new WaitUntilCommand(()->{
+					boolean arm1AtPickupFloor = Math.abs(m_armJoint1.getAngle().getDegrees() - 125) < 5; 
+					boolean arm2AtPickupFloor = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5; 
+					boolean wristAtPickupFloor = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5; 
+					return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
 
+				}),
+				new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
+				new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist))
+			)
+		));
 
 
 
