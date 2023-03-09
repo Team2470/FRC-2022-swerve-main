@@ -134,11 +134,40 @@ public class RobotContainer {
     	));
 
 		//Initialize other autos here
-		m_autoSelector.registerCommand("Auto Crap - Community", "CRAP", new SequentialCommandGroup(
-			new RunCommand(() -> m_drivetrain.drive(1.25, 0, 0, false), m_drivetrain).withInterrupt(() -> !m_drivetrain.isLevel()),
-			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false), m_drivetrain).withInterrupt(m_drivetrain::isLevel), 
+		m_autoSelector.registerCommand("Middle", "MID", new SequentialCommandGroup(
+			new InstantCommand(() -> m_drivetrain.resetHeading()),
+			new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
+			new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain).withTimeout(1.5),
+			new BalanceOnChargeStation(m_drivetrain), 
 			XStop()
 		));
+
+		m_autoSelector.registerCommand("Auto31 18pts", "LVL3", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
+			put("start", new SequentialCommandGroup(
+				new InstantCommand(()->m_Gripper.closeGripper()),
+				new SequentialCommandGroup(
+					new WaitCommand(0.25),
+					new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist))
+				),
+				new SequentialCommandGroup(
+					new WaitUntilCommand(()->{
+						boolean arm1AtPickupFloor = Math.abs(m_armJoint1.getAngle().getDegrees() - 125) < 5; 
+						boolean arm2AtPickupFloor = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5; 
+						boolean wristAtPickupFloor = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5; 
+						return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
+	
+					}),
+					new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
+					new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist))
+				)
+			));
+			put("stop", new SequentialCommandGroup(
+				new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
+				new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain).withTimeout(1.5),
+				new BalanceOnChargeStation(m_drivetrain), 
+				XStop())
+			);
+		}}, "DriveDockv3", new PathConstraints(3, 2)));
 
 		m_autoSelector.registerCommand("Auto21 18pts", "2118", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 			put("start", new ParallelCommandGroup(new Command[] {
@@ -160,7 +189,7 @@ public class RobotContainer {
 				new BalanceOnChargeStation(m_drivetrain), 
 				XStop())
 			);
-		}}, "DriveDockv3", new PathConstraints(2, 2)));
+		}}, "DriveDockv3", new PathConstraints(3, 2)));
 
 		m_autoSelector.registerCommand("Drop and set blue left", "DSBL", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 			put("start", new ParallelCommandGroup(new Command[] {
@@ -176,7 +205,7 @@ public class RobotContainer {
 				)
 		
 			}));
-		}}, "Drop and set BL", new PathConstraints(2, 2)));
+		}}, "Drop and set BL", new PathConstraints(3,2)));
 
 		m_autoSelector.registerCommand("Drop and set blue right", "DSBR", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 			put("start", new ParallelCommandGroup(new Command[] {
@@ -192,7 +221,7 @@ public class RobotContainer {
 				)
 		
 			}));
-		}}, "Drop and set BR", new PathConstraints(2, 2)));
+		}}, "Drop and set BR", new PathConstraints(3, 2)));
 
 		// m_autoSelector.registerCommand("Drop and set red right", "DSRR", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 		// 	put("start", new ParallelCommandGroup(new Command[] {
