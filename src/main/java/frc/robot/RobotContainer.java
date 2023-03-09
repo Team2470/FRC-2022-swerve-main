@@ -140,29 +140,7 @@ public class RobotContainer {
     m_autoSelector.registerCommand("Auto31 21pts", "LVL3",
         createAutoPath(m_drivetrain, new HashMap<String, Command>() {
           {
-            put("start", new SequentialCommandGroup(
-                new InstantCommand(() -> m_Gripper.closeGripper()),
-                new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.15),
-                new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(0.15),
-                new SequentialCommandGroup(
-                    new WaitCommand(0.25),
-                    new ScheduleCommand(
-                        new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist))),
-                new SequentialCommandGroup(
-                    new WaitUntilCommand(() -> {
-                      boolean arm1AtPickupFloor = Math
-                          .abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
-                      boolean arm2AtPickupFloor = Math
-                          .abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5;
-                      boolean wristAtPickupFloor = Math
-                          .abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
-                      return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
-
-                    }),
-                    new WaitCommand(0.4),
-                    new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
-                    new ScheduleCommand(
-                        new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))));
+            put("start", scoreLevel3());
             put("stop", new SequentialCommandGroup(
                 new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain)
                     .withTimeout(0.5),
@@ -187,7 +165,6 @@ public class RobotContainer {
                     new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
                     new ScheduleCommand(
                         new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))
-
         }));
             put("stop", new SequentialCommandGroup(
                 new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain)
@@ -201,79 +178,60 @@ public class RobotContainer {
 
     m_autoSelector.registerCommand("Drop and set left", "DSL",
         createAutoPath(m_drivetrain, new HashMap<String, Command>() {
-          {
-            put("start", new SequentialCommandGroup(
-                new InstantCommand(() -> m_Gripper.closeGripper()),
-                new SequentialCommandGroup(
-                    new WaitCommand(0.25),
-                    new ScheduleCommand(
-                        new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist))),
-                new SequentialCommandGroup(
-                    new WaitUntilCommand(() -> {
-                      boolean arm1AtPickupFloor = Math
-                          .abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
-                      boolean arm2AtPickupFloor = Math
-                          .abs(m_Armjoint2.getAngleFromGround().getDegrees() - -43) < 5;
-                      boolean wristAtPickupFloor = Math
-                          .abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
-                      return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
-
-                    }),
-                    new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
-                    new ScheduleCommand(
-                        new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))));
-          }
+          { put("start", scoreLevel3()); }
         }, "Drop and set BL", new PathConstraints(3, 2)));
 
     m_autoSelector.registerCommand("Drop and set right", "DSR",
         createAutoPath(m_drivetrain, new HashMap<String, Command>() {
-          {
-            put("start", new SequentialCommandGroup(
-                new InstantCommand(() -> m_Gripper.closeGripper()),
-                new SequentialCommandGroup(
-                    new WaitCommand(0.25),
-                    new ScheduleCommand(
-                        new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist))),
-                new SequentialCommandGroup(
-                    new WaitUntilCommand(() -> {
-                      boolean arm1AtPickupFloor = Math
-                          .abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
-                      boolean arm2AtPickupFloor = Math
-                          .abs(m_Armjoint2.getAngleFromGround().getDegrees() - -43) < 5;
-                      boolean wristAtPickupFloor = Math
-                          .abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
-                      return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
-
-                    }),
-                    new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
-                    new ScheduleCommand(
-                        new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))));
-          }
+          { put("start", scoreLevel3()); }
         }, "Drop and set BR", new PathConstraints(3, 2)));
 
-    m_autoSelector.registerCommand("Ryan Test Auto", "RTS", new SequentialCommandGroup(
+    // m_autoSelector.registerCommand("Ryan Test Auto", "RTS", new SequentialCommandGroup(
+    //     new InstantCommand(() -> m_Gripper.closeGripper()),
+    //     new SequentialCommandGroup(
+    //         new WaitCommand(0.25),
+    //         new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist))),
+    //     new SequentialCommandGroup(
+    //         new WaitUntilCommand(() -> {
+    //           boolean arm1AtPickupFloor = Math.abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
+    //           boolean arm2AtPickupFloor = Math
+    //               .abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5;
+    //           boolean wristAtPickupFloor = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
+    //           return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
+
+    //         }),
+    //         new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
+    //         new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))));
+    m_autoSelector.initialize();
+  }
+
+  public Command scoreLevel3() {
+    return new SequentialCommandGroup(
         new InstantCommand(() -> m_Gripper.closeGripper()),
+        new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.15),
+        new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(0.15),
         new SequentialCommandGroup(
             new WaitCommand(0.25),
-            new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist))),
+            new ScheduleCommand(
+                new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist))),
         new SequentialCommandGroup(
             new WaitUntilCommand(() -> {
-              boolean arm1AtPickupFloor = Math.abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
+              boolean arm1AtPickupFloor = Math
+                  .abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
               boolean arm2AtPickupFloor = Math
                   .abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5;
-              boolean wristAtPickupFloor = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
+              boolean wristAtPickupFloor = Math
+                  .abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
               return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
 
             }),
+            new WaitCommand(0.4),
             new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
-            new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))));
-
-    m_autoSelector.registerCommand("Drive 2 Ramp", "RAMP", new SequentialCommandGroup(
-        createAutoPath(
-            m_drivetrain, new HashMap<String, Command>(), "Drive2Ramp", new PathConstraints(1, 1)),
-        XStop()));
-
-    m_autoSelector.initialize();
+            new ScheduleCommand(
+                new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)
+                )
+            )
+        );
   }
 
   /**
