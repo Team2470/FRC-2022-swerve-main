@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -23,7 +25,7 @@ public class GripperSubsystem extends SubsystemBase {
     m_gamePieceSensor = new DigitalInput(Constants.Gripper.kGamePieceSensorDIO);
   }
 
-  public boolean isGamePieceDetected(){
+  public Boolean isGamePieceDetected(){
     return !m_gamePieceSensor.get();
   }
 

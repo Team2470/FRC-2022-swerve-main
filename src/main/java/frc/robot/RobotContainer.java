@@ -131,13 +131,14 @@ public class RobotContainer {
 
     // Initialize other autos here
     m_autoSelector.registerCommand("Middle", "MID", new SequentialCommandGroup(
+        new InstantCommand(() -> scoreLevel3()),
         new InstantCommand(() -> m_drivetrain.resetHeading()),
         new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
         new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain).withTimeout(1.5),
         new BalanceOnChargeStation(m_drivetrain),
         XStop()));
 
-    m_autoSelector.registerCommand("Auto31 21pts", "LVL3",
+    m_autoSelector.registerCommand("Auto31 21pts", "21-3",
         createAutoPath(m_drivetrain, new HashMap<String, Command>() {
           {
             put("start", scoreLevel3());
@@ -151,7 +152,7 @@ public class RobotContainer {
           }
         }, "DriveDockv3", new PathConstraints(3, 2)));
 
-    m_autoSelector.registerCommand("Auto21 18pts", "2121",
+    m_autoSelector.registerCommand("Auto21 18pts", "2118",
         createAutoPath(m_drivetrain, new HashMap<String, Command>() {
           {
             put("start", new ParallelCommandGroup(new Command[] {
@@ -177,14 +178,16 @@ public class RobotContainer {
         }, "DriveDockv3", new PathConstraints(3, 2)));
 
     m_autoSelector.registerCommand("Drop and set left", "DSL",
-        createAutoPath(m_drivetrain, new HashMap<String, Command>() {
-          { put("start", scoreLevel3()); }
-        }, "Drop and set BL", new PathConstraints(3, 2)));
+        createAutoPath(m_drivetrain, new HashMap<String, Command>() {{ 
+            put("start", scoreLevel3()); 
+            put("stop", autoGetPiece());
+        }}, "Drop and set BL", new PathConstraints(3, 2)));
 
     m_autoSelector.registerCommand("Drop and set right", "DSR",
-        createAutoPath(m_drivetrain, new HashMap<String, Command>() {
-          { put("start", scoreLevel3()); }
-        }, "Drop and set BR", new PathConstraints(3, 2)));
+        createAutoPath(m_drivetrain, new HashMap<String, Command>() {{ 
+            put("start", scoreLevel3()); 
+            put("stop", autoGetPiece());
+        }}, "Drop and set BR", new PathConstraints(3, 2)));
 
     // m_autoSelector.registerCommand("Ryan Test Auto", "RTS", new SequentialCommandGroup(
     //     new InstantCommand(() -> m_Gripper.closeGripper()),
@@ -203,6 +206,14 @@ public class RobotContainer {
     //         new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
     //         new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))));
     m_autoSelector.initialize();
+  }
+
+  public Command autoGetPiece() {
+    return new SequentialCommandGroup(
+        new MoveWristJoint2(m_Wrist, 0),
+        new RunCommand(() -> m_drivetrain.drive(0.75, 0, 0, false)).until(m_Gripper::isGamePieceDetected).withTimeout(4),
+        new InstantCommand(() -> m_Gripper.closeGripper())
+    );
   }
 
   public Command scoreLevel3() {
