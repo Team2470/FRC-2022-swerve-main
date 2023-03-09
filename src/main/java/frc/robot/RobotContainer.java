@@ -142,7 +142,7 @@ public class RobotContainer {
 			XStop()
 		));
 
-		m_autoSelector.registerCommand("Auto31 18pts", "LVL3", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
+		m_autoSelector.registerCommand("Auto31 21pts", "LVL3", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 			put("start", new SequentialCommandGroup(
 				new InstantCommand(()->m_Gripper.closeGripper()),
 				new SequentialCommandGroup(
@@ -152,11 +152,12 @@ public class RobotContainer {
 				new SequentialCommandGroup(
 					new WaitUntilCommand(()->{
 						boolean arm1AtPickupFloor = Math.abs(m_armJoint1.getAngle().getDegrees() - 125) < 5; 
-						boolean arm2AtPickupFloor = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5; 
+						boolean arm2AtPickupFloor = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -43) < 5; 
 						boolean wristAtPickupFloor = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5; 
 						return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
 	
 					}),
+					new WaitCommand(0.4),
 					new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
 					new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist))
 				)
@@ -169,7 +170,7 @@ public class RobotContainer {
 			);
 		}}, "DriveDockv3", new PathConstraints(3, 2)));
 
-		m_autoSelector.registerCommand("Auto21 18pts", "2118", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
+		m_autoSelector.registerCommand("Auto21 18pts", "2121", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 			put("start", new ParallelCommandGroup(new Command[] {
 				new InstantCommand(()->m_Gripper.closeGripper()),
 				new SequentialCommandGroup(
@@ -191,36 +192,46 @@ public class RobotContainer {
 			);
 		}}, "DriveDockv3", new PathConstraints(3, 2)));
 
-		m_autoSelector.registerCommand("Drop and set blue left", "DSBL", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
-			put("start", new ParallelCommandGroup(new Command[] {
+		m_autoSelector.registerCommand("Drop and set left", "DSL", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
+			put("start", new SequentialCommandGroup(
 				new InstantCommand(()->m_Gripper.closeGripper()),
 				new SequentialCommandGroup(
 					new WaitCommand(0.25),
-					new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))
+					new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist))
 				),
 				new SequentialCommandGroup(
-					new WaitUntilCommand(()->m_Wrist.getAngleFromGround().getDegrees() > -5),
+					new WaitUntilCommand(()->{
+						boolean arm1AtPickupFloor = Math.abs(m_armJoint1.getAngle().getDegrees() - 125) < 5; 
+						boolean arm2AtPickupFloor = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -43) < 5; 
+						boolean wristAtPickupFloor = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5; 
+						return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
+	
+					}),
 					new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
 					new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist))
 				)
-		
-			}));
+			));
 		}}, "Drop and set BL", new PathConstraints(3,2)));
 
-		m_autoSelector.registerCommand("Drop and set blue right", "DSBR", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
-			put("start", new ParallelCommandGroup(new Command[] {
+		m_autoSelector.registerCommand("Drop and set right", "DSR", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
+			put("start", new SequentialCommandGroup(
 				new InstantCommand(()->m_Gripper.closeGripper()),
 				new SequentialCommandGroup(
 					new WaitCommand(0.25),
-					new ScheduleCommand(new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))
+					new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist))
 				),
 				new SequentialCommandGroup(
-					new WaitUntilCommand(()->m_Wrist.getAngleFromGround().getDegrees() > -5),
+					new WaitUntilCommand(()->{
+						boolean arm1AtPickupFloor = Math.abs(m_armJoint1.getAngle().getDegrees() - 125) < 5; 
+						boolean arm2AtPickupFloor = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -43) < 5; 
+						boolean wristAtPickupFloor = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5; 
+						return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
+	
+					}),
 					new RunCommand(()->m_Gripper.openGripper(), m_Gripper).withTimeout(1),
 					new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist))
 				)
-		
-			}));
+			));
 		}}, "Drop and set BR", new PathConstraints(3, 2)));
 
 		// m_autoSelector.registerCommand("Drop and set red right", "DSRR", createAutoPath(m_drivetrain, new HashMap<String, Command>() {{

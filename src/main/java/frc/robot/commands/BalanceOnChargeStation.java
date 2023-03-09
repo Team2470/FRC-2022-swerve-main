@@ -50,6 +50,6 @@ public class BalanceOnChargeStation extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(m_drivetrain.getRoll()) < 8.5;
+    return Math.abs(m_drivetrain.getRoll()) < 6;
   }
 }
