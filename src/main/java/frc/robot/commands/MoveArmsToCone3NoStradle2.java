@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.ArmJoint1;
 import frc.robot.subsystems.Armjoint2V2;
@@ -18,18 +19,24 @@ import frc.robot.subsystems.WristJointV2;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class MoveArmsToCubeCone1 extends SequentialCommandGroup {
+public class MoveArmsToCone3NoStradle2 extends SequentialCommandGroup {
 
   /** Creates a new MoveArmsToStartingPosition. */
-  public MoveArmsToCubeCone1(ArmJoint1 armJoint1,  Armjoint2V2 Armjoint2, WristJointV2 Wrist) {
+  public MoveArmsToCone3NoStradle2(ArmJoint1 armJoint1,  Armjoint2V2 Armjoint2, WristJointV2 Wrist) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-			new ParallelCommandGroup(
-      new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(48)),
-			new ScheduleCommand(new MoveWristJoint2(Wrist, 0)),
-			new MoveArmjoint2(Armjoint2, 28)
-			)
+      new ParallelCommandGroup(
+        new SequentialCommandGroup(
+          new WaitCommand(0.5),
+          new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(125))
+        ),
+        new SequentialCommandGroup(
+          new MoveArmjoint2(Armjoint2, -60).repeatedly().until(()->armJoint1.getAngle().getDegrees() > 120),
+          new MoveArmjoint2(Armjoint2, -39)
+        ),
+        new ScheduleCommand(new MoveWristJoint2(Wrist, -25))
+      )
     );
   }
 }

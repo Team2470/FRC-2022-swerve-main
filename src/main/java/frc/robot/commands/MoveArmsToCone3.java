@@ -29,7 +29,7 @@ public class MoveArmsToCone3 extends SequentialCommandGroup {
         new MoveArmjoint2(Armjoint2, -39),
         new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(103)),
         new SequentialCommandGroup(
-          new MoveWristJoint2(Wrist, -25)
+          new ScheduleCommand(new MoveWristJoint2(Wrist, -25))
         )
       )
     );

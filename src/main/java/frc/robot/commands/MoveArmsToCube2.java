@@ -27,7 +27,7 @@ public class MoveArmsToCube2 extends SequentialCommandGroup {
     addCommands(
 			new ParallelCommandGroup(
       new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(85)),
-			new MoveWristJoint2(Wrist, 0),
+			new ScheduleCommand(new MoveWristJoint2(Wrist, 0)),
 			new MoveArmjoint2(Armjoint2, -10)
 			)
         
