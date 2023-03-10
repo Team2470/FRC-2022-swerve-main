@@ -186,8 +186,12 @@ public class RobotContainer {
     m_autoSelector.registerCommand("Drop and set right", "DSR",
         createAutoPath(m_drivetrain, new HashMap<String, Command>() {{ 
             put("start", scoreLevel3()); 
-            put("stop", autoGetPiece());
-        }}, "Drop and set BR", new PathConstraints(3, 2)));
+            put("intakeDown", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1,m_Armjoint2,m_Wrist)));
+        }}, "Drop and set BR", new PathConstraints(3, 2)).andThen(
+            createAutoPath(m_drivetrain, new HashMap<String, Command>() {{ 
+            }}, "Drop and set BR Reverse", new PathConstraints(3, 2))
+        )
+    );
 
     // m_autoSelector.registerCommand("Ryan Test Auto", "RTS", new SequentialCommandGroup(
     //     new InstantCommand(() -> m_Gripper.closeGripper()),
@@ -297,7 +301,7 @@ public class RobotContainer {
           boolean wristAtHP = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5;
           boolean armAtHP = arm1AtHP && arm2AtHP && wristAtHP;
 
-          return m_Gripper.isGamePieceDetected() && RobotState.isTeleop() && (armAtPickupFloor || armAtHP);
+          return m_Gripper.isGamePieceDetected() && /*RobotState.isTeleop() &&*/ (armAtPickupFloor || armAtHP);
         }).onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
 
     // m_controller.x().onTrue(
