@@ -85,11 +85,11 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final ArmJoint1 m_armJoint1 = new ArmJoint1();
   private final Armjoint2V2 m_Armjoint2 = new Armjoint2V2(Constants.PidArmCfg.kArmjoint2,
-      () -> m_armJoint1.getAngle().getDegrees());
+		() -> m_armJoint1.getAngle().getDegrees());
   private final GripperSubsystem m_Gripper = new GripperSubsystem();
   private final PneumaticHub m_PneumaticHub = new PneumaticHub();
   private final WristJointV2 m_Wrist = new WristJointV2(Constants.PidArmCfg.kWrist,
-      () -> m_Armjoint2.getAngleFromGround().getDegrees());
+		() -> m_Armjoint2.getAngleFromGround().getDegrees());
 
   private final NetworkTable m_cameraTable = NetworkTableInstance.getDefault().getTable("CameraPublisher");
   private final NetworkTableEntry m_cameraSelector = m_cameraTable.getEntry("selector");
@@ -98,313 +98,315 @@ public class RobotContainer {
   private final AutoSelector m_autoSelector;
 
   /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+	* The container for the robot. Contains subsystems, OI devices, and commands.
+	*/
   public RobotContainer() {
 
-    // CameraServer.startAutomaticCapture();
+	 // CameraServer.startAutomaticCapture();
 
-    // Configure default commands
-    m_armJoint1.setDefaultCommand(new RunCommand(
-        () -> m_armJoint1.stop(),
-        m_armJoint1));
+	 // Configure default commands
+	 m_armJoint1.setDefaultCommand(new RunCommand(
+		  () -> m_armJoint1.stop(),
+		  m_armJoint1));
 
-    // m_Gripper.setDefaultCommand(new RunCommand(
-    // () -> m_Gripper.openGripper(),
-    // m_Gripper
-    // ));
+	 // m_Gripper.setDefaultCommand(new RunCommand(
+	 // () -> m_Gripper.openGripper(),
+	 // m_Gripper
+	 // ));
 
-    m_cameraSelector.setDouble(0.0);
+	 m_cameraSelector.setDouble(0.0);
 
-    // Configure the button bindings
-    configureButtonBindings();
+	 // Configure the button bindings
+	 configureButtonBindings();
 
-    m_PneumaticHub.enableCompressorAnalog(90, 120);
+	 m_PneumaticHub.enableCompressorAnalog(90, 120);
 
-    PathPlannerServer.startServer(5811);
+	 PathPlannerServer.startServer(5811);
 
-    // Auto Selector
-    m_revDigit = new RevDigit();
-    m_revDigit.display("BWMP");
-    m_autoSelector = new AutoSelector(m_revDigit, "DFLT", new SequentialCommandGroup(
-        new PrintCommand("OOPS")));
+	 // Auto Selector
+	 m_revDigit = new RevDigit();
+	 m_revDigit.display("BWMP");
+	 m_autoSelector = new AutoSelector(m_revDigit, "DFLT", new SequentialCommandGroup(
+		  new PrintCommand("OOPS")));
 
-    // Initialize other autos here
-    m_autoSelector.registerCommand("Middle", "MID", new SequentialCommandGroup(
-        new InstantCommand(() -> scoreLevel3()),
-        new InstantCommand(() -> m_drivetrain.resetHeading()),
-        new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
-        new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain).withTimeout(1.5),
-        new BalanceOnChargeStation(m_drivetrain),
-        XStop()));
+	 // Initialize other autos here
+	 m_autoSelector.registerCommand("Middle", "MID", new SequentialCommandGroup(
+		  new InstantCommand(() -> scoreLevel3()),
+		  new InstantCommand(() -> m_drivetrain.resetHeading()),
+		  new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
+		  new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain).withTimeout(1.5),
+		  new BalanceOnChargeStation(m_drivetrain),
+		  XStop()));
 
-    m_autoSelector.registerCommand("Auto31 21pts", "21-3",
-        createAutoPath(m_drivetrain, new HashMap<String, Command>() {
-          {
-            put("start", scoreLevel3());
-            put("stop", new SequentialCommandGroup(
-                new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain)
-                    .withTimeout(0.5),
-                new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain)
-                    .withTimeout(1.5),
-                new BalanceOnChargeStation(m_drivetrain),
-                XStop()));
-          }
-        }, "DriveDockv3", new PathConstraints(3, 2)));
+	m_autoSelector.registerCommand("Auto31 21pts", "21-3",
+		  createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
+				put("start", scoreLevel3());
+				put("stop", new SequentialCommandGroup(
+					 new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain)
+						  .withTimeout(0.5),
+					 new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain)
+						  .withTimeout(1.5),
+					 new BalanceOnChargeStation(m_drivetrain),
+					 XStop()));
+  	}}, "DriveDockv3", new PathConstraints(3, 2)));
 
-    m_autoSelector.registerCommand("Auto21 18pts", "2118",
-        createAutoPath(m_drivetrain, new HashMap<String, Command>() {
-          {
-            put("start", new ParallelCommandGroup(new Command[] {
-                new InstantCommand(() -> m_Gripper.closeGripper()),
-                new SequentialCommandGroup(
-                    new WaitCommand(0.25),
-                    new ScheduleCommand(
-                        new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))),
-                new SequentialCommandGroup(
-                    new WaitUntilCommand(() -> m_Wrist.getAngleFromGround().getDegrees() > -5),
-                    new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
-                    new ScheduleCommand(
-                        new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))
-        }));
-            put("stop", new SequentialCommandGroup(
-                new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain)
-                    .withTimeout(0.5),
-                new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain)
-                    .withTimeout(1.5),
-                new BalanceOnChargeStation(m_drivetrain),
-                XStop()));
-          }
-        }, "DriveDockv3", new PathConstraints(3, 2)));
+	m_autoSelector.registerCommand("Auto21 18pts", "2118",
+		  createAutoPath(m_drivetrain, new HashMap<String, Command>() {
+			 {
+				put("start", new ParallelCommandGroup(new Command[] {
+					 new InstantCommand(() -> m_Gripper.closeGripper()),
+					 new SequentialCommandGroup(
+						  new WaitCommand(0.25),
+						  new ScheduleCommand(
+								new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))),
+					 new SequentialCommandGroup(
+						  new WaitUntilCommand(() -> m_Wrist.getAngleFromGround().getDegrees() > -5),
+						  new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
+						  new ScheduleCommand(
+								new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))
+		  }));
+				put("stop", new SequentialCommandGroup(
+					 new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain)
+						  .withTimeout(0.5),
+					 new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain)
+						  .withTimeout(1.5),
+					 new BalanceOnChargeStation(m_drivetrain),
+					 XStop()));
+			 }
+		  }, "DriveDockv3", new PathConstraints(3, 2)));
 
-    m_autoSelector.registerCommand("Drop and set left", "DSL",
-        createAutoPath(m_drivetrain, new HashMap<String, Command>() {{ 
-            put("start", scoreLevel3()); 
-            put("stop", autoGetPiece());
-        }}, "Drop and set BL", new PathConstraints(3, 2)));
+	 m_autoSelector.registerCommand("Drop and set left", "DSL",
+		  createAutoPath(m_drivetrain, new HashMap<String, Command>() {{ 
+				put("start", scoreLevel3()); 
+				put("stop", autoGetPiece());
+		  }}, "Drop and set Left", new PathConstraints(3, 2)));
 
-    m_autoSelector.registerCommand("Drop and set right", "DSR",
-        createAutoPath(m_drivetrain, new HashMap<String, Command>() {{ 
-            put("start", scoreLevel3()); 
-            put("stop", autoGetPiece());
-        }}, "Drop and set BR", new PathConstraints(3, 2)));
+	 m_autoSelector.registerCommand("Drop and set right", "DSR",
+		  createAutoPath(m_drivetrain, new HashMap<String, Command>() {{ 
+				put("start", scoreLevel3()); 
+				put("stop", autoGetPiece());
+		  }}, "Drop and set BR", new PathConstraints(3, 2)));
 
-    // m_autoSelector.registerCommand("Ryan Test Auto", "RTS", new SequentialCommandGroup(
-    //     new InstantCommand(() -> m_Gripper.closeGripper()),
-    //     new SequentialCommandGroup(
-    //         new WaitCommand(0.25),
-    //         new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist))),
-    //     new SequentialCommandGroup(
-    //         new WaitUntilCommand(() -> {
-    //           boolean arm1AtPickupFloor = Math.abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
-    //           boolean arm2AtPickupFloor = Math
-    //               .abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5;
-    //           boolean wristAtPickupFloor = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
-    //           return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
+	m_autoSelector.registerCommand("Best Auto", "28-L", createAutoPath(
+		m_drivetrain, 
+		new HashMap<String, Command>() {{
+			put("start", scoreLevel3());
+			put("pickup", new RunCommand(null, null));// TODO: create pickup command
+			put("score", scoreLevel3());
+			put("stop", new BalanceOnChargeStation(m_drivetrain));
+		}}, "28-Left", new PathConstraints(5, 5))
+	);
 
-    //         }),
-    //         new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
-    //         new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))));
-    m_autoSelector.initialize();
+	m_autoSelector.registerCommand("Best Auto", "28-R", createAutoPath(
+		m_drivetrain, 
+		new HashMap<String, Command>() {{
+			put("start", scoreLevel3());
+			put("pickup", new RunCommand(null, null));// TODO: create pickup command
+			put("score", scoreLevel3());
+			put("stop", new BalanceOnChargeStation(m_drivetrain));
+		}}, "28-Right", new PathConstraints(5, 5))
+	);
+
+	 m_autoSelector.initialize();
   }
 
   public Command autoGetPiece() {
-    return new SequentialCommandGroup(
-        new MoveWristJoint2(m_Wrist, 0),
-        new RunCommand(() -> m_drivetrain.drive(0.75, 0, 0, false)).until(m_Gripper::isGamePieceDetected).withTimeout(4),
-        new InstantCommand(() -> m_Gripper.closeGripper())
-    );
+	 return new SequentialCommandGroup(
+		  new MoveWristJoint2(m_Wrist, 0),
+		  new RunCommand(() -> m_drivetrain.drive(0.75, 0, 0, false)).until(m_Gripper::isGamePieceDetected).withTimeout(4),
+		  new InstantCommand(() -> m_Gripper.closeGripper())
+	 );
   }
 
   public Command scoreLevel3() {
-    return new SequentialCommandGroup(
-        new InstantCommand(() -> m_Gripper.closeGripper()),
-        new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.15),
-        new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(0.15),
-        new SequentialCommandGroup(
-            new WaitCommand(0.25),
-            new ScheduleCommand(
-                new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist))),
-        new SequentialCommandGroup(
-            new WaitUntilCommand(() -> {
-              boolean arm1AtPickupFloor = Math
-                  .abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
-              boolean arm2AtPickupFloor = Math
-                  .abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5;
-              boolean wristAtPickupFloor = Math
-                  .abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
-              return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
+	 return new SequentialCommandGroup(
+		  new InstantCommand(() -> m_Gripper.closeGripper()),
+		  new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.15),
+		  new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(0.15),
+		  new SequentialCommandGroup(
+				new WaitCommand(0.25),
+				new ScheduleCommand(
+					 new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist))),
+		  new SequentialCommandGroup(
+				new WaitUntilCommand(() -> {
+				  boolean arm1AtPickupFloor = Math
+						.abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
+				  boolean arm2AtPickupFloor = Math
+						.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5;
+				  boolean wristAtPickupFloor = Math
+						.abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
+				  return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
 
-            }),
-            new WaitCommand(0.4),
-            new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
-            new ScheduleCommand(
-                new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)
-                )
-            )
-        );
+				}),
+				new WaitCommand(0.4),
+				new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
+				new ScheduleCommand(
+					 new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)
+					 )
+				)
+		  );
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-   * it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
+	* Use this method to define your button->command mappings. Buttons can be
+	* created by
+	* instantiating a {@link GenericHID} or one of its subclasses ({@link
+	* edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+	* it to a {@link
+	* edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+	*/
   private void configureButtonBindings() {
-    // Configure default commands
-    m_drivetrain.setDefaultCommand(new DriveWithController(m_drivetrain, m_controller.getHID()));
+	 // Configure default commands
+	 m_drivetrain.setDefaultCommand(new DriveWithController(m_drivetrain, m_controller.getHID()));
 
-    m_controller.start().onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do
-                                                                                 // something with odometry? As
-                                                                                 // it freaks out
+	 m_controller.start().onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do
+																											// something with odometry? As
+																											// it freaks out
 
-    m_controller.rightStick().toggleOnTrue(new RunCommand(() -> {
-      var latchedModuleStates = new SwerveModuleState[] {
-          new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
-          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
-          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
-          new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
-      };
+	 m_controller.rightStick().toggleOnTrue(new RunCommand(() -> {
+		var latchedModuleStates = new SwerveModuleState[] {
+			 new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+			 new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+			 new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+			 new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+		};
 
-      m_drivetrain.setModuleStates(latchedModuleStates);
-    }, m_drivetrain));
+		m_drivetrain.setModuleStates(latchedModuleStates);
+	 }, m_drivetrain));
 
-    m_controller.y().onTrue(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper));
+	 m_controller.y().onTrue(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper));
 
-    m_controller.rightBumper()
-        .onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
+	 m_controller.rightBumper()
+		  .onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
 
-    new Trigger(
-        () -> {
-          // boolean arm1AtScoreLow = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) <
-          // 5;
-          // boolean arm2AtScoreLow =
-          // Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - 32) < 5;
-          // boolean wristAtScoreLow = Math.abs(m_Wrist.getAngleFromGround().getDegrees()
-          // - 0) < 5;
-          // boolean armAtScoreLow = arm1AtScoreLow && arm2AtScoreLow && wristAtScoreLow;
+	 new Trigger(
+		  () -> {
+			 // boolean arm1AtScoreLow = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) <
+			 // 5;
+			 // boolean arm2AtScoreLow =
+			 // Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - 32) < 5;
+			 // boolean wristAtScoreLow = Math.abs(m_Wrist.getAngleFromGround().getDegrees()
+			 // - 0) < 5;
+			 // boolean armAtScoreLow = arm1AtScoreLow && arm2AtScoreLow && wristAtScoreLow;
 
-          boolean arm1AtPickupFloor = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) < 5;
-          boolean arm2AtPickupFloor = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - 41) < 5;
-          boolean wristAtPickupFloor = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5;
-          boolean armAtPickupFloor = arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
+			 boolean arm1AtPickupFloor = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) < 5;
+			 boolean arm2AtPickupFloor = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - 41) < 5;
+			 boolean wristAtPickupFloor = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5;
+			 boolean armAtPickupFloor = arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
 
-          boolean arm1AtHP = Math.abs(m_armJoint1.getAngle().getDegrees() - 77) < 5;
-          boolean arm2AtHP = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -22) < 5;
-          boolean wristAtHP = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5;
-          boolean armAtHP = arm1AtHP && arm2AtHP && wristAtHP;
+			 boolean arm1AtHP = Math.abs(m_armJoint1.getAngle().getDegrees() - 77) < 5;
+			 boolean arm2AtHP = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -22) < 5;
+			 boolean wristAtHP = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5;
+			 boolean armAtHP = arm1AtHP && arm2AtHP && wristAtHP;
 
-          return m_Gripper.isGamePieceDetected() && RobotState.isTeleop() && (armAtPickupFloor || armAtHP);
-        }).onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
+			 return m_Gripper.isGamePieceDetected() && RobotState.isTeleop() && (armAtPickupFloor || armAtHP);
+		  }).onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
 
-    // m_controller.x().onTrue(
-    // new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2,
-    // m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(false))
-    // );
-    // m_buttonPad.button(1).whileTrue(
-    // new
-    // ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
-    // );
-    m_buttonPad.button(5).onTrue(
-        new MoveArmsToCube2(m_armJoint1, m_Armjoint2, m_Wrist)
-            .beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-    // m_buttonPad.button(5).whileTrue(
-    // new RunCommand(()->m_armJoint1.inwards(),
-    // m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
-    // );
-    m_buttonPad.button(9).onTrue(
-        new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)
-            .beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-    m_buttonPad.button(1).onTrue(
-        new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)
-            .beforeStarting(() -> m_drivetrain.setSlowMode(true)));
+	 // m_controller.x().onTrue(
+	 // new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2,
+	 // m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(false))
+	 // );
+	 // m_buttonPad.button(1).whileTrue(
+	 // new
+	 // ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
+	 // );
+	 m_buttonPad.button(5).onTrue(
+		  new MoveArmsToCube2(m_armJoint1, m_Armjoint2, m_Wrist)
+				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
+	 // m_buttonPad.button(5).whileTrue(
+	 // new RunCommand(()->m_armJoint1.inwards(),
+	 // m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
+	 // );
+	 m_buttonPad.button(9).onTrue(
+		  new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)
+				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
+	 m_buttonPad.button(1).onTrue(
+		  new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)
+				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 
-    m_buttonPad.button(2).whileTrue(
-        new ArmJoint2Outward(m_Armjoint2).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
+	 m_buttonPad.button(2).whileTrue(
+		  new ArmJoint2Outward(m_Armjoint2).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 
-    m_buttonPad.button(6).whileTrue(
-        new ArmJoint2Inward(m_Armjoint2).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-    m_buttonPad.button(10).onTrue(
-        new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper)).alongWith(
-            new MoveArmsToHumanPlayer(m_armJoint1, m_Armjoint2, m_Wrist)
-                .beforeStarting(() -> m_drivetrain.setSlowMode(true))));
+	 m_buttonPad.button(6).whileTrue(
+		  new ArmJoint2Inward(m_Armjoint2).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
+	 m_buttonPad.button(10).onTrue(
+		  new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper)).alongWith(
+				new MoveArmsToHumanPlayer(m_armJoint1, m_Armjoint2, m_Wrist)
+					 .beforeStarting(() -> m_drivetrain.setSlowMode(true))));
 
-    m_buttonPad.button(3).whileTrue(
-        new WristJointOutward2(m_Wrist)
-            .beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-    m_buttonPad.button(7).whileTrue(
-        new WristJointInward2(m_Wrist)
-            .beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-    m_buttonPad.button(11).onTrue(
-        new MoveWristJoint2(m_Wrist, 0).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
+	 m_buttonPad.button(3).whileTrue(
+		  new WristJointOutward2(m_Wrist)
+				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
+	 m_buttonPad.button(7).whileTrue(
+		  new WristJointInward2(m_Wrist)
+				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
+	 m_buttonPad.button(11).onTrue(
+		  new MoveWristJoint2(m_Wrist, 0).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 
-    m_buttonPad.button(8).onTrue(
-        new ParallelCommandGroup(
-            new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist),
-            new SequentialCommandGroup(
-                new WaitUntilCommand(() -> (m_armJoint1.getAngle().getDegrees() < 60
-                    && m_Armjoint2.getAngleFromGround().getDegrees() > 0)),
-                new RunCommand(() -> m_drivetrain.setSlowMode(false))))
+	 m_buttonPad.button(8).onTrue(
+		  new ParallelCommandGroup(
+				new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist),
+				new SequentialCommandGroup(
+					 new WaitUntilCommand(() -> (m_armJoint1.getAngle().getDegrees() < 60
+						  && m_Armjoint2.getAngleFromGround().getDegrees() > 0)),
+					 new RunCommand(() -> m_drivetrain.setSlowMode(false))))
 
-    );
-    m_buttonPad.button(12).onTrue(
-        new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper)).alongWith(
-            new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)
-                .beforeStarting(() -> m_drivetrain.setSlowMode(true))));
-    m_buttonPad.button(4).onTrue(
-        new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist)
-            .beforeStarting(() -> m_drivetrain.setSlowMode(true)));
+	 );
+	 m_buttonPad.button(12).onTrue(
+		  new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper)).alongWith(
+				new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)
+					 .beforeStarting(() -> m_drivetrain.setSlowMode(true))));
+	 m_buttonPad.button(4).onTrue(
+		  new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist)
+				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
   }
 
   /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
+	* Use this to pass the autonomous command to the main {@link Robot} class.
+	*
+	* @return the command to run in autonomous
+	*/
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return m_autoSelector.selected();
+	 // An ExampleCommand will run in autonomous
+	 return m_autoSelector.selected();
   }
 
   public Command makeWPILibSwerveExamople() {
-    TrajectoryConfig config = new TrajectoryConfig(1, 1)
-        .setKinematics(Constants.Drive.kDriveKinematics);
+	 TrajectoryConfig config = new TrajectoryConfig(1, 1)
+		  .setKinematics(Constants.Drive.kDriveKinematics);
 
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-        // : origin faces the positive x direction
-        new Pose2d(0, 0, new Rotation2d(0)),
-        // : pass through 2 'waypoints' that create an 'S' shaped path
-        List.of(new Translation2d(Units.inchesToMeters(24), Units.inchesToMeters(24))),
-        // : end 3 meters ahead of our starting position
-        new Pose2d(Units.inchesToMeters(48), 0, new Rotation2d(0)),
-        // : pass through the trajectory configuration
-        config);
+	 Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+		  // : origin faces the positive x direction
+		  new Pose2d(0, 0, new Rotation2d(0)),
+		  // : pass through 2 'waypoints' that create an 'S' shaped path
+		  List.of(new Translation2d(Units.inchesToMeters(24), Units.inchesToMeters(24))),
+		  // : end 3 meters ahead of our starting position
+		  new Pose2d(Units.inchesToMeters(48), 0, new Rotation2d(0)),
+		  // : pass through the trajectory configuration
+		  config);
 
-    var thetaController = new ProfiledPIDController(
-        Constants.Auto.kPThetaController, 0, 0, Constants.Auto.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+	 var thetaController = new ProfiledPIDController(
+		  Constants.Auto.kPThetaController, 0, 0, Constants.Auto.kThetaControllerConstraints);
+	 thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        exampleTrajectory,
-        m_drivetrain::getPose,
-        Constants.Drive.kDriveKinematics,
+	 SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
+		  exampleTrajectory,
+		  m_drivetrain::getPose,
+		  Constants.Drive.kDriveKinematics,
 
-        // : Position Controllers
-        new PIDController(3, 0, 0),
-        new PIDController(3, 0, 0),
+		  // : Position Controllers
+		  new PIDController(3, 0, 0),
+		  new PIDController(3, 0, 0),
 
-        thetaController,
-        m_drivetrain::setModuleStates,
-        m_drivetrain);
+		  thetaController,
+		  m_drivetrain::setModuleStates,
+		  m_drivetrain);
 
-    m_drivetrain.resetOdometry(exampleTrajectory.getInitialPose());
+	 m_drivetrain.resetOdometry(exampleTrajectory.getInitialPose());
 
-    return new SequentialCommandGroup(
-        new InstantCommand(() -> m_drivetrain.resetOdometry(exampleTrajectory.getInitialPose())),
-        swerveControllerCommand.andThen(() -> m_drivetrain.drive(0, 0, 0, false)));
+	 return new SequentialCommandGroup(
+		  new InstantCommand(() -> m_drivetrain.resetOdometry(exampleTrajectory.getInitialPose())),
+		  swerveControllerCommand.andThen(() -> m_drivetrain.drive(0, 0, 0, false)));
   }
 
   // public Command krateAleksDriveToDoor() {
@@ -420,50 +422,50 @@ public class RobotContainer {
   // }
 
   public void autonomousInit() {
-    m_drivetrain.resetHeading();
+	 m_drivetrain.resetHeading();
   }
 
   public void teleopInit() {
-    m_drivetrain.setSlowMode(false);
+	 m_drivetrain.setSlowMode(false);
   }
 
   public Command XStop() {
-    return new RunCommand(() -> {
-      var latchedModuleStates = new SwerveModuleState[] {
-          new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
-          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
-          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
-          new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
-      };
-      m_drivetrain.setModuleStates(latchedModuleStates);
-    },
-        m_drivetrain);
+	 return new RunCommand(() -> {
+		var latchedModuleStates = new SwerveModuleState[] {
+			 new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+			 new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+			 new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+			 new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+		};
+		m_drivetrain.setModuleStates(latchedModuleStates);
+	 },
+		  m_drivetrain);
   }
 
   public Command createAutoPath(Drivetrain drivetrain, HashMap<String, Command> eventMap, String pathName,
-      PathConstraints pathConstraints) {
-    List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
-        pathName, pathConstraints);
+		PathConstraints pathConstraints) {
+	 List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
+		  pathName, pathConstraints);
 
-    SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-        drivetrain::getPose,
-        drivetrain::resetOdometry,
-        Constants.Drive.kDriveKinematics,
+	 SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+		  drivetrain::getPose,
+		  drivetrain::resetOdometry,
+		  Constants.Drive.kDriveKinematics,
 
-        new PIDConstants(5.0, 0, 0), // : PID constants for translation error
-        new PIDConstants(1.0, 0, 0), // : Theta rotation,
+		  new PIDConstants(5.0, 0, 0), // : PID constants for translation error
+		  new PIDConstants(1.0, 0, 0), // : Theta rotation,
 
-        drivetrain::setModuleStates,
+		  drivetrain::setModuleStates,
 
-        eventMap, true, drivetrain);
+		  eventMap, true, drivetrain);
 
-    return autoBuilder.fullAuto(pathGroup);
+	 return autoBuilder.fullAuto(pathGroup);
   }
 
   public void disabledPeriodic() {
-    m_drivetrain.resetSteerEncoders();
-    m_Wrist.resetAbsolutePosition();
-    m_armJoint1.resetAbsolutePosition();
-    m_Armjoint2.resetAbsolutePosition();
+	 m_drivetrain.resetSteerEncoders();
+	 m_Wrist.resetAbsolutePosition();
+	 m_armJoint1.resetAbsolutePosition();
+	 m_Armjoint2.resetAbsolutePosition();
   }
 }
