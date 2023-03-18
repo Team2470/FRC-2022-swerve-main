@@ -5,6 +5,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Drivetrain;
 
 public class BalanceOnChargeStation extends CommandBase {
@@ -25,8 +27,12 @@ public class BalanceOnChargeStation extends CommandBase {
   }
 
   // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {}
+  @Override public void initialize() {
+    new SequentialCommandGroup(
+      new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
+      new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain).withTimeout(1.5)
+    );
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override public void execute() {

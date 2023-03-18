@@ -133,8 +133,6 @@ public class RobotContainer {
 	 m_autoSelector.registerCommand("Middle", "MID", new SequentialCommandGroup(
 		  new InstantCommand(() -> scoreLevel3()),
 		  new InstantCommand(() -> m_drivetrain.resetHeading()),
-		  new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
-		  new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain).withTimeout(1.5),
 		  new BalanceOnChargeStation(m_drivetrain),
 		  XStop()));
 
@@ -142,16 +140,12 @@ public class RobotContainer {
 		  createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 				put("start", scoreLevel3());
 				put("stop", new SequentialCommandGroup(
-					 new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain)
-						  .withTimeout(0.5),
-					 new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain)
-						  .withTimeout(1.5),
 					 new BalanceOnChargeStation(m_drivetrain),
 					 XStop()));
   	}}, "DriveDockv3", new PathConstraints(3, 2)));
 
 	m_autoSelector.registerCommand("Auto21 18pts", "2118",
-		  createAutoPath(m_drivetrain, new HashMap<String, Command>() {
+		  createAutoPath(new HashMap<String, Command>() {
 			 {
 				put("start", new ParallelCommandGroup(new Command[] {
 					 new InstantCommand(() -> m_Gripper.closeGripper()),
@@ -166,29 +160,24 @@ public class RobotContainer {
 								new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))
 		  }));
 				put("stop", new SequentialCommandGroup(
-					 new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain)
-						  .withTimeout(0.5),
-					 new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain)
-						  .withTimeout(1.5),
 					 new BalanceOnChargeStation(m_drivetrain),
 					 XStop()));
 			 }
 		  }, "DriveDockv3", new PathConstraints(3, 2)));
 
 	 m_autoSelector.registerCommand("Drop and set left", "DSL",
-		  createAutoPath(m_drivetrain, new HashMap<String, Command>() {{ 
+		  createAutoPath(new HashMap<String, Command>() {{ 
 				put("start", scoreLevel3()); 
 				put("stop", autoGetPiece());
 		  }}, "Drop and set Left", new PathConstraints(3, 2)));
 
 	 m_autoSelector.registerCommand("Drop and set right", "DSR",
-		  createAutoPath(m_drivetrain, new HashMap<String, Command>() {{ 
+		  createAutoPath(new HashMap<String, Command>() {{ 
 				put("start", scoreLevel3()); 
 				put("stop", autoGetPiece());
 		  }}, "Drop and set BR", new PathConstraints(3, 2)));
 
 	m_autoSelector.registerCommand("Best Auto", "28-L", createAutoPath(
-		m_drivetrain, 
 		new HashMap<String, Command>() {{
 			put("start", scoreLevel3());
 			put("pickup", new RunCommand(null, null));// TODO: create pickup command
@@ -198,7 +187,6 @@ public class RobotContainer {
 	);
 
 	m_autoSelector.registerCommand("Best Auto", "28-R", createAutoPath(
-		m_drivetrain, 
 		new HashMap<String, Command>() {{
 			put("start", scoreLevel3());
 			put("pickup", new RunCommand(null, null));// TODO: create pickup command
@@ -210,13 +198,13 @@ public class RobotContainer {
 	 m_autoSelector.initialize();
   }
 
-  public Command autoGetPiece() {
-	 return new SequentialCommandGroup(
-		  new MoveWristJoint2(m_Wrist, 0),
-		  new RunCommand(() -> m_drivetrain.drive(0.75, 0, 0, false)).until(m_Gripper::isGamePieceDetected).withTimeout(4),
-		  new InstantCommand(() -> m_Gripper.closeGripper())
-	 );
-  }
+	public Command autoGetPiece() {
+		return new SequentialCommandGroup(
+			new MoveWristJoint2(m_Wrist, 0),
+			new RunCommand(() -> m_drivetrain.drive(0.75, 0, 0, false)).until(m_Gripper::isGamePieceDetected).withTimeout(4),
+			new InstantCommand(() -> m_Gripper.closeGripper())
+		);
+	}
 
   public Command scoreLevel3() {
 	 return new SequentialCommandGroup(
@@ -245,6 +233,12 @@ public class RobotContainer {
 					 )
 				)
 		  );
+  }
+
+  public Command pickupPiece() {
+		return new SequentialCommandGroup(
+			
+		);
   }
 
   /**
@@ -371,44 +365,6 @@ public class RobotContainer {
 	 return m_autoSelector.selected();
   }
 
-  public Command makeWPILibSwerveExamople() {
-	 TrajectoryConfig config = new TrajectoryConfig(1, 1)
-		  .setKinematics(Constants.Drive.kDriveKinematics);
-
-	 Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-		  // : origin faces the positive x direction
-		  new Pose2d(0, 0, new Rotation2d(0)),
-		  // : pass through 2 'waypoints' that create an 'S' shaped path
-		  List.of(new Translation2d(Units.inchesToMeters(24), Units.inchesToMeters(24))),
-		  // : end 3 meters ahead of our starting position
-		  new Pose2d(Units.inchesToMeters(48), 0, new Rotation2d(0)),
-		  // : pass through the trajectory configuration
-		  config);
-
-	 var thetaController = new ProfiledPIDController(
-		  Constants.Auto.kPThetaController, 0, 0, Constants.Auto.kThetaControllerConstraints);
-	 thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-	 SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-		  exampleTrajectory,
-		  m_drivetrain::getPose,
-		  Constants.Drive.kDriveKinematics,
-
-		  // : Position Controllers
-		  new PIDController(3, 0, 0),
-		  new PIDController(3, 0, 0),
-
-		  thetaController,
-		  m_drivetrain::setModuleStates,
-		  m_drivetrain);
-
-	 m_drivetrain.resetOdometry(exampleTrajectory.getInitialPose());
-
-	 return new SequentialCommandGroup(
-		  new InstantCommand(() -> m_drivetrain.resetOdometry(exampleTrajectory.getInitialPose())),
-		  swerveControllerCommand.andThen(() -> m_drivetrain.drive(0, 0, 0, false)));
-  }
-
   // public Command krateAleksDriveToDoor() {
   // final HashMap<String, Command> eventMap = new HashMap<String, Command>() {{
   // put("start", new SequentialCommandGroup(new Command[] {
@@ -429,43 +385,61 @@ public class RobotContainer {
 	 m_drivetrain.setSlowMode(false);
   }
 
-  public Command XStop() {
-	 return new RunCommand(() -> {
-		var latchedModuleStates = new SwerveModuleState[] {
-			 new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
-			 new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
-			 new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
-			 new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
-		};
-		m_drivetrain.setModuleStates(latchedModuleStates);
-	 },
-		  m_drivetrain);
-  }
+  	public Command XStop() {
+	 	return new RunCommand(() -> {
+			var latchedModuleStates = new SwerveModuleState[] {
+				new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+				new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+				new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+				new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+			}; m_drivetrain.setModuleStates(latchedModuleStates);
+		}, m_drivetrain);
+  	}
 
-  public Command createAutoPath(Drivetrain drivetrain, HashMap<String, Command> eventMap, String pathName,
+	//: uses drivetrain argument
+  	public Command createAutoPath(Drivetrain drivetrain, HashMap<String, Command> eventMap, String pathName,
 		PathConstraints pathConstraints) {
-	 List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
-		  pathName, pathConstraints);
+	 		List<PathPlannerTrajectory> pathGroup = 
+				PathPlanner.loadPathGroup(pathName, pathConstraints);
 
-	 SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-		  drivetrain::getPose,
-		  drivetrain::resetOdometry,
-		  Constants.Drive.kDriveKinematics,
+		SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+			drivetrain::getPose,
+			drivetrain::resetOdometry,
+			Constants.Drive.kDriveKinematics,
 
-		  new PIDConstants(5.0, 0, 0), // : PID constants for translation error
-		  new PIDConstants(1.0, 0, 0), // : Theta rotation,
+			new PIDConstants(5.0, 0, 0), // : PID constants for translation error
+			new PIDConstants(1.0, 0, 0), // : Theta rotation,
 
-		  drivetrain::setModuleStates,
+			drivetrain::setModuleStates,
+			eventMap, true, drivetrain
+		);
 
-		  eventMap, true, drivetrain);
+		return autoBuilder.fullAuto(pathGroup);
+	}
+	//: uses drivetrain member 
+	public Command createAutoPath(HashMap<String, Command> eventMap, String pathName, PathConstraints pathConstraints) {
+		List<PathPlannerTrajectory> pathGroup = 
+			PathPlanner.loadPathGroup(pathName, pathConstraints);
 
-	 return autoBuilder.fullAuto(pathGroup);
-  }
+		SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+			m_drivetrain::getPose,
+			m_drivetrain::resetOdometry,
+			Constants.Drive.kDriveKinematics,
 
-  public void disabledPeriodic() {
-	 m_drivetrain.resetSteerEncoders();
-	 m_Wrist.resetAbsolutePosition();
-	 m_armJoint1.resetAbsolutePosition();
-	 m_Armjoint2.resetAbsolutePosition();
-  }
+			new PIDConstants(5.0, 0, 0), // : PID constants for translation error
+			new PIDConstants(1.0, 0, 0), // : Theta rotation,
+
+			m_drivetrain::setModuleStates,
+			eventMap, true, m_drivetrain
+		);
+
+		return autoBuilder.fullAuto(pathGroup);
+	}
+
+  	public void disabledPeriodic() {
+		m_drivetrain.resetSteerEncoders();
+		m_Wrist.resetAbsolutePosition();
+		m_armJoint1.resetAbsolutePosition();
+		m_Armjoint2.resetAbsolutePosition();
+  	}
 }
