@@ -78,104 +78,100 @@ import frc.robot.subsystems.WristJointV2;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // OI
-  private final CommandXboxController m_controller = new CommandXboxController(0);
-  private final CommandJoystick m_buttonPad = new CommandJoystick(1);
-  // The robot's subsystems and commands are defined here...
-  private final Drivetrain m_drivetrain = new Drivetrain();
-  private final ArmJoint1 m_armJoint1 = new ArmJoint1();
-  private final Armjoint2V2 m_Armjoint2 = new Armjoint2V2(Constants.PidArmCfg.kArmjoint2,
+	// OI
+	private final CommandXboxController m_controller = new CommandXboxController(0);
+	private final CommandJoystick m_buttonPad = new CommandJoystick(1);
+	// The robot's subsystems and commands are defined here...
+	private final Drivetrain m_drivetrain = new Drivetrain();
+	private final ArmJoint1 m_armJoint1 = new ArmJoint1();
+	private final Armjoint2V2 m_Armjoint2 = new Armjoint2V2(Constants.PidArmCfg.kArmjoint2,
 		() -> m_armJoint1.getAngle().getDegrees());
-  private final GripperSubsystem m_Gripper = new GripperSubsystem();
-  private final PneumaticHub m_PneumaticHub = new PneumaticHub();
-  private final WristJointV2 m_Wrist = new WristJointV2(Constants.PidArmCfg.kWrist,
+	private final GripperSubsystem m_Gripper = new GripperSubsystem();
+	private final PneumaticHub m_PneumaticHub = new PneumaticHub();
+	private final WristJointV2 m_Wrist = new WristJointV2(Constants.PidArmCfg.kWrist,
 		() -> m_Armjoint2.getAngleFromGround().getDegrees());
 
-  private final NetworkTable m_cameraTable = NetworkTableInstance.getDefault().getTable("CameraPublisher");
-  private final NetworkTableEntry m_cameraSelector = m_cameraTable.getEntry("selector");
-  // Auto
-  private final RevDigit m_revDigit;
-  private final AutoSelector m_autoSelector;
+	private final NetworkTable m_cameraTable = NetworkTableInstance.getDefault().getTable("CameraPublisher");
+	private final NetworkTableEntry m_cameraSelector = m_cameraTable.getEntry("selector");
+	// Auto
+	private final RevDigit m_revDigit;
+	private final AutoSelector m_autoSelector;
 
   /**
 	* The container for the robot. Contains subsystems, OI devices, and commands.
 	*/
-  public RobotContainer() {
+  	public RobotContainer() {
+	 	// CameraServer.startAutomaticCapture();
 
-	 // CameraServer.startAutomaticCapture();
+	 	// Configure default commands
+	 	m_armJoint1.setDefaultCommand
+			( new RunCommand(() -> m_armJoint1.stop(), m_armJoint1) );
 
-	 // Configure default commands
-	 m_armJoint1.setDefaultCommand(new RunCommand(
-		  () -> m_armJoint1.stop(),
-		  m_armJoint1));
+	 	// m_Gripper.setDefaultCommand(new RunCommand(
+		// () -> m_Gripper.openGripper(),
+		// m_Gripper
+		// ));
 
-	 // m_Gripper.setDefaultCommand(new RunCommand(
-	 // () -> m_Gripper.openGripper(),
-	 // m_Gripper
-	 // ));
+	 	m_cameraSelector.setDouble(0.0);
 
-	 m_cameraSelector.setDouble(0.0);
+	 	// Configure the button bindings
+	 	configureButtonBindings();
 
-	 // Configure the button bindings
-	 configureButtonBindings();
+	 	m_PneumaticHub.enableCompressorAnalog(90, 120);
+	 	PathPlannerServer.startServer(5811);
 
-	 m_PneumaticHub.enableCompressorAnalog(90, 120);
+		// Auto Selector
+		m_revDigit = new RevDigit();
+		m_revDigit.display("BWMP");
+		m_autoSelector = new AutoSelector(m_revDigit, "DFLT", new SequentialCommandGroup(
+			new PrintCommand("OOPS")));
 
-	 PathPlannerServer.startServer(5811);
+		// Initialize other autos here
+		m_autoSelector.registerCommand("Middle", "MID", new SequentialCommandGroup(
+			new InstantCommand(() -> scoreLevel3()),
+			new InstantCommand(() -> m_drivetrain.resetHeading()),
+			new BalanceOnChargeStation(m_drivetrain),
+			XStop()
+		));
 
-	 // Auto Selector
-	 m_revDigit = new RevDigit();
-	 m_revDigit.display("BWMP");
-	 m_autoSelector = new AutoSelector(m_revDigit, "DFLT", new SequentialCommandGroup(
-		  new PrintCommand("OOPS")));
-
-	 // Initialize other autos here
-	 m_autoSelector.registerCommand("Middle", "MID", new SequentialCommandGroup(
-		  new InstantCommand(() -> scoreLevel3()),
-		  new InstantCommand(() -> m_drivetrain.resetHeading()),
-		  new BalanceOnChargeStation(m_drivetrain),
-		  XStop()));
-
-	m_autoSelector.registerCommand("Auto31 21pts", "21-3",
-		  createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
+		m_autoSelector.registerCommand("Auto31 21pts", "21-3",
+			createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 				put("start", scoreLevel3());
 				put("stop", new SequentialCommandGroup(
-					 new BalanceOnChargeStation(m_drivetrain),
-					 XStop()));
-  	}}, "DriveDockv3", new PathConstraints(3, 2)));
+					new BalanceOnChargeStation(m_drivetrain),
+					XStop()
+				));
+		}}, "DriveDockv3", new PathConstraints(3, 2)));
 
-	m_autoSelector.registerCommand("Auto21 18pts", "2118",
-		  createAutoPath(new HashMap<String, Command>() {
-			 {
-				put("start", new ParallelCommandGroup(new Command[] {
-					 new InstantCommand(() -> m_Gripper.closeGripper()),
-					 new SequentialCommandGroup(
-						  new WaitCommand(0.25),
-						  new ScheduleCommand(
-								new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))),
-					 new SequentialCommandGroup(
-						  new WaitUntilCommand(() -> m_Wrist.getAngleFromGround().getDegrees() > -5),
-						  new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
-						  new ScheduleCommand(
-								new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))
-		  }));
-				put("stop", new SequentialCommandGroup(
-					 new BalanceOnChargeStation(m_drivetrain),
-					 XStop()));
-			 }
-		  }, "DriveDockv3", new PathConstraints(3, 2)));
+		m_autoSelector.registerCommand("Auto21 18pts", "2118", createAutoPath(new HashMap<String, Command>() {{
+			put("start", new ParallelCommandGroup(new Command[] {
+					new InstantCommand(() -> m_Gripper.closeGripper()),
+					new SequentialCommandGroup(
+						new WaitCommand(0.25),
+						new ScheduleCommand(
+							new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))),
+					new SequentialCommandGroup(
+						new WaitUntilCommand(() -> m_Wrist.getAngleFromGround().getDegrees() > -5),
+						new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
+						new ScheduleCommand(
+							new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))
+			}));
+			put("stop", new SequentialCommandGroup(
+				new BalanceOnChargeStation(m_drivetrain),
+				XStop()));
+		}}, "DriveDockv3", new PathConstraints(3, 2)));
 
-	 m_autoSelector.registerCommand("Drop and set left", "DSL",
+	   m_autoSelector.registerCommand("Drop and set left", "DSL",
+		   createAutoPath(new HashMap<String, Command>() {{ 
+				put("start", scoreLevel3()); 
+				put("stop", autoGetPiece());
+		  }}, "DSL", new PathConstraints(3, 2)));
+
+	   m_autoSelector.registerCommand("Drop and set right", "Drop and set BRDSR",
 		  createAutoPath(new HashMap<String, Command>() {{ 
 				put("start", scoreLevel3()); 
 				put("stop", autoGetPiece());
-		  }}, "Drop and set Left", new PathConstraints(3, 2)));
-
-	 m_autoSelector.registerCommand("Drop and set right", "DSR",
-		  createAutoPath(new HashMap<String, Command>() {{ 
-				put("start", scoreLevel3()); 
-				put("stop", autoGetPiece());
-		  }}, "Drop and set BR", new PathConstraints(3, 2)));
+		  }}, "DSR", new PathConstraints(3, 2)));
 
 	m_autoSelector.registerCommand("Best Auto", "28-L", createAutoPath(
 		new HashMap<String, Command>() {{
@@ -206,7 +202,7 @@ public class RobotContainer {
 		);
 	}
 
-  public Command scoreLevel3() {
+   public Command scoreLevel3() {
 	 return new SequentialCommandGroup(
 		  new InstantCommand(() -> m_Gripper.closeGripper()),
 		  new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.15),
@@ -235,12 +231,11 @@ public class RobotContainer {
 		  );
   }
 
-  public Command pickupPiece() {
+  	public Command pickupPiece() {
 		return new SequentialCommandGroup(
 			
 		);
-  }
-
+  	}
   /**
 	* Use this method to define your button->command mappings. Buttons can be
 	* created by
@@ -346,14 +341,17 @@ public class RobotContainer {
 					 new RunCommand(() -> m_drivetrain.setSlowMode(false))))
 
 	 );
-	 m_buttonPad.button(12).onTrue(
-		  new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper)).alongWith(
+	 	m_buttonPad.button(12).onTrue(
+		  	new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper)).alongWith(
 				new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)
-					 .beforeStarting(() -> m_drivetrain.setSlowMode(true))));
-	 m_buttonPad.button(4).onTrue(
+					.beforeStarting(() -> m_drivetrain.setSlowMode(true))
+				)
+		);
+	 	m_buttonPad.button(4).onTrue(
 		  new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist)
-				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-  }
+				.beforeStarting(() -> m_drivetrain.setSlowMode(true))
+		);
+  	}
 
   /**
 	* Use this to pass the autonomous command to the main {@link Robot} class.
@@ -365,25 +363,13 @@ public class RobotContainer {
 	 return m_autoSelector.selected();
   }
 
-  // public Command krateAleksDriveToDoor() {
-  // final HashMap<String, Command> eventMap = new HashMap<String, Command>() {{
-  // put("start", new SequentialCommandGroup(new Command[] {
-  // new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2,
-  // m_Wrist).beforeStarting(()->m_drivetrain.setSlowMode(true)),
-  // new RunCommand(()->m_Gripper.closeGripper(), m_Gripper),
-  // new MoveArmjoint1ToPosition(m_armJoint1,
-  // Rotation2d.fromDegrees(60)).beforeStarting(()->m_drivetrain.setSlowMode(true)),
-  // }));
-  // }};
-  // }
+	public void autonomousInit() {
+		m_drivetrain.resetHeading();
+	}
 
-  public void autonomousInit() {
-	 m_drivetrain.resetHeading();
-  }
-
-  public void teleopInit() {
-	 m_drivetrain.setSlowMode(false);
-  }
+	public void teleopInit() {
+		m_drivetrain.setSlowMode(false);
+	}
 
   	public Command XStop() {
 	 	return new RunCommand(() -> {
