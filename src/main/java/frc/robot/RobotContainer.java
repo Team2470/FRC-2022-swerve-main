@@ -170,16 +170,16 @@ public class RobotContainer {
 	m_autoSelector.registerCommand("Best Auto", "28-L", createAutoPath(
 		new HashMap<String, Command>() {{
 			put("start", scoreLevel3());
-			put("pickup", new RunCommand(null, null));// TODO: create pickup command
+			put("extend", new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist));
 			put("score", scoreLevel3());
-			put("stop", Balance());
+			put("balance", Balance());
 		}}, "28-Left", new PathConstraints(5, 5))
 	);
 
 	m_autoSelector.registerCommand("Best Auto", "28-R", createAutoPath(
 		new HashMap<String, Command>() {{
 			put("start", scoreLevel3());
-			put("pickup", new RunCommand(null, null));// TODO: create pickup command
+			put("extend", new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist));
 			put("score", scoreLevel3());
 			put("stop", Balance());
 		}}, "28-Right", new PathConstraints(5, 5))
@@ -291,7 +291,7 @@ public class RobotContainer {
 			 boolean wristAtHP = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5;
 			 boolean armAtHP = arm1AtHP && arm2AtHP && wristAtHP;
 
-			 return m_Gripper.isGamePieceDetected() && RobotState.isTeleop() && (armAtPickupFloor || armAtHP);
+			 return m_Gripper.isGamePieceDetected() && (armAtPickupFloor || armAtHP);
 		  }).onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
 
 	 // m_controller.x().onTrue(
