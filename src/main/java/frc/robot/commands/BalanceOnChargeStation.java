@@ -24,15 +24,11 @@ public class BalanceOnChargeStation extends CommandBase {
   /** Creates a new BalanceOnChargeStation. */
   public BalanceOnChargeStation(Drivetrain drivetrain) {
     m_drivetrain = drivetrain;
+    addRequirements(m_drivetrain);
   }
 
   // Called when the command is initially scheduled.
-  @Override public void initialize() {
-    new SequentialCommandGroup(
-      new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
-      new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain).withTimeout(1.5)
-    );
-  }
+  @Override public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override public void execute() {

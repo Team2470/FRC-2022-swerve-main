@@ -130,17 +130,13 @@ public class RobotContainer {
 		m_autoSelector.registerCommand("Middle", "MID", new SequentialCommandGroup(
 			new InstantCommand(() -> scoreLevel3()),
 			new InstantCommand(() -> m_drivetrain.resetHeading()),
-			new BalanceOnChargeStation(m_drivetrain),
-			XStop()
+			Balance()
 		));
 
 		m_autoSelector.registerCommand("Auto31 21pts", "21-3",
 			createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 				put("start", scoreLevel3());
-				put("stop", new SequentialCommandGroup(
-					new BalanceOnChargeStation(m_drivetrain),
-					XStop()
-				));
+				put("stop", new SequentialCommandGroup(Balance()));
 		}}, "DriveDockv3", new PathConstraints(3, 2)));
 
 		m_autoSelector.registerCommand("Auto21 18pts", "2118", createAutoPath(new HashMap<String, Command>() {{
@@ -156,9 +152,7 @@ public class RobotContainer {
 						new ScheduleCommand(
 							new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))
 			}));
-			put("stop", new SequentialCommandGroup(
-				new BalanceOnChargeStation(m_drivetrain),
-				XStop()));
+			put("stop", Balance());
 		}}, "DriveDockv3", new PathConstraints(3, 2)));
 
 	   m_autoSelector.registerCommand("Drop and set left", "DSL",
@@ -178,7 +172,7 @@ public class RobotContainer {
 			put("start", scoreLevel3());
 			put("pickup", new RunCommand(null, null));// TODO: create pickup command
 			put("score", scoreLevel3());
-			put("stop", new BalanceOnChargeStation(m_drivetrain));
+			put("stop", Balance());
 		}}, "28-Left", new PathConstraints(5, 5))
 	);
 
@@ -187,12 +181,21 @@ public class RobotContainer {
 			put("start", scoreLevel3());
 			put("pickup", new RunCommand(null, null));// TODO: create pickup command
 			put("score", scoreLevel3());
-			put("stop", new BalanceOnChargeStation(m_drivetrain));
+			put("stop", Balance());
 		}}, "28-Right", new PathConstraints(5, 5))
 	);
 
 	 m_autoSelector.initialize();
   }
+
+  	public Command Balance() {
+		return new SequentialCommandGroup(
+			new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
+			new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain).withTimeout(1.5),
+			new BalanceOnChargeStation(m_drivetrain),
+			XStop()
+		);
+  	}
 
 	public Command autoGetPiece() {
 		return new SequentialCommandGroup(
