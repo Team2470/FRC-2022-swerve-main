@@ -24,7 +24,7 @@ public class BalanceOnChargeStation extends CommandBase {
   /** Creates a new BalanceOnChargeStation. */
   public BalanceOnChargeStation(Drivetrain drivetrain) {
     m_drivetrain = drivetrain;
-    addRequirements(m_drivetrain);
+    // addRequirements(m_drivetrain);
   }
 
   // Called when the command is initially scheduled.

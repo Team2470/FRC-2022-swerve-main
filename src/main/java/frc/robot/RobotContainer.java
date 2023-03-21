@@ -167,24 +167,21 @@ public class RobotContainer {
 				put("stop", autoGetPiece());
 		  }}, "DSR", new PathConstraints(3, 2)));
 
-	m_autoSelector.registerCommand("Best Auto", "28-L", createAutoPath(
-		new HashMap<String, Command>() {{
+		m_autoSelector.registerCommand("28L", "28-L", createAutoPath(new HashMap<String, Command>() {{
 			put("start", scoreLevel3());
-			put("extend", new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist));
-			put("score", scoreLevel3());
-			put("balance", Balance());
-		}}, "28-Left", new PathConstraints(5, 5))
-	);
-
-	m_autoSelector.registerCommand("Best Auto", "28-R", createAutoPath(
-		new HashMap<String, Command>() {{
-			put("start", scoreLevel3());
-			put("extend", new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist));
+			put("extend", autoGetPiece());
+			put("wrist-in", new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
 			put("score", scoreLevel3());
 			put("stop", Balance());
-		}}, "28-Right", new PathConstraints(5, 5))
-	);
-
+		}}, "28-L", new PathConstraints(5, 5)));
+		
+		m_autoSelector.registerCommand("28R", "28-R", createAutoPath(new HashMap<String, Command>() {{
+			put("start", scoreLevel3());
+			put("extend", autoGetPiece());
+			put("wrist-in", new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
+			put("score", scoreLevel3());
+			put("stop", Balance());
+		}}, "28-L", new PathConstraints(5, 5)));
 	 m_autoSelector.initialize();
   }
 
@@ -200,43 +197,36 @@ public class RobotContainer {
 	public Command autoGetPiece() {
 		return new SequentialCommandGroup(
 			new MoveWristJoint2(m_Wrist, 0),
-			new RunCommand(() -> m_drivetrain.drive(0.75, 0, 0, false)).until(m_Gripper::isGamePieceDetected).withTimeout(4),
-			new InstantCommand(() -> m_Gripper.closeGripper())
+			new RunCommand(() -> m_drivetrain.drive(0.75, 0, 0, false)).until(m_Gripper::isGamePieceDetected).withTimeout(4)
 		);
 	}
 
    public Command scoreLevel3() {
-	 return new SequentialCommandGroup(
-		  new InstantCommand(() -> m_Gripper.closeGripper()),
-		  new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.15),
-		  new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(0.15),
-		  new SequentialCommandGroup(
+	 	return new SequentialCommandGroup(
+			new InstantCommand(() -> m_Gripper.closeGripper()),
+			new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.15),
+			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(0.15),
+			new SequentialCommandGroup(
 				new WaitCommand(0.25),
 				new ScheduleCommand(
-					 new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist))),
-		  new SequentialCommandGroup(
-				new WaitUntilCommand(() -> {
-				  boolean arm1AtPickupFloor = Math
-						.abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
-				  boolean arm2AtPickupFloor = Math
-						.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5;
-				  boolean wristAtPickupFloor = Math
-						.abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
-				  return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
-
-				}),
-				new WaitCommand(0.4),
-				new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
-				new ScheduleCommand(
-					 new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)
-					 )
+					new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist)
 				)
-		  );
-  }
-
-  	public Command pickupPiece() {
-		return new SequentialCommandGroup(
-			
+			), 
+			new SequentialCommandGroup(
+				new WaitUntilCommand(() -> {
+				boolean arm1AtPickupFloor = Math
+					.abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
+				boolean arm2AtPickupFloor = Math
+					.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5;
+				boolean wristAtPickupFloor = Math
+					.abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
+				return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
+			}),
+			new WaitCommand(0.4),
+			new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
+			new ScheduleCommand
+				( new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist) )
+			)
 		);
   	}
   /**
