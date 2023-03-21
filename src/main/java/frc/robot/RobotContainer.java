@@ -122,7 +122,7 @@ public class RobotContainer {
 
 		// Auto Selector
 		m_revDigit = new RevDigit();
-		m_revDigit.display("BWMP");
+		m_revDigit.display("VERD");
 		m_autoSelector = new AutoSelector(m_revDigit, "DFLT", new SequentialCommandGroup(
 			new PrintCommand("OOPS")));
 
@@ -180,7 +180,7 @@ public class RobotContainer {
 
             put("extend", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
 			put("wrist-in", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
-			// put("score", scoreLevel3());
+			put("score", scoreLevel3());
 			// put("stop", Balance());
 		}}, "28-R", new PathConstraints(3, 2)));
 	 m_autoSelector.initialize();
