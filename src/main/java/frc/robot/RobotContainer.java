@@ -173,15 +173,16 @@ public class RobotContainer {
 			put("wrist-in", new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
 			put("score", scoreLevel3());
 			put("stop", Balance());
-		}}, "28-L", new PathConstraints(5, 5)));
+		}}, "28-L", new PathConstraints(3, 2)));
 		
 		m_autoSelector.registerCommand("28R", "28-R", createAutoPath(new HashMap<String, Command>() {{
 			put("start", scoreLevel3());
-			put("extend", autoGetPiece());
-			put("wrist-in", new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
-			put("score", scoreLevel3());
-			put("stop", Balance());
-		}}, "28-L", new PathConstraints(5, 5)));
+
+            put("extend", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("wrist-in", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			// put("score", scoreLevel3());
+			// put("stop", Balance());
+		}}, "28-R", new PathConstraints(3, 2)));
 	 m_autoSelector.initialize();
   }
 
@@ -206,6 +207,7 @@ public class RobotContainer {
 			new InstantCommand(() -> m_Gripper.closeGripper()),
 			new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.15),
 			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(0.15),
+            new InstantCommand(()->m_drivetrain.stop()),
 			new SequentialCommandGroup(
 				new WaitCommand(0.25),
 				new ScheduleCommand(
@@ -223,7 +225,7 @@ public class RobotContainer {
 				return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
 			}),
 			new WaitCommand(0.4),
-			new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
+			new RunCommand(() -> m_Gripper.openGripper()).withTimeout(1),
 			new ScheduleCommand
 				( new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist) )
 			)
@@ -387,7 +389,7 @@ public class RobotContainer {
 			Constants.Drive.kDriveKinematics,
 
 			new PIDConstants(5.0, 0, 0), // : PID constants for translation error
-			new PIDConstants(1.0, 0, 0), // : Theta rotation,
+			new PIDConstants(1.5, 0, 0), // : Theta rotation,
 
 			drivetrain::setModuleStates,
 			eventMap, true, drivetrain
@@ -406,7 +408,7 @@ public class RobotContainer {
 			Constants.Drive.kDriveKinematics,
 
 			new PIDConstants(5.0, 0, 0), // : PID constants for translation error
-			new PIDConstants(1.0, 0, 0), // : Theta rotation,
+			new PIDConstants(1.5, 0, 0), // : Theta rotation,
 
 			m_drivetrain::setModuleStates,
 			eventMap, true, m_drivetrain
