@@ -64,7 +64,7 @@
       },
       "holonomicAngle": 0,
       "isReversal": false,
-      "velOverride": null,
+      "velOverride": 1.5,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -89,7 +89,7 @@
       },
       "holonomicAngle": 0,
       "isReversal": false,
-      "velOverride": null,
+      "velOverride": 3.0,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -151,7 +151,7 @@
   ],
   "markers": [
     {
-      "position": 1.9090909090909092,
+      "position": 1.8,
       "names": [
         "extend"
       ]
@@ -160,6 +160,12 @@
       "position": 3.75,
       "names": [
         "wrist-in"
+      ]
+    },
+    {
+      "position": 4.5,
+      "names": [
+        "arm_up"
       ]
     }
   ]

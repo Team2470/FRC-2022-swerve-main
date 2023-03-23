@@ -173,14 +173,15 @@ public class RobotContainer {
 			put("wrist-in", new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
 			put("score", scoreLevel3());
 			put("stop", Balance());
-		}}, "28-L", new PathConstraints(3, 2)));
+		}}, "28-L", Constants.Auto.pathConstrains));
 		
 		m_autoSelector.registerCommand("28R", "28-R", createAutoPath(new HashMap<String, Command>() {{
 			put("start", scoreLevel3());
 
             put("extend", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
 			put("wrist-in", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
-			put("score", scoreLevel3());
+			put("arm_up", new ScheduleCommand(new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist)));
+            put("score", scoreLevel3());
 			// put("stop", Balance());
 		}}, "28-R", new PathConstraints(3, 2)));
 	 m_autoSelector.initialize();
@@ -206,10 +207,10 @@ public class RobotContainer {
 	 	return new SequentialCommandGroup(
 			new InstantCommand(() -> m_Gripper.closeGripper()),
 			new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.15),
-			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(0.15),
+			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(.3),
             new InstantCommand(()->m_drivetrain.stop()),
 			new SequentialCommandGroup(
-				new WaitCommand(0.25),
+				// new WaitCommand(0.25),
 				new ScheduleCommand(
 					new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist)
 				)
@@ -224,8 +225,10 @@ public class RobotContainer {
 					.abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
 				return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
 			}),
-			new WaitCommand(0.4),
-			new RunCommand(() -> m_Gripper.openGripper()).withTimeout(1),
+			new WaitCommand(0.2),
+			new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1)),
+            new WaitCommand(0.4),
+
 			new ScheduleCommand
 				( new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist) )
 			)
