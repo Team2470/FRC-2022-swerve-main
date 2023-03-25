@@ -87,6 +87,10 @@ public class DriveWithController extends CommandBase {
 
         fieldOrient = !controller.getAButton();
 
+        if(controller.getBButton()){
+            xMove = 0;
+        }
+
         // Determine if the robot should be moving,
         boolean moving = xMove != 0 || yMove != 0 || rotate != 0;
 
