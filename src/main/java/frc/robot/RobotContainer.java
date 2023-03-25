@@ -29,6 +29,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.RobotState;
@@ -178,11 +179,13 @@ public class RobotContainer {
 		
 		m_autoSelector.registerCommand("28R", "28-R", createAutoPath(new HashMap<String, Command>() {{
 			put("start", scoreLevel3());
-
+			put("arm-down", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
             put("extend", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
 			put("wrist-in", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("close-intake", new ScheduleCommand(new InstantCommand(() -> m_Gripper.closeGripper())));
 			put("arm_up", new ScheduleCommand(new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist)));
             put("score", scoreLevel3());
+
 			// put("stop", Balance());
 		}}, "28-R", new PathConstraints(3, 2)));
 	 m_autoSelector.initialize();
@@ -227,11 +230,11 @@ public class RobotContainer {
 				return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
 			}),
 			new WaitCommand(0.2),
-			new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1)),
-            new WaitCommand(0.4),
+			new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1))
+            // new WaitCommand(0.4),
 
-			new ScheduleCommand
-				( new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist) )
+			// new ScheduleCommand
+			// 	( new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist) )
 			)
 		);
   	}
@@ -272,7 +275,7 @@ public class RobotContainer {
     m_controller.povLeft().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
 
 
-
+    new Trigger(
         () -> {
           // boolean arm1AtScoreLow = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) <
           // 5;
@@ -281,7 +284,6 @@ public class RobotContainer {
           // boolean wristAtScoreLow = Math.abs(m_Wrist.getAngleFromGround().getDegrees()
           // - 0) < 5;
           // boolean armAtScoreLow = arm1AtScoreLow && arm2AtScoreLow && wristAtScoreLow;
-    new Trigger(
 
 			 boolean arm1AtPickupFloor = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) < 5;
 			 boolean arm2AtPickupFloor = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - 41) < 5;
@@ -399,7 +401,7 @@ public class RobotContainer {
 			Constants.Drive.kDriveKinematics,
 
 			new PIDConstants(5.0, 0, 0), // : PID constants for translation error
-			new PIDConstants(1.5, 0, 0), // : Theta rotation,
+			new PIDConstants(2, 0, 0), // : Theta rotation,
 
 			drivetrain::setModuleStates,
 			eventMap, true, drivetrain
@@ -418,7 +420,7 @@ public class RobotContainer {
 			Constants.Drive.kDriveKinematics,
 
 			new PIDConstants(5.0, 0, 0), // : PID constants for translation error
-			new PIDConstants(1.5, 0, 0), // : Theta rotation,
+			new PIDConstants(2.0, 0, 0), // : Theta rotation,
 
 			m_drivetrain::setModuleStates,
 			eventMap, true, m_drivetrain
