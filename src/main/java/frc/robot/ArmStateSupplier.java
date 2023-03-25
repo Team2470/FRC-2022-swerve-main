@@ -6,7 +6,5 @@ package frc.robot;
 
 /** Add your docs here. */
 public interface ArmStateSupplier {
-
     public ArmState getArmState();
-
 }

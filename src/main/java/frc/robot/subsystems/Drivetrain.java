@@ -210,7 +210,6 @@ public class Drivetrain extends SubsystemBase {
    public Pose2d getPose() {
       return m_odometry.getPoseMeters();
    }
-
    /**
     * Resets the odometry to the specified pose
     * @param pose the pose to switch to set the odometry to
