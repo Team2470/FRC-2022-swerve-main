@@ -60,6 +60,7 @@ import frc.robot.commands.MoveArmsToPickUpPosition;
 import frc.robot.commands.MoveArmsToSecondConePosition;
 import frc.robot.commands.MoveArmsToStartingPosition;
 import frc.robot.commands.MoveWristJoint2;
+import frc.robot.commands.RobotTurnToAngle;
 import frc.robot.commands.WristJointInward2;
 import frc.robot.commands.WristJointOutward2;
 import frc.robot.subsystems.ArmJoint1;
@@ -276,6 +277,12 @@ public class RobotContainer {
 
     m_controller.rightBumper()
         .onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
+
+    m_controller.povRight().whileTrue(new RobotTurnToAngle(m_drivetrain, 0));
+
+    m_controller.povLeft().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
+
+
 
     new Trigger(
         () -> {
