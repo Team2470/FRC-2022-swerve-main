@@ -243,7 +243,7 @@ public final class Constants {
          .setName("armJoint2")
          .setEncoderOffset(-52.91015625 - 74.1796875)
          .setEncoderDirection(true)
-         .setOutputVoltage(8);
+         .setOutputVoltage(12);
 
 
 

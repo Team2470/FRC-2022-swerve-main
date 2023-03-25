@@ -60,6 +60,7 @@ import frc.robot.commands.MoveArmsToPickUpPosition;
 import frc.robot.commands.MoveArmsToSecondConePosition;
 import frc.robot.commands.MoveArmsToStartingPosition;
 import frc.robot.commands.MoveWristJoint2;
+import frc.robot.commands.RobotTurnToAngle;
 import frc.robot.commands.WristJointInward2;
 import frc.robot.commands.WristJointOutward2;
 import frc.robot.subsystems.ArmJoint1;
@@ -266,15 +267,21 @@ public class RobotContainer {
 	 m_controller.rightBumper()
 		  .onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
 
-	 new Trigger(
-		  () -> {
-			 // boolean arm1AtScoreLow = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) <
-			 // 5;
-			 // boolean arm2AtScoreLow =
-			 // Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - 32) < 5;
-			 // boolean wristAtScoreLow = Math.abs(m_Wrist.getAngleFromGround().getDegrees()
-			 // - 0) < 5;
-			 // boolean armAtScoreLow = arm1AtScoreLow && arm2AtScoreLow && wristAtScoreLow;
+    m_controller.povRight().whileTrue(new RobotTurnToAngle(m_drivetrain, 0));
+
+    m_controller.povLeft().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
+
+
+
+        () -> {
+          // boolean arm1AtScoreLow = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) <
+          // 5;
+          // boolean arm2AtScoreLow =
+          // Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - 32) < 5;
+          // boolean wristAtScoreLow = Math.abs(m_Wrist.getAngleFromGround().getDegrees()
+          // - 0) < 5;
+          // boolean armAtScoreLow = arm1AtScoreLow && arm2AtScoreLow && wristAtScoreLow;
+    new Trigger(
 
 			 boolean arm1AtPickupFloor = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) < 5;
 			 boolean arm2AtPickupFloor = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - 41) < 5;
