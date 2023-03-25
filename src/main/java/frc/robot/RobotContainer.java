@@ -278,9 +278,9 @@ public class RobotContainer {
     m_controller.rightBumper()
         .onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
 
-    m_controller.povUp().whileTrue(new RobotTurnToAngle(m_drivetrain, 0));
+    m_controller.povRight().whileTrue(new RobotTurnToAngle(m_drivetrain, 0));
 
-    m_controller.povDown().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
+    m_controller.povLeft().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
 
 
 

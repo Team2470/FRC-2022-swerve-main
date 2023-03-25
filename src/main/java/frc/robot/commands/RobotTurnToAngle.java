@@ -12,7 +12,7 @@ import frc.robot.subsystems.Drivetrain;
 public class RobotTurnToAngle extends CommandBase {
 
   private Drivetrain m_drivetrain;
-  private PIDController m_Controller = new PIDController(1, 0, 0);
+  private PIDController m_Controller = new PIDController(.1, 0, 0);
   private double m_angle;
 
   /** Creates a new RobotTurnToAngle. */
