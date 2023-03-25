@@ -71,7 +71,7 @@ public class ArmJoint1 extends SubsystemBase {
 
   public void outwards(){
     engageRatchet(false);
-    m_motor.set(ControlMode.PercentOutput, .1);
+    m_motor.set(ControlMode.PercentOutput, .25);
   }
 
   public void inwards() {

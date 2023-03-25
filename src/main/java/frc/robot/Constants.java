@@ -230,22 +230,17 @@ public final class Constants {
          return this;
       }
 
-
-
-
       public static final PidArmCfg kArmjoint2 = new PidArmCfg()
          .setCanIDs(21, 21)
          .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
          .setLimits(0, 1960) //back  1600 min 3400
          .setMotionProfileConstants(3.14, 3.14)
          .setFeedforwardConstants(0, 0.31, 5.39, 0)
-         .setPID(.3, 0, 0)
+         .setPID(.55, 0, 0)
          .setName("armJoint2")
          .setEncoderOffset(-52.91015625 - 74.1796875)
          .setEncoderDirection(true)
          .setOutputVoltage(12);
-
-
 
 
       public static final PidArmCfg kWrist = new PidArmCfg()

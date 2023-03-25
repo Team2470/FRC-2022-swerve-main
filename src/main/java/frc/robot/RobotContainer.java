@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -181,15 +182,20 @@ public class RobotContainer {
 			put("start", scoreLevel3());
 			put("arm-down", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
             put("extend", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
-			put("wrist-in", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("wrist-in", new ConditionalCommand(
+				new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)), 
+				new ScheduleCommand(new InstantCommand(() -> m_drivetrain.stop(), m_drivetrain)),
+				() -> (m_Gripper.isGamePieceDetected())
+			));
 			put("close-intake", new ScheduleCommand(new InstantCommand(() -> m_Gripper.closeGripper())));
-			put("arm_up", new ScheduleCommand(new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist)));
-            put("score", scoreLevel3());
+			put("arm_up", new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)));
+            put("stop", scoreLevel3NoArmMovement());
 
-			// put("stop", Balance());
-		}}, "28-R", new PathConstraints(3, 2)));
+		}}, "28-R", new PathConstraints(3.5, 2)));
 	 m_autoSelector.initialize();
-  }
+  	}
+
+	
 
   	public Command Balance() {
 		return new SequentialCommandGroup(
@@ -210,7 +216,7 @@ public class RobotContainer {
    public Command scoreLevel3() {
 	 	return new SequentialCommandGroup(
 			new InstantCommand(() -> m_Gripper.closeGripper()),
-			new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.15),
+			new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.25),
 			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(.3),
             new InstantCommand(()->m_drivetrain.stop()),
 			new SequentialCommandGroup(
@@ -238,6 +244,59 @@ public class RobotContainer {
 			)
 		);
   	}
+
+	// TODO this goes a little too fast, opened way to fast.
+	  public Command scoreLevel3NoArmMovement() {
+		return new SequentialCommandGroup(
+		   new InstantCommand(() -> m_Gripper.closeGripper()),
+		   new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.25),
+		   new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(.3),
+		   new InstantCommand(()->m_drivetrain.stop()),
+		//    new SequentialCommandGroup(
+		// 	   // new WaitCommand(0.25),
+		// 	   new ScheduleCommand(
+		// 		   new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist)
+		// 	   )
+		//    ), 
+		//    new SequentialCommandGroup(
+		// 	   new WaitUntilCommand(() -> {
+		// 	   boolean arm1AtPickupFloor = Math
+		// 		   .abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
+		// 	   boolean arm2AtPickupFloor = Math
+		// 		   .abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5;
+		// 	   boolean wristAtPickupFloor = Math
+		// 		   .abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
+		// 	   return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
+		//    }),
+		//    new WaitCommand(0.2),
+		   new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1))
+		   // new WaitCommand(0.4),
+
+		   // new ScheduleCommand
+		   // 	( new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist) )
+		//    )
+	   );
+	 }
+
+	public Command moveArm2ScoreLevel3() {
+		return new SequentialCommandGroup(
+			new InstantCommand(() -> m_Gripper.closeGripper()),
+			new ScheduleCommand(
+				new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist)
+			), 
+			new SequentialCommandGroup(
+				new WaitUntilCommand(() -> {
+				boolean arm1AtPickupFloor = Math
+					.abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
+				boolean arm2AtPickupFloor = Math
+					.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5;
+				boolean wristAtPickupFloor = Math
+					.abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
+				return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
+			})
+			)
+		);
+	}
   /**
 	* Use this method to define your button->command mappings. Buttons can be
 	* created by
