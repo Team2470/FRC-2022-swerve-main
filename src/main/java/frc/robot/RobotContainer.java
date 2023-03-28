@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 
@@ -137,9 +138,9 @@ public class RobotContainer {
 		));
 
 		m_autoSelector.registerCommand("Auto31 21pts", "21-3",
-			createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
+			createAutoPath(new HashMap<String, Command>() {{
 				put("start", scoreLevel3());
-				put("stop", new SequentialCommandGroup(Balance()));
+				put("stop", Balance());
 		}}, "DriveDockv3", new PathConstraints(3, 2)));
 
 		m_autoSelector.registerCommand("Auto21 18pts", "2118", createAutoPath(new HashMap<String, Command>() {{
@@ -158,44 +159,41 @@ public class RobotContainer {
 			put("stop", Balance());
 		}}, "DriveDockv3", new PathConstraints(3, 2)));
 
-	   m_autoSelector.registerCommand("Drop and set left", "DSL",
-		   createAutoPath(new HashMap<String, Command>() {{ 
-				put("start", scoreLevel3()); 
-				put("stop", autoGetPiece());
-		  }}, "DSL", new PathConstraints(3, 2)));
-
-	   m_autoSelector.registerCommand("Drop and set right", "Drop and set BRDSR",
-		  createAutoPath(new HashMap<String, Command>() {{ 
-				put("start", scoreLevel3()); 
-				put("stop", autoGetPiece());
-		  }}, "DSR", new PathConstraints(3, 2)));
-
-		m_autoSelector.registerCommand("28L", "28-L", createAutoPath(new HashMap<String, Command>() {{
-			put("start", scoreLevel3());
-			put("extend", autoGetPiece());
-			put("wrist-in", new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist));
-			put("score", scoreLevel3());
-			put("stop", Balance());
-		}}, "28-L", Constants.Auto.pathConstrains));
+	   m_autoSelector.registerCommand("Drop & set left", "DSL", dropAndSet());
+	   m_autoSelector.registerCommand("Drop & set right", "DSR", dropAndSet());
 		
-		m_autoSelector.registerCommand("28R", "28-R", createAutoPath(new HashMap<String, Command>() {{
+		m_autoSelector.registerCommand("28 point auto", "28-R", score28PointsAuto());
+	 	
+		m_autoSelector.registerCommand("MID2", "MID2", newMidAuto());
+		
+		m_autoSelector.initialize();
+  	}
+
+	public Command dropAndSet() {
+		return createAutoPath(new HashMap<String, Command>() {{ 
+			put("start", scoreLevel3()); 
+			put("stop", autoGetPiece());
+		}}, "DSR", new PathConstraints(3, 2));
+	}
+
+	public Command score28PointsAuto() {
+		return createAutoPath(new HashMap<String, Command>() {{
 			put("start", scoreLevel3());
 			put("arm-down", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
-            put("extend", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			
+			put("extend", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
 			put("wrist-in", new ConditionalCommand(
 				new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)), 
 				new ScheduleCommand(new InstantCommand(() -> m_drivetrain.stop(), m_drivetrain)),
 				() -> (m_Gripper.isGamePieceDetected())
 			));
+
 			put("close-intake", new ScheduleCommand(new InstantCommand(() -> m_Gripper.closeGripper())));
 			put("arm_up", new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)));
-            put("stop", scoreLevel3NoArmMovement());
+			put("stop", scoreLevel3NoArmMovement());
 
-		}}, "28-R", new PathConstraints(3.5, 2)));
-	 m_autoSelector.initialize();
-  	}
-
-	
+		}}, "28-R", new PathConstraints(3.5, 2));
+	}
 
   	public Command Balance() {
 		return new SequentialCommandGroup(
@@ -246,7 +244,7 @@ public class RobotContainer {
   	}
 
 	// TODO this goes a little too fast, opened way to fast.
-	  public Command scoreLevel3NoArmMovement() {
+	public Command scoreLevel3NoArmMovement() {
 		return new SequentialCommandGroup(
 		   new InstantCommand(() -> m_Gripper.closeGripper()),
 		   new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.25),
@@ -305,7 +303,25 @@ public class RobotContainer {
 	* it to a {@link
 	* edu.wpi.first.wpilibj2.command.button.JoystickButton}.
 	*/
-  private void configureButtonBindings() {
+
+	private Command newMidAuto() {
+		return new SequentialCommandGroup(
+			createAutoPath(new HashMap<String, Command>() {{
+				put("start", scoreLevel3());
+			}}, "MiddleScorePart1", Constants.Auto.pathConstrains),
+
+			new InstantCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(2),
+			
+			createAutoPath(new HashMap<String, Command>() {{
+				put("start", scoreLevel3());
+				put("open", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+				put("close", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+				put("stop", new ScheduleCommand(Balance()));
+			}}, "MiddleScorePart2", Constants.Auto.pathConstrains)
+		);
+	}
+
+  	private void configureButtonBindings() {
 	 // Configure default commands
 	 m_drivetrain.setDefaultCommand(new DriveWithController(m_drivetrain, m_controller.getHID()));
 
@@ -334,8 +350,7 @@ public class RobotContainer {
     m_controller.povLeft().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
 
 
-    new Trigger(
-        () -> {
+    new Trigger(() -> {
           // boolean arm1AtScoreLow = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) <
           // 5;
           // boolean arm2AtScoreLow =
