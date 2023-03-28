@@ -20,7 +20,7 @@
           "start"
         ],
         "executionBehavior": "sequential",
-        "waitBehavior": "after",
+        "waitBehavior": "none",
         "waitTime": 0
       }
     },
@@ -68,7 +68,7 @@
         "names": [
           "stop"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -78,7 +78,7 @@
     {
       "position": 0.0,
       "names": [
-        "event"
+        "arm-down"
       ]
     },
     {

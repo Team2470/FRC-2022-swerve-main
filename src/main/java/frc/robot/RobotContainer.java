@@ -139,24 +139,27 @@ public class RobotContainer {
 		m_autoSelector.registerCommand("Auto31 21pts", "21-3",
 			createAutoPath(m_drivetrain, new HashMap<String, Command>() {{
 				put("start", scoreLevel3());
-				put("stop", new SequentialCommandGroup(Balance()));
-		}}, "DriveDockv3", new PathConstraints(3, 2)));
+				put("arm-down", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+				put("stop", Balance());
+		}}, "DriveDockv3", Constants.Auto.pathConstrains));
 
 		m_autoSelector.registerCommand("Auto21 18pts", "2118", createAutoPath(new HashMap<String, Command>() {{
 			put("start", new ParallelCommandGroup(new Command[] {
 					new InstantCommand(() -> m_Gripper.closeGripper()),
 					new SequentialCommandGroup(
 						new WaitCommand(0.25),
-						new ScheduleCommand(
-							new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist))),
+						new ScheduleCommand(scoreLevel3())
+					),
 					new SequentialCommandGroup(
 						new WaitUntilCommand(() -> m_Wrist.getAngleFromGround().getDegrees() > -5),
 						new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
 						new ScheduleCommand(
-							new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)))
+							new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)
+						)
+					)
 			}));
 			put("stop", Balance());
-		}}, "DriveDockv3", new PathConstraints(3, 2)));
+		}}, "DriveDockv3", Constants.Auto.pathConstrains));
 
 	   m_autoSelector.registerCommand("Drop and set left", "DSL",
 		   createAutoPath(new HashMap<String, Command>() {{ 
@@ -168,7 +171,7 @@ public class RobotContainer {
 		  createAutoPath(new HashMap<String, Command>() {{ 
 				put("start", scoreLevel3()); 
 				put("stop", autoGetPiece());
-		  }}, "DSR", new PathConstraints(3, 2)));
+		  }}, "DSR", Constants.Auto.pathConstrains));
 
 		m_autoSelector.registerCommand("28L", "28-L", createAutoPath(new HashMap<String, Command>() {{
 			put("start", scoreLevel3());
@@ -191,7 +194,7 @@ public class RobotContainer {
 			put("arm_up", new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)));
             put("stop", scoreLevel3NoArmMovement());
 
-		}}, "28-R", new PathConstraints(3.5, 2)));
+		}}, "28-R", Constants.Auto.pathConstrains));
 	 m_autoSelector.initialize();
   	}
 
