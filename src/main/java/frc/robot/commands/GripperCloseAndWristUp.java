@@ -33,7 +33,7 @@ public class GripperCloseAndWristUp extends ParallelCommandGroup {
         new PrintCommand("Nothing todo"), 
         ()->(m_armJoint1.getAngle().getDegrees() < 60 && m_Armjoint2.getAngleFromGround().getDegrees() < 50)
       ),
-      new RunCommand(()->m_Gripper.closeGripper(),m_Gripper),
+      new RunCommand(()->m_Gripper.closeGripper(), m_Gripper),
   			new SequentialCommandGroup(
           new WaitCommand(0.5),
           new ConditionalCommand( 

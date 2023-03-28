@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.HashMap;
 
+import com.pathplanner.lib.PathConstraints;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -50,7 +51,7 @@ public final class Constants {
       public static final double kTrackWidthMeters = Units.inchesToMeters(20.5);
 
       public static final double kDriveGearReduction = SdsModuleConfigurations.MK4_L2.getDriveReduction();
-
+      
       public static final double kMaxDriveVelocityMetersPerSecond = 
          DCMotor.getNEO(1).freeSpeedRadPerSec / (2) * kDriveGearReduction * kWheelDiameterMeters * (kDriveVoltageCompensation/12.0);
 
@@ -142,8 +143,9 @@ public final class Constants {
    }
 
    public static class Auto {
-      public static final double kMaxSpeedMetersPerSecond = 3;
+      public static final double kMaxSpeedMetersPerSecond = Drive.kMaxDriveVelocityMetersPerSecond * 0.75;
       public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+      public static final PathConstraints pathConstrains = new PathConstraints(3.5, 2);
       public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
       public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
@@ -228,22 +230,17 @@ public final class Constants {
          return this;
       }
 
-
-
-
       public static final PidArmCfg kArmjoint2 = new PidArmCfg()
          .setCanIDs(21, 21)
          .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
          .setLimits(0, 1960) //back  1600 min 3400
          .setMotionProfileConstants(3.14, 3.14)
          .setFeedforwardConstants(0, 0.31, 5.39, 0)
-         .setPID(.3, 0, 0)
+         .setPID(.55, 0, 0)
          .setName("armJoint2")
          .setEncoderOffset(-52.91015625 - 74.1796875)
          .setEncoderDirection(true)
          .setOutputVoltage(12);
-
-
 
 
       public static final PidArmCfg kWrist = new PidArmCfg()
