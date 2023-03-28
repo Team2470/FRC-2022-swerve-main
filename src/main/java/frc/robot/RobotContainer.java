@@ -161,11 +161,9 @@ public class RobotContainer {
 
 	   m_autoSelector.registerCommand("Drop & set left", "DSL", dropAndSet());
 	   m_autoSelector.registerCommand("Drop & set right", "DSR", dropAndSet());
-		
+
 		m_autoSelector.registerCommand("28 point auto", "28-R", score28PointsAuto());
-	 	
 		m_autoSelector.registerCommand("MID2", "MID2", newMidAuto());
-		
 		m_autoSelector.initialize();
   	}
 
