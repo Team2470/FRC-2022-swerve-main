@@ -170,6 +170,7 @@ public class RobotContainer {
 		m_autoSelector.registerCommand("28 point auto", "28-R", score28PointsAuto());
 		m_autoSelector.registerCommand("MID2", "MID2", newMidAuto());
 		m_autoSelector.initialize();
+		
   	}
 
 	public Command midScoreAndBalance() {
@@ -202,8 +203,7 @@ public class RobotContainer {
 			put("arm_up", new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)));
 			put("stop", scoreLevel3NoArmMovement());
 
-		}}, "28-R", Constants.Auto.pathConstrains));
-	 m_autoSelector.initialize();
+		}}, "28-R", Constants.Auto.pathConstrains);
   	}
 
   	public Command Balance() {
