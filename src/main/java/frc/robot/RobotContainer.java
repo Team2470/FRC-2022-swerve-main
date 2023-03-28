@@ -159,6 +159,8 @@ public class RobotContainer {
 			put("stop", Balance());
 		}}, "DriveDockv3", new PathConstraints(3, 2)));
 
+		m_autoSelector.registerCommand("Score, Grap, Balance", "SGAB", midScoreAndBalance());
+
 	   m_autoSelector.registerCommand("Drop & set left", "DSL", dropAndSet());
 	   m_autoSelector.registerCommand("Drop & set right", "DSR", dropAndSet());
 
@@ -166,6 +168,13 @@ public class RobotContainer {
 		m_autoSelector.registerCommand("MID2", "MID2", newMidAuto());
 		m_autoSelector.initialize();
   	}
+
+	public Command midScoreAndBalance() {
+		return createAutoPath(new HashMap<String, Command>() {{
+			put("start", scoreLevel3());
+			put("stop", Balance());
+		}}, "MiddleScorePart1", Constants.Auto.pathConstrains);
+	}
 
 	public Command dropAndSet() {
 		return createAutoPath(new HashMap<String, Command>() {{ 
