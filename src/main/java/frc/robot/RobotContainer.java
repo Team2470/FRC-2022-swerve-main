@@ -258,23 +258,20 @@ public class RobotContainer {
 		// 		   new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist)
 		// 	   )
 		//    ), 
-		//    new SequentialCommandGroup(
-		// 	   new WaitUntilCommand(() -> {
-		// 	   boolean arm1AtPickupFloor = Math
-		// 		   .abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
-		// 	   boolean arm2AtPickupFloor = Math
-		// 		   .abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5;
-		// 	   boolean wristAtPickupFloor = Math
-		// 		   .abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
-		// 	   return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
-		//    }),
-		//    new WaitCommand(0.2),
-		   new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1))
-		   // new WaitCommand(0.4),
+			new WaitUntilCommand(() -> {
+		 	   boolean arm1AtPickupFloor = Math
+		 		   .abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
+		 	   boolean arm2AtPickupFloor = Math
+		 		   .abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5;
+		 	   boolean wristAtPickupFloor = Math
+		 		   .abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
+		 	   return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
+		    }),
+		    new WaitCommand(0.2),
+		   new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1)),
+		   new WaitCommand(0.4),
 
-		   // new ScheduleCommand
-		   // 	( new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist) )
-		//    )
+		   new ScheduleCommand( new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist) )
 	   );
 	 }
 
