@@ -12,8 +12,7 @@ import frc.robot.subsystems.Drivetrain;
 public class BalanceOnChargeStation extends CommandBase {
 
   private Drivetrain m_drivetrain;
-
-
+  private int m_direction;
   // private enum State {
   //   kDriveOnFloor,
   //   kDriveOnRamp,
@@ -22,8 +21,9 @@ public class BalanceOnChargeStation extends CommandBase {
   // }
 
   /** Creates a new BalanceOnChargeStation. */
-  public BalanceOnChargeStation(Drivetrain drivetrain) {
+  public BalanceOnChargeStation(Drivetrain drivetrain, int direction) {
     m_drivetrain = drivetrain;
+    m_direction = direction;
     // addRequirements(m_drivetrain);
   }
 
@@ -32,7 +32,7 @@ public class BalanceOnChargeStation extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override public void execute() {
-    final double kP = -0.01;
+    final double kP = -0.01 *m_direction;
     double output = m_drivetrain.getRoll() * kP;
 
     if (Math.abs(output) > 1) {
@@ -40,6 +40,8 @@ public class BalanceOnChargeStation extends CommandBase {
     } else if (Math.abs(output) < 0.5) {
       output = Math.copySign(0.5, output);
     }
+
+    output = Math.copySign(1, m_direction);
 
     m_drivetrain.drive(output, 0, 0, false);
   }

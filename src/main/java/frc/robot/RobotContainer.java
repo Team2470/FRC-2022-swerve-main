@@ -131,11 +131,15 @@ public class RobotContainer {
 			new PrintCommand("OOPS")));
 
 		// Initialize other autos here
-		m_autoSelector.registerCommand("Middle", "MID", new SequentialCommandGroup(
-			new InstantCommand(() -> scoreLevel3()),
-			new InstantCommand(() -> m_drivetrain.resetHeading()),
-			Balance()
-		));
+		m_autoSelector.registerCommand("Middle", "MID", createAutoPath(
+			new HashMap<String, Command>() {{
+				put("start", new SequentialCommandGroup(
+					scoreLevel3(),
+					new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)),
+					new WaitCommand(1.5)
+				));
+				put("stop", new ScheduleCommand(Balance()));
+		}}, "mid", Constants.Auto.pathConstrains));
 
 		m_autoSelector.registerCommand("Auto31 21pts", "21-3",
 			createAutoPath(new HashMap<String, Command>() {{
@@ -210,7 +214,16 @@ public class RobotContainer {
 		return new SequentialCommandGroup(
 			new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
 			new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain).withTimeout(1.5),
-			new BalanceOnChargeStation(m_drivetrain),
+			new BalanceOnChargeStation(m_drivetrain, 1),
+			XStop()
+		);
+  	}
+
+  	public Command BalanceReverse() {
+		return new SequentialCommandGroup(
+			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
+			new RunCommand(() -> m_drivetrain.drive(-1.5, 0, 0, false), m_drivetrain).withTimeout(1.5),
+			new BalanceOnChargeStation(m_drivetrain, -1),
 			XStop()
 		);
   	}
@@ -318,10 +331,9 @@ public class RobotContainer {
 				put("start", scoreLevel3());
 			}}, "MiddleScorePart1", Constants.Auto.pathConstrains),
 
-			new InstantCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(2),
+			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(2),
 			
 			createAutoPath(new HashMap<String, Command>() {{
-				put("start", scoreLevel3());
 				put("open", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
 				put("close", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
 				put("stop", new ScheduleCommand(Balance()));
