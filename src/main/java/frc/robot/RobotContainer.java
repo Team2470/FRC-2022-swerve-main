@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -392,7 +393,9 @@ public class RobotContainer {
 			 boolean armAtHP = arm1AtHP && arm2AtHP && wristAtHP;
 
 			 return m_Gripper.isGamePieceDetected() && (armAtPickupFloor || armAtHP);
-		  }).onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
+		  }).onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain)
+		  .alongWith(new RunCommand(()-> m_controller.getHID().setRumble(RumbleType.kBothRumble, .3)).withTimeout(.2))
+		  );
 
 	 // m_controller.x().onTrue(
 	 // new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2,
