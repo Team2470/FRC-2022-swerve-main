@@ -44,6 +44,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -394,7 +395,10 @@ public class RobotContainer {
 
 			 return m_Gripper.isGamePieceDetected() && (armAtPickupFloor || armAtHP);
 		  }).onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain)
-		  .alongWith(new RunCommand(()-> m_controller.getHID().setRumble(RumbleType.kBothRumble, .3)).withTimeout(.2))
+		  .alongWith(new StartEndCommand(
+			()-> m_controller.getHID().setRumble(RumbleType.kBothRumble, .3),
+			()-> m_controller.getHID().setRumble(RumbleType.kBothRumble, 0)
+			).withTimeout(.2))
 		  );
 
 	 // m_controller.x().onTrue(
