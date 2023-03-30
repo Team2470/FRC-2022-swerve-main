@@ -32,7 +32,7 @@ public class MoveArmsToCube3 extends SequentialCommandGroup {
           new MoveArmjoint1ToPosition(armJoint1, Rotation2d.fromDegrees(110))
         ),
         new SequentialCommandGroup(
-          new MoveArmjoint2(Armjoint2, -60).repeatedly().until(()->armJoint1.getAngle().getDegrees() > 120),
+          new MoveArmjoint2(Armjoint2, -60).repeatedly().until(()->armJoint1.getAngle().getDegrees() > 100),
           new MoveArmjoint2(Armjoint2, -35)
         ),
         new ScheduleCommand(new MoveWristJoint2(Wrist, -10))

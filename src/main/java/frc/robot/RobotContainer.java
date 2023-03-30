@@ -424,7 +424,7 @@ public class RobotContainer {
 		  new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 
-	 m_buttonPad.button(2).whileTrue(
+	 m_buttonPad.button(2).onTrue(
 		  new MoveArmsToCube3(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 
 	 m_buttonPad.button(6).whileTrue(
