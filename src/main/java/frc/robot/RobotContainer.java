@@ -148,31 +148,33 @@ public class RobotContainer {
 				put("stop", Balance());
 		}}, "DriveDockv3", Constants.Auto.pathConstrains));
 
-		m_autoSelector.registerCommand("Auto21 18pts", "2118", createAutoPath(new HashMap<String, Command>() {{
-			put("start", new ParallelCommandGroup(new Command[] {
-					new InstantCommand(() -> m_Gripper.closeGripper()),
-					new SequentialCommandGroup(
-						new WaitCommand(0.25),
-						new ScheduleCommand(scoreLevel3())
-					),
-					new SequentialCommandGroup(
-						new WaitUntilCommand(() -> m_Wrist.getAngleFromGround().getDegrees() > -5),
-						new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
-						new ScheduleCommand(
-							new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)
-						)
-					)
-			}));
-			put("stop", Balance());
-		}}, "DriveDockv3", Constants.Auto.pathConstrains));
+		m_autoSelector.registerCommand("28 point auto", "CABLE", score28PointsAuto());
 
-		m_autoSelector.registerCommand("Score, Grap, Balance", "SGAB", midScoreAndBalance());
+		// Legacy autos (and un tested with new arm speed)
+		// m_autoSelector.registerCommand("Drop & set left", "DSL", dropAndSet());
+		// m_autoSelector.registerCommand("Drop & set right", "DSR", dropAndSet());
+		// m_autoSelector.registerCommand("Auto21 18pts", "2118", createAutoPath(new HashMap<String, Command>() {{
+		// 	put("start", new ParallelCommandGroup(new Command[] {
+		// 			new InstantCommand(() -> m_Gripper.closeGripper()),
+		// 			new SequentialCommandGroup(
+		// 				new WaitCommand(0.25),
+		// 				new ScheduleCommand(scoreLevel3())
+		// 			),
+		// 			new SequentialCommandGroup(
+		// 				new WaitUntilCommand(() -> m_Wrist.getAngleFromGround().getDegrees() > -5),
+		// 				new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1),
+		// 				new ScheduleCommand(
+		// 					new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)
+		// 				)
+		// 			)
+		// 	}));
+		// 	put("stop", Balance());
+		// }}, "DriveDockv3", Constants.Auto.pathConstrains));
 
-	   m_autoSelector.registerCommand("Drop & set left", "DSL", dropAndSet());
-	   m_autoSelector.registerCommand("Drop & set right", "DSR", dropAndSet());
+		// Untested autos
+		// m_autoSelector.registerCommand("MID2", "MID2", newMidAuto());
+		// m_autoSelector.registerCommand("Score, Grap, Balance", "SGAB", midScoreAndBalance());
 
-		m_autoSelector.registerCommand("28 point auto", "28-R", score28PointsAuto());
-		m_autoSelector.registerCommand("MID2", "MID2", newMidAuto());
 		m_autoSelector.initialize();
 		
   	}
