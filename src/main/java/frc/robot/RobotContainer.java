@@ -151,7 +151,7 @@ public class RobotContainer {
 				put("stop", Balance());
 		}}, "DriveDockv3", Constants.Auto.pathConstrains));
 
-		m_autoSelector.registerCommand("28 point auto", "CABLE", score28PointsAuto());
+		m_autoSelector.registerCommand("28 point auto", "CABL", score28PointsAuto());
 
 		// Legacy autos (and un tested with new arm speed)
 		// m_autoSelector.registerCommand("Drop & set left", "DSL", dropAndSet());
@@ -205,7 +205,8 @@ public class RobotContainer {
 			put("wrist-in", new ConditionalCommand(
 				new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)), 
 				new ScheduleCommand(new InstantCommand(() -> m_drivetrain.stop(), m_drivetrain)),
-				() -> (m_Gripper.isGamePieceDetected())
+				//() -> (m_Gripper.isGamePieceDetected())
+				() -> true
 			));
 
 			put("close-intake", new ScheduleCommand(new InstantCommand(() -> m_Gripper.closeGripper())));
