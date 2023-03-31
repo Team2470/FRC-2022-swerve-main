@@ -221,6 +221,7 @@ public class RobotContainer {
 			new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
 			new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain).withTimeout(1.5),
 			new BalanceOnChargeStation(m_drivetrain, 1),
+			new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
 			XStop()
 		);
   	}
