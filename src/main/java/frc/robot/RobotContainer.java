@@ -152,6 +152,8 @@ public class RobotContainer {
 		}}, "DriveDockv3", Constants.Auto.pathConstrains));
 
 		m_autoSelector.registerCommand("28 point auto", "CABL", score28PointsAuto());
+		m_autoSelector.registerCommand("bal", "bal", Balance());
+
 
 		// Legacy autos (and un tested with new arm speed)
 		// m_autoSelector.registerCommand("Drop & set left", "DSL", dropAndSet());
@@ -221,6 +223,7 @@ public class RobotContainer {
 			new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(0.5),
 			new RunCommand(() -> m_drivetrain.drive(1.5, 0, 0, false), m_drivetrain).withTimeout(1.5),
 			new BalanceOnChargeStation(m_drivetrain, 1),
+			new RunCommand(() -> m_drivetrain.drive(-0.5, 0, 0, false), m_drivetrain).withTimeout(1),
 			XStop()
 		);
   	}
