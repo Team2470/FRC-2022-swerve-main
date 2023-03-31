@@ -16,6 +16,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.server.PathPlannerServer;
+import com.playingwithfusion.TimeOfFlight;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -36,6 +37,7 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -73,6 +75,7 @@ import frc.robot.subsystems.ArmJoint1;
 import frc.robot.subsystems.Armjoint2V2;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.GripperSubsystem;
+import frc.robot.subsystems.TOF;
 import frc.robot.subsystems.WristJointV2;
 
 /**
@@ -88,6 +91,7 @@ public class RobotContainer {
 	// OI
 	private final CommandXboxController m_controller = new CommandXboxController(0);
 	private final CommandJoystick m_buttonPad = new CommandJoystick(1);
+	private final TOF m_tof = new TOF();
 	// The robot's subsystems and commands are defined here...
 	private final Drivetrain m_drivetrain = new Drivetrain();
 	private final ArmJoint1 m_armJoint1 = new ArmJoint1();
@@ -205,7 +209,7 @@ public class RobotContainer {
 			put("wrist-in", new ConditionalCommand(
 				new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)), 
 				new ScheduleCommand(new InstantCommand(() -> m_drivetrain.stop(), m_drivetrain)),
-				() -> (m_Gripper.isGamePieceDetected())
+				() -> (m_Gripper.isGamePieceDetected() || m_tof.targetDetected())
 			));
 
 			put("close-intake", new ScheduleCommand(new InstantCommand(() -> m_Gripper.closeGripper())));
@@ -539,4 +543,10 @@ public class RobotContainer {
 		m_armJoint1.resetAbsolutePosition();
 		m_Armjoint2.resetAbsolutePosition();
   	}
+
+	public void robotPeriodic() {
+		SmartDashboard.putNumber("TOF Distance From Piece", m_tof.distanceFromTarget());
+		SmartDashboard.putBoolean("TOF is range valid", m_tof.isRangeValid());
+		SmartDashboard.putBoolean("TOF is piece collected", m_tof.targetDetected());
+	}
 }
