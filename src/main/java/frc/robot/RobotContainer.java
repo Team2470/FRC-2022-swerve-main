@@ -137,7 +137,7 @@ public class RobotContainer {
 		m_autoSelector.registerCommand("Middle", "MID", createAutoPath(
 			new HashMap<String, Command>() {{
 				put("start", new SequentialCommandGroup(
-					scoreLevel3(),
+					scoreLevel3Long(),
 					new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)),
 					new WaitCommand(1.5)
 				));
@@ -146,7 +146,7 @@ public class RobotContainer {
 
 		m_autoSelector.registerCommand("Auto31 21pts", "21-3",
 			createAutoPath(new HashMap<String, Command>() {{
-				put("start", scoreLevel3());
+				put("start", scoreLevel3Long());
 				put("arm-down", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
 				put("stop", Balance());
 		}}, "DriveDockv3", Constants.Auto.pathConstrains));
@@ -264,14 +264,46 @@ public class RobotContainer {
 				return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
 			}),
 			new WaitCommand(0.2),
-			new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1))
-            // new WaitCommand(0.4),
+			new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1)),
+            new WaitCommand(0.5)
 
 			// new ScheduleCommand
 			// 	( new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist) )
 			)
 		);
   	}
+
+	  public Command scoreLevel3Long() {
+		return new SequentialCommandGroup(
+		   new InstantCommand(() -> m_Gripper.closeGripper()),
+		   new RunCommand(() -> m_drivetrain.drive(0.02, 0, 0, false)).withTimeout(0.25),
+		   new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(.3),
+		   new InstantCommand(()->m_drivetrain.stop()),
+		   new SequentialCommandGroup(
+			   // new WaitCommand(0.25),
+			   new ScheduleCommand(
+				   new MoveArmsToCone3NoStradle2(m_armJoint1, m_Armjoint2, m_Wrist)
+			   )
+		   ), 
+		   new SequentialCommandGroup(
+			   new WaitUntilCommand(() -> {
+			   boolean arm1AtPickupFloor = Math
+				   .abs(m_armJoint1.getAngle().getDegrees() - 125) < 5;
+			   boolean arm2AtPickupFloor = Math
+				   .abs(m_Armjoint2.getAngleFromGround().getDegrees() - -39) < 5;
+			   boolean wristAtPickupFloor = Math
+				   .abs(m_Wrist.getAngleFromGround().getDegrees() - -25) < 5;
+			   return arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
+		   }),
+		   new WaitCommand(0.2),
+		   new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper).withTimeout(1)),
+		   new WaitCommand(1)
+
+		   // new ScheduleCommand
+		   // 	( new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist) )
+		   )
+	   );
+	 }
 
 	// TODO this goes a little too fast, opened way to fast.
 	public Command scoreLevel3NoArmMovement() {
@@ -334,7 +366,7 @@ public class RobotContainer {
 	private Command newMidAuto() {
 		return new SequentialCommandGroup(
 			createAutoPath(new HashMap<String, Command>() {{
-				put("start", scoreLevel3());
+				put("start", scoreLevel3Long());
 			}}, "MiddleScorePart1", Constants.Auto.pathConstrains),
 
 			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(2),
