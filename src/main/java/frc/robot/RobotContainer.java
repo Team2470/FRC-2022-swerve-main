@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -103,6 +104,8 @@ public class RobotContainer {
 	// Auto
 	private final RevDigit m_revDigit;
 	private final AutoSelector m_autoSelector;
+
+	private boolean m_rightSightEnabled = true;
 
   /**
 	* The container for the robot. Contains subsystems, OI devices, and commands.
@@ -410,6 +413,8 @@ public class RobotContainer {
 
     m_controller.povLeft().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
 
+	m_controller.back().onTrue(new InstantCommand(
+		()->m_rightSightEnabled = !m_rightSightEnabled));
 
     new Trigger(() -> {
           // boolean arm1AtScoreLow = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) <
@@ -430,7 +435,7 @@ public class RobotContainer {
 			 boolean wristAtHP = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5;
 			 boolean armAtHP = arm1AtHP && arm2AtHP && wristAtHP;
 
-			 return m_Gripper.isGamePieceDetected() && (armAtPickupFloor || armAtHP);
+			 return m_Gripper.isGamePieceDetected() && (armAtPickupFloor || armAtHP) && m_rightSightEnabled;
 		  }).onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain)
 		  .alongWith(new StartEndCommand(
 			()-> m_controller.getHID().setRumble(RumbleType.kBothRumble, .3),
@@ -446,6 +451,8 @@ public class RobotContainer {
 	 // new
 	 // ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
 	 // );
+	
+
 	 m_buttonPad.button(5).onTrue(
 		  new MoveArmsToCube2(m_armJoint1, m_Armjoint2, m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
@@ -512,10 +519,12 @@ public class RobotContainer {
 
 	public void autonomousInit() {
 		m_drivetrain.resetHeading();
+		m_rightSightEnabled = true;
 	}
 
 	public void teleopInit() {
 		m_drivetrain.setSlowMode(false);
+		m_rightSightEnabled = true;
 	}
 
   	public Command XStop() {
@@ -568,6 +577,12 @@ public class RobotContainer {
 
 		return autoBuilder.fullAuto(pathGroup);
 	}
+
+	public void robotPeriodic(){
+		SmartDashboard.putBoolean("right sight enabled",m_rightSightEnabled);
+	}
+
+
 
   	public void disabledPeriodic() {
 		m_drivetrain.resetSteerEncoders();
