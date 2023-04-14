@@ -151,6 +151,8 @@ public class RobotContainer {
 				put("stop", Balance());
 		}}, "DriveDockv3", Constants.Auto.pathConstrains));
 
+		m_autoSelector.registerCommand("2.5 point", "2.5 P", getAutonomousCommand());
+
 		m_autoSelector.registerCommand("28 point auto", "CABL", score28PointsAuto());
 		m_autoSelector.registerCommand("bal", "bal", Balance());
 
@@ -217,6 +219,19 @@ public class RobotContainer {
 
 		}}, "28-R", Constants.Auto.pathConstrains);
   	}
+
+	public Command score2halfPointsAutCommand() {
+		return createAutoPath(new HashMap<String, Command>() {{
+			put("start", scoreLevel3());
+			put("arm-down", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("extend", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("close-intake", new ScheduleCommand(new InstantCommand(() -> m_Gripper.closeGripper())));
+			put("wrist-in", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("arm-up", new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("score", scoreLevel3());
+			put("stop", scoreLevel3());
+		}}, "2.5P", Constants.Auto.pathConstrains);
+	}
 
   	public Command Balance() {
 		return new SequentialCommandGroup(
