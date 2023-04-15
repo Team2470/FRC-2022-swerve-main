@@ -45,7 +45,7 @@ public final class Constants {
 
    public static class Drive {
       //: Physical constants (motors, sensors, ...)
-      public static final double kDriveVoltageCompensation = 10;
+      public static final double kDriveVoltageCompensation = 11;
       public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
       public static final double kWheelBaseLengthMeters = Units.inchesToMeters(25.5);
       public static final double kTrackWidthMeters = Units.inchesToMeters(20.5);

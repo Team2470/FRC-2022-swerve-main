@@ -462,40 +462,43 @@ public class RobotContainer {
 	 // new
 	 // ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
 	 // );
-	 m_buttonPad.button(5).onTrue(
+	 m_buttonPad.button(4).onTrue(
 		  new MoveArmsToCube2(m_armJoint1, m_Armjoint2, m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 	 // m_buttonPad.button(5).whileTrue(
 	 // new RunCommand(()->m_armJoint1.inwards(),
 	 // m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
 	 // );
-	 m_buttonPad.button(9).onTrue(
+	 m_buttonPad.button(5).onTrue(
 		  new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-	 m_buttonPad.button(1).onTrue(
+	m_buttonPad.button(8).onTrue(
+			new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)
+				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
+	 m_buttonPad.button(2).onTrue(
 		  new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 
-	 m_buttonPad.button(2).onTrue(
+	 m_buttonPad.button(3).onTrue(
 		  new MoveArmsToCube3(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 
-	 m_buttonPad.button(6).whileTrue(
-		  new ArmJoint2Inward(m_Armjoint2).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-	 m_buttonPad.button(10).onTrue(
+	//  m_buttonPad.button(6).whileTrue(
+		//   new ArmJoint2Inward(m_Armjoint2).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
+	 m_buttonPad.button(6).onTrue(
 		  new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper)).alongWith(
 				new MoveArmsToHumanPlayer(m_armJoint1, m_Armjoint2, m_Wrist)
 					 .beforeStarting(() -> m_drivetrain.setSlowMode(true))));
 
-	 m_buttonPad.button(3).whileTrue(
+	 m_buttonPad.button(7).whileTrue(
 		  new WristJointOutward2(m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-	 m_buttonPad.button(7).whileTrue(
+	 m_buttonPad.button(11).whileTrue(
 		  new WristJointInward2(m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-	 m_buttonPad.button(11).onTrue(
+	 m_buttonPad.button(12).onTrue(
 		  new MoveWristJoint2(m_Wrist, 0).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 
-	 m_buttonPad.button(8).onTrue(
+	 m_buttonPad.button(10).onTrue(
 		  new ParallelCommandGroup(
 				new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist),
 				new SequentialCommandGroup(
@@ -504,13 +507,13 @@ public class RobotContainer {
 					 new RunCommand(() -> m_drivetrain.setSlowMode(false))))
 
 	 );
-	 	m_buttonPad.button(12).onTrue(
+	 	m_buttonPad.button(9).onTrue(
 		  	new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper)).alongWith(
 				new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)
 					.beforeStarting(() -> m_drivetrain.setSlowMode(true))
 				)
 		);
-	 	m_buttonPad.button(4).onTrue(
+	 	m_buttonPad.button(1).onTrue(
 		  new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true))
 		);
