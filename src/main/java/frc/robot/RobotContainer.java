@@ -202,6 +202,7 @@ public class RobotContainer {
 		}}, "DSR", new PathConstraints(3, 2));
 	}
 
+	// cable side
 	public Command score28PointsAuto() {
 		return createAutoPath(new HashMap<String, Command>() {{
 			put("start", scoreLevel3());
@@ -230,6 +231,7 @@ public class RobotContainer {
 			put("close-intake", new ScheduleCommand(new InstantCommand(() -> m_Gripper.closeGripper())));
 			put("wrist-in", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
 			put("arm-up", new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("score-cube", scoreLevel3NoArmMovement());
 			put("score", new ScheduleCommand(new InstantCommand(() -> m_Gripper.openGripper())));
 			put("throw", new ScheduleCommand(new InstantCommand(() -> m_Gripper.openGripper())));
 			put("stop", scoreLevel3());
