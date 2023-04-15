@@ -18,6 +18,14 @@ import frc.robot.Constants;
 
 public class GripperSubsystem extends SubsystemBase {
 
+  private boolean m_rightSightEnabled = true;
+  public void enableRightSight(boolean enabled) {
+    m_rightSightEnabled = enabled;
+  }
+  public boolean getRightSightEnabled() {
+    return m_rightSightEnabled;
+  }
+
     private final DoubleSolenoid m_gripperSolenoid;
     private final DigitalInput m_gamePieceSensor;
   /** Creates a new GripperSubsystem. */
@@ -27,7 +35,7 @@ public class GripperSubsystem extends SubsystemBase {
   }
 
   public Boolean isGamePieceDetected(){
-    return !m_gamePieceSensor.get();
+    return !m_gamePieceSensor.get() && m_rightSightEnabled;
   }
 
   public void openGripper(){
