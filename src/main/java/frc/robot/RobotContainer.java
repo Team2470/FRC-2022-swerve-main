@@ -153,6 +153,8 @@ public class RobotContainer {
 				put("stop", Balance());
 		}}, "DriveDockv3", Constants.Auto.pathConstrains));
 
+		m_autoSelector.registerCommand("TMP", "TMP", createNew2Point5Auto());
+
 		m_autoSelector.registerCommand("2.5 point", "25GP", score2halfPointsAutoCommand());
 
 		m_autoSelector.registerCommand("28 point auto", "CABL", score28PointsAuto());
@@ -385,21 +387,14 @@ public class RobotContainer {
 	* it to a {@link
 	* edu.wpi.first.wpilibj2.command.button.JoystickButton}.
 	*/
-
-	private Command newMidAuto() {
-		return new SequentialCommandGroup(
-			createAutoPath(new HashMap<String, Command>() {{
-				put("start", scoreLevel3Long());
-			}}, "MiddleScorePart1", Constants.Auto.pathConstrains),
-
-			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(2),
-			
-			createAutoPath(new HashMap<String, Command>() {{
-				put("open", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
-				put("close", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
-				put("stop", new ScheduleCommand(Balance()));
-			}}, "MiddleScorePart2", Constants.Auto.pathConstrains)
-		);
+	private Command createNew2Point5Auto() {
+		return createAutoPath(new HashMap<String, Command>() {{
+			put("score", scoreLevel3());
+			put("extend", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("pickup", new InstantCommand(() -> m_Gripper.closeGripper()));
+			put("retract", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("scoreMovement", new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)));
+		}}, "new 20.5", Constants.Auto.pathConstrains);
 	}
 
   	private void configureButtonBindings() {
