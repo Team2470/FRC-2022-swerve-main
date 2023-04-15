@@ -151,7 +151,7 @@ public class RobotContainer {
 				put("stop", Balance());
 		}}, "DriveDockv3", Constants.Auto.pathConstrains));
 
-		m_autoSelector.registerCommand("2.5 point", "2.5 P", getAutonomousCommand());
+		m_autoSelector.registerCommand("2.5 point", "25GP", score2halfPointsAutoCommand());
 
 		m_autoSelector.registerCommand("28 point auto", "CABL", score28PointsAuto());
 		m_autoSelector.registerCommand("bal", "bal", Balance());
@@ -220,7 +220,7 @@ public class RobotContainer {
 		}}, "28-R", Constants.Auto.pathConstrains);
   	}
 
-	public Command score2halfPointsAutCommand() {
+	public Command score2halfPointsAutoCommand() {
 		return createAutoPath(new HashMap<String, Command>() {{
 			put("start", scoreLevel3());
 			put("arm-down", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
@@ -228,9 +228,10 @@ public class RobotContainer {
 			put("close-intake", new ScheduleCommand(new InstantCommand(() -> m_Gripper.closeGripper())));
 			put("wrist-in", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
 			put("arm-up", new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)));
-			put("score", scoreLevel3());
+			put("score", new ScheduleCommand(new InstantCommand(() -> m_Gripper.openGripper())));
+			put("throw", new ScheduleCommand(new InstantCommand(() -> m_Gripper.openGripper())));
 			put("stop", scoreLevel3());
-		}}, "2.5P", Constants.Auto.pathConstrains);
+		}}, "2.5 GP", Constants.Auto.pathConstrains);
 	}
 
   	public Command Balance() {

@@ -152,15 +152,15 @@
     {
       "anchorPoint": {
         "x": 2.3758851026473984,
-        "y": 4.543155577539226
+        "y": 4.5
       },
       "prevControl": {
         "x": 2.758220052448046,
-        "y": 4.573742373523278
+        "y": 4.5305867959840525
       },
       "nextControl": {
         "x": 2.1491785088833337,
-        "y": 4.5250190500381
+        "y": 4.481863472498874
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -177,25 +177,27 @@
     {
       "anchorPoint": {
         "x": 1.9134036513687065,
-        "y": 4.43
+        "y": 4.39
       },
       "prevControl": {
         "x": 2.0952931951942233,
-        "y": 4.43
+        "y": 4.39
       },
       "nextControl": {
         "x": 1.7501063322551498,
-        "y": 4.43
+        "y": 4.39
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
-      "isStopPoint": false,
+      "isStopPoint": true,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
+        "names": [
+          "start"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
         "waitTime": 0
       }
     },
@@ -377,15 +379,15 @@
     {
       "anchorPoint": {
         "x": 2.548182113908088,
-        "y": 4.543155577539226
+        "y": 4.5
       },
       "prevControl": {
         "x": 3.0378683564384676,
-        "y": 4.579428632541476
+        "y": 4.53627305500225
       },
       "nextControl": {
         "x": 2.5279602621613066,
-        "y": 4.54165766259502
+        "y": 4.498502085055794
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -456,12 +458,6 @@
       ]
     },
     {
-      "position": 7.090909090909091,
-      "names": [
-        "score"
-      ]
-    },
-    {
       "position": 7.6,
       "names": [
         "arm-down"
@@ -489,6 +485,12 @@
       "position": 15.709090909090904,
       "names": [
         "arm-up"
+      ]
+    },
+    {
+      "position": 7.08,
+      "names": [
+        "throw"
       ]
     }
   ]
