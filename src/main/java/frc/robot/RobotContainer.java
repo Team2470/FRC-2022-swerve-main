@@ -538,11 +538,13 @@ public class RobotContainer {
 
 	public void autonomousInit() {
 		m_drivetrain.resetHeading();
+		m_drivetrain.setNominalVoltages(Constants.Auto.kAutoVoltageCompensation);
 		m_Gripper.enableRightSight(true);
 	}
 
 	public void teleopInit() {
 		m_drivetrain.setSlowMode(false);
+		m_drivetrain.setNominalVoltages(Constants.Drive.kDriveVoltageCompensation);
 		m_Gripper.enableRightSight(true);
 	}
 

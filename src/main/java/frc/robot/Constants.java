@@ -143,6 +143,7 @@ public final class Constants {
    }
 
    public static class Auto {
+      public static final double kAutoVoltageCompensation = 10;
       public static final double kMaxSpeedMetersPerSecond = Drive.kMaxDriveVelocityMetersPerSecond * 0.75;
       public static final double kMaxAccelerationMetersPerSecondSquared = 3;
       public static final PathConstraints pathConstrains = new PathConstraints(3.5, 2);
