@@ -74,6 +74,7 @@ import frc.robot.subsystems.ArmJoint1;
 import frc.robot.subsystems.Armjoint2V2;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.GripperSubsystem;
+import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.WristJointV2;
 
 /**
@@ -104,6 +105,7 @@ public class RobotContainer {
 	// Auto
 	private final RevDigit m_revDigit;
 	private final AutoSelector m_autoSelector;
+	private final Vision m_vision = new Vision();
 
 
   /**
