@@ -14,7 +14,15 @@ public class Vision extends SubsystemBase {
   private final NetworkTableEntry m_cameraSelector = m_cameraTable.getEntry("selector");
   /** Creates a new Vision. */
   public Vision() {
-    m_cameraSelector.setDouble(0.0);
+    showGrid();
+  }
+
+  public void showGrid() {
+    m_cameraSelector.setDouble(0);
+  }
+
+  public void showGripper() {
+    m_cameraSelector.setDouble(1);
   }
 
   @Override

@@ -156,9 +156,7 @@ public class RobotContainer {
 		}}, "DriveDockv3", Constants.Auto.pathConstrains));
 
 		m_autoSelector.registerCommand("TMP", "TMP", createNew2Point5Auto());
-
 		m_autoSelector.registerCommand("2.5 point", "25GP", score2halfPointsAutoCommand());
-
 		m_autoSelector.registerCommand("28 point auto", "CABL", score28PointsAuto());
 		m_autoSelector.registerCommand("bal", "bal", Balance());
 
@@ -391,12 +389,18 @@ public class RobotContainer {
 	*/
 	private Command createNew2Point5Auto() {
 		return createAutoPath(new HashMap<String, Command>() {{
-			put("score", scoreLevel3());
+			put("start", scoreLevel3());
+			put("arm-down", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
 			put("extend", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
-			put("pickup", new InstantCommand(() -> m_Gripper.closeGripper()));
-			put("retract", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
-			put("scoreMovement", new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)));
-		}}, "new 20.5", Constants.Auto.pathConstrains);
+			put("close-intake", new ScheduleCommand(new InstantCommand(() -> m_Gripper.closeGripper())));
+			put("wrist-in", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("arm-up", new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("score", new SequentialCommandGroup(
+				scoreLevel3NoArmMovement(),
+				new InstantCommand(() -> m_Gripper.openGripper())
+			));
+			put("stop", scoreLevel3());
+		}}, "TMP", Constants.Auto.pathConstrains);
 	}
 
   	private void configureButtonBindings() {
@@ -491,7 +495,8 @@ public class RobotContainer {
 	 m_buttonPad.button(6).onTrue(
 		  new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper)).alongWith(
 				new MoveArmsToHumanPlayer(m_armJoint1, m_Armjoint2, m_Wrist)
-					 .beforeStarting(() -> m_drivetrain.setSlowMode(true))));
+					 .beforeStarting(() -> m_drivetrain.setSlowMode(true))).beforeStarting(()->m_vision.showGripper())
+					 );
 
 	 m_buttonPad.button(7).whileTrue(
 		  new WristJointOutward2(m_Wrist)
@@ -504,17 +509,17 @@ public class RobotContainer {
 
 	 m_buttonPad.button(10).onTrue(
 		  new ParallelCommandGroup(
-				new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist),
+				new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_vision.showGrid()),
 				new SequentialCommandGroup(
 					 new WaitUntilCommand(() -> (m_armJoint1.getAngle().getDegrees() < 60
-						  && m_Armjoint2.getAngleFromGround().getDegrees() > 0)),
+						  && m_Armjoint2.getAngleFromGround().getDegrees() > -20)),
 					 new RunCommand(() -> m_drivetrain.setSlowMode(false))))
 
 	 );
 	 	m_buttonPad.button(9).onTrue(
 		  	new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper)).alongWith(
 				new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)
-					.beforeStarting(() -> m_drivetrain.setSlowMode(true))
+					.beforeStarting(() -> m_drivetrain.setSlowMode(true)).beforeStarting(()->m_vision.showGripper())
 				)
 		);
 	 	m_buttonPad.button(1).onTrue(
