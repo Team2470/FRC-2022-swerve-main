@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -73,6 +74,7 @@ import frc.robot.subsystems.ArmJoint1;
 import frc.robot.subsystems.Armjoint2V2;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.GripperSubsystem;
+import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.WristJointV2;
 
 /**
@@ -103,6 +105,8 @@ public class RobotContainer {
 	// Auto
 	private final RevDigit m_revDigit;
 	private final AutoSelector m_autoSelector;
+	private final Vision m_vision = new Vision();
+
 
   /**
 	* The container for the robot. Contains subsystems, OI devices, and commands.
@@ -151,6 +155,8 @@ public class RobotContainer {
 				put("stop", Balance());
 		}}, "DriveDockv3", Constants.Auto.pathConstrains));
 
+		m_autoSelector.registerCommand("TMP", "TMP", createNew2Point5Auto());
+		m_autoSelector.registerCommand("2.5 point", "25GP", score2halfPointsAutoCommand());
 		m_autoSelector.registerCommand("28 point auto", "CABL", score28PointsAuto());
 		m_autoSelector.registerCommand("bal", "bal", Balance());
 
@@ -198,6 +204,7 @@ public class RobotContainer {
 		}}, "DSR", new PathConstraints(3, 2));
 	}
 
+	// cable side
 	public Command score28PointsAuto() {
 		return createAutoPath(new HashMap<String, Command>() {{
 			put("start", scoreLevel3());
@@ -217,6 +224,21 @@ public class RobotContainer {
 
 		}}, "28-R", Constants.Auto.pathConstrains);
   	}
+
+	public Command score2halfPointsAutoCommand() {
+		return createAutoPath(new HashMap<String, Command>() {{
+			put("start", scoreLevel3());
+			put("arm-down", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("extend", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("close-intake", new ScheduleCommand(new InstantCommand(() -> m_Gripper.closeGripper())));
+			put("wrist-in", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("arm-up", new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("score-cube", scoreLevel3NoArmMovement());
+			put("score", new ScheduleCommand(new InstantCommand(() -> m_Gripper.openGripper())));
+			put("throw", new ScheduleCommand(new InstantCommand(() -> m_Gripper.openGripper())));
+			put("stop", scoreLevel3());
+		}}, "2.5 GP", Constants.Auto.pathConstrains);
+	}
 
   	public Command Balance() {
 		return new SequentialCommandGroup(
@@ -365,21 +387,20 @@ public class RobotContainer {
 	* it to a {@link
 	* edu.wpi.first.wpilibj2.command.button.JoystickButton}.
 	*/
-
-	private Command newMidAuto() {
-		return new SequentialCommandGroup(
-			createAutoPath(new HashMap<String, Command>() {{
-				put("start", scoreLevel3Long());
-			}}, "MiddleScorePart1", Constants.Auto.pathConstrains),
-
-			new RunCommand(() -> m_drivetrain.drive(0.5, 0, 0, false)).withTimeout(2),
-			
-			createAutoPath(new HashMap<String, Command>() {{
-				put("open", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
-				put("close", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
-				put("stop", new ScheduleCommand(Balance()));
-			}}, "MiddleScorePart2", Constants.Auto.pathConstrains)
-		);
+	private Command createNew2Point5Auto() {
+		return createAutoPath(new HashMap<String, Command>() {{
+			put("start", scoreLevel3());
+			put("arm-down", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("extend", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("close-intake", new ScheduleCommand(new InstantCommand(() -> m_Gripper.closeGripper())));
+			put("wrist-in", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("arm-up", new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)));
+			put("score", new SequentialCommandGroup(
+				scoreLevel3NoArmMovement(),
+				new InstantCommand(() -> m_Gripper.openGripper())
+			));
+			put("stop", scoreLevel3());
+		}}, "TMP", Constants.Auto.pathConstrains);
 	}
 
   	private void configureButtonBindings() {
@@ -410,6 +431,9 @@ public class RobotContainer {
 
     m_controller.povLeft().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
 
+	m_controller.back().onTrue(new InstantCommand(
+		()->m_Gripper.enableRightSight(!m_Gripper.getRightSightEnabled())
+	));
 
     new Trigger(() -> {
           // boolean arm1AtScoreLow = Math.abs(m_armJoint1.getAngle().getDegrees() - 50) <
@@ -446,55 +470,59 @@ public class RobotContainer {
 	 // new
 	 // ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
 	 // );
-	 m_buttonPad.button(5).onTrue(
+	 m_buttonPad.button(4).onTrue(
 		  new MoveArmsToCube2(m_armJoint1, m_Armjoint2, m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 	 // m_buttonPad.button(5).whileTrue(
 	 // new RunCommand(()->m_armJoint1.inwards(),
 	 // m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
 	 // );
-	 m_buttonPad.button(9).onTrue(
+	 m_buttonPad.button(5).onTrue(
 		  new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-	 m_buttonPad.button(1).onTrue(
+	m_buttonPad.button(8).onTrue(
+			new MoveArmsToCubeCone1(m_armJoint1, m_Armjoint2, m_Wrist)
+				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
+	 m_buttonPad.button(2).onTrue(
 		  new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 
-	 m_buttonPad.button(2).onTrue(
+	 m_buttonPad.button(3).onTrue(
 		  new MoveArmsToCube3(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 
-	 m_buttonPad.button(6).whileTrue(
-		  new ArmJoint2Inward(m_Armjoint2).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-	 m_buttonPad.button(10).onTrue(
+	//  m_buttonPad.button(6).whileTrue(
+		//   new ArmJoint2Inward(m_Armjoint2).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
+	 m_buttonPad.button(6).onTrue(
 		  new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper)).alongWith(
 				new MoveArmsToHumanPlayer(m_armJoint1, m_Armjoint2, m_Wrist)
-					 .beforeStarting(() -> m_drivetrain.setSlowMode(true))));
+					 .beforeStarting(() -> m_drivetrain.setSlowMode(true))).beforeStarting(()->m_vision.showGripper())
+					 );
 
-	 m_buttonPad.button(3).whileTrue(
+	 m_buttonPad.button(7).whileTrue(
 		  new WristJointOutward2(m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-	 m_buttonPad.button(7).whileTrue(
+	 m_buttonPad.button(11).whileTrue(
 		  new WristJointInward2(m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
-	 m_buttonPad.button(11).onTrue(
+	 m_buttonPad.button(12).onTrue(
 		  new MoveWristJoint2(m_Wrist, 0).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 
-	 m_buttonPad.button(8).onTrue(
+	 m_buttonPad.button(10).onTrue(
 		  new ParallelCommandGroup(
-				new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist),
+				new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_vision.showGrid()),
 				new SequentialCommandGroup(
 					 new WaitUntilCommand(() -> (m_armJoint1.getAngle().getDegrees() < 60
-						  && m_Armjoint2.getAngleFromGround().getDegrees() > 0)),
+						  && m_Armjoint2.getAngleFromGround().getDegrees() > -20)),
 					 new RunCommand(() -> m_drivetrain.setSlowMode(false))))
 
 	 );
-	 	m_buttonPad.button(12).onTrue(
+	 	m_buttonPad.button(9).onTrue(
 		  	new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper)).alongWith(
 				new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)
-					.beforeStarting(() -> m_drivetrain.setSlowMode(true))
+					.beforeStarting(() -> m_drivetrain.setSlowMode(true)).beforeStarting(()->m_vision.showGripper())
 				)
 		);
-	 	m_buttonPad.button(4).onTrue(
+	 	m_buttonPad.button(1).onTrue(
 		  new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true))
 		);
@@ -512,10 +540,14 @@ public class RobotContainer {
 
 	public void autonomousInit() {
 		m_drivetrain.resetHeading();
+		m_drivetrain.setNominalVoltages(Constants.Auto.kAutoVoltageCompensation);
+		m_Gripper.enableRightSight(true);
 	}
 
 	public void teleopInit() {
 		m_drivetrain.setSlowMode(false);
+		m_drivetrain.setNominalVoltages(Constants.Drive.kDriveVoltageCompensation);
+		m_Gripper.enableRightSight(true);
 	}
 
   	public Command XStop() {
@@ -568,6 +600,12 @@ public class RobotContainer {
 
 		return autoBuilder.fullAuto(pathGroup);
 	}
+
+	public void robotPeriodic(){
+		SmartDashboard.putBoolean("right sight enabled",m_Gripper.getRightSightEnabled());
+	}
+
+
 
   	public void disabledPeriodic() {
 		m_drivetrain.resetSteerEncoders();

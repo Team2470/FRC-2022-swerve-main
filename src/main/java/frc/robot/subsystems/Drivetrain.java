@@ -19,6 +19,7 @@ import frc.robot.Constants.Drive.ModuleConfig;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.revrobotics.CANSparkMax;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
@@ -134,6 +135,12 @@ public class Drivetrain extends SubsystemBase {
    public void resetSteerEncoders(){
       for (int i = 0; i < 4; i++){
          ((CANCoder)m_swerve_modules[i].getSteerEncoder().getInternal()).setPositionToAbsolute();
+      }
+   }
+
+   public void setNominalVoltages(double voltage) {
+      for (SwerveModule swerveModule : m_swerve_modules) {
+         ((CANSparkMax) swerveModule.getDriveMotor()).enableVoltageCompensation(voltage);
       }
    }
 
