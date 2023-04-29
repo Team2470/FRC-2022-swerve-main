@@ -57,6 +57,7 @@ import frc.robot.commands.ArmJoint2Outward;
 import frc.robot.commands.BalanceOnChargeStation;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.GripperCloseAndWristUp;
+import frc.robot.commands.MoveArmsToCone2NoStradle;
 import frc.robot.commands.MoveArmsToCone3NoStradle;
 import frc.robot.commands.MoveArmsToCone3NoStradle2;
 import frc.robot.commands.MoveArmsToCube2;
@@ -449,8 +450,8 @@ public class RobotContainer {
 			 boolean wristAtPickupFloor = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5;
 			 boolean armAtPickupFloor = arm1AtPickupFloor && arm2AtPickupFloor && wristAtPickupFloor;
 
-			 boolean arm1AtHP = Math.abs(m_armJoint1.getAngle().getDegrees() - 77) < 5;
-			 boolean arm2AtHP = Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -22) < 5;
+			 boolean arm1AtHP = Math.abs(m_armJoint1.getAngle().getDegrees() - 78) < 3;
+			 boolean arm2AtHP =  Math.abs(m_Armjoint2.getAngleFromGround().getDegrees() - -22) < 5;
 			 boolean wristAtHP = Math.abs(m_Wrist.getAngleFromGround().getDegrees() - 0) < 5;
 			 boolean armAtHP = arm1AtHP && arm2AtHP && wristAtHP;
 
@@ -459,7 +460,7 @@ public class RobotContainer {
 		  .alongWith(new StartEndCommand(
 			()-> m_controller.getHID().setRumble(RumbleType.kBothRumble, .3),
 			()-> m_controller.getHID().setRumble(RumbleType.kBothRumble, 0)
-			).withTimeout(.2))
+			).withTimeout(.2)).alongWith(new InstantCommand(()->m_vision.showGrid()))
 		  );
 
 	 // m_controller.x().onTrue(
@@ -523,7 +524,7 @@ public class RobotContainer {
 				)
 		);
 	 	m_buttonPad.button(1).onTrue(
-		  new MoveArmsToSecondConePosition(m_armJoint1, m_Armjoint2, m_Wrist)
+		  new MoveArmsToCone2NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true))
 		);
   	}
