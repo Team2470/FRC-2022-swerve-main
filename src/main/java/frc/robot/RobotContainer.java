@@ -401,7 +401,7 @@ public class RobotContainer {
 				new InstantCommand(() -> m_Gripper.openGripper())
 			));
 			put("stop", scoreLevel3());
-		}}, "TMP", Constants.Auto.pathConstrains);
+		}}, "TMP", new PathConstraints(3, 2));
 	}
 
   	private void configureButtonBindings() {
