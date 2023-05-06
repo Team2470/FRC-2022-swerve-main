@@ -158,8 +158,7 @@ public class RobotContainer {
 
 		m_autoSelector.registerCommand("TMP", "TMP", createNew2Point5Auto());
 		m_autoSelector.registerCommand("2.5 point", "25GP", score2halfPointsAutoCommand());
-		m_autoSelector.registerCommand("28 point auto", "CBLU", score28PointsAuto());
-		m_autoSelector.registerCommand("Cable Red", "CRED", CableAutoRed());
+		m_autoSelector.registerCommand("28 point auto", "CABL", score28PointsAuto());
 		m_autoSelector.registerCommand("bal", "bal", Balance());
 
 
@@ -225,26 +224,6 @@ public class RobotContainer {
 			put("stop", scoreLevel3NoArmMovement());
 
 		}}, "28-R", Constants.Auto.pathConstrains);
-  	}
-
-	  public Command CableAutoRed() {
-		return createAutoPath(new HashMap<String, Command>() {{
-			put("start", scoreLevel3());
-			put("arm-down", new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
-			
-			put("extend", new ScheduleCommand(new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)));
-			put("wrist-in", new ConditionalCommand(
-				new ScheduleCommand(new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist)), 
-				new ScheduleCommand(new InstantCommand(() -> m_drivetrain.stop(), m_drivetrain)),
-				//() -> (m_Gripper.isGamePieceDetected())
-				() -> true
-			));
-
-			put("close-intake", new ScheduleCommand(new InstantCommand(() -> m_Gripper.closeGripper())));
-			put("arm_up", new ScheduleCommand(new MoveArmsToCone3NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)));
-			put("stop", scoreLevel3NoArmMovement());
-
-		}}, "28-R Red", Constants.Auto.pathConstrains);
   	}
 
 	public Command score2halfPointsAutoCommand() {
