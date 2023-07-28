@@ -22,6 +22,7 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import com.revrobotics.CANSparkMax;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 public class Drivetrain extends SubsystemBase {
@@ -105,11 +106,11 @@ public class Drivetrain extends SubsystemBase {
 }
 
    private SwerveModule createModule(ModuleConfig config, Mk4ModuleConfiguration moduleConfig, ShuffleboardTab tab) {
-      return Mk4SwerveModuleHelper.createNeo(
+      return Mk4iSwerveModuleHelper.createNeo(
          tab.getLayout(config.name, BuiltInLayouts.kList)
             .withSize(2, 6).withPosition(config.col, config.line),
          
-         moduleConfig, Mk4SwerveModuleHelper.GearRatio.L2,
+         moduleConfig, Mk4iSwerveModuleHelper.GearRatio.L2,
          config.drivingID, config.steeringID, //: drving & steering IDs
          config.encoderID, config.offset.getRadians() //: encoder ID and offset (rotation)
       );
