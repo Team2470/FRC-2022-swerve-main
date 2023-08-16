@@ -56,6 +56,7 @@ import frc.robot.commands.BalanceOnChargeStation;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.RobotTurnToAngle;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.PivotTemp;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -71,6 +72,7 @@ public class RobotContainer {
 	private final CommandXboxController m_controller = new CommandXboxController(0);
 	// The robot's subsystems and commands are defined here...
 	private final Drivetrain m_drivetrain = new Drivetrain();
+	private final PivotTemp m_pivotTemp = new PivotTemp();
 
 	private final NetworkTable m_cameraTable = NetworkTableInstance.getDefault().getTable("CameraPublisher");
 	private final NetworkTableEntry m_cameraSelector = m_cameraTable.getEntry("selector");
@@ -126,10 +128,13 @@ public class RobotContainer {
 	 }, m_drivetrain));
 
 
-    m_controller.povRight().whileTrue(new RobotTurnToAngle(m_drivetrain, 0));
+    // m_controller.povRight().whileTrue(new RobotTurnToAngle(m_drivetrain, 0));
 
-    m_controller.povLeft().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
-  	}
+    // m_controller.povLeft().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
+
+	 m_controller.povUp().whileTrue(m_pivotTemp.setPowerCmd( 1.0));
+	 m_controller.povDown().whileTrue(m_pivotTemp.setPowerCmd(-1.0));
+	}
 
   /**
 	* Use this to pass the autonomous command to the main {@link Robot} class.
