@@ -132,8 +132,8 @@ public class RobotContainer {
 
     // m_controller.povLeft().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
 
-	 m_controller.povUp().whileTrue(m_pivotTemp.setPowerCmd( 1.0));
-	 m_controller.povDown().whileTrue(m_pivotTemp.setPowerCmd(-1.0));
+	 m_controller.povUp().whileTrue(m_pivotTemp.setPowerCmd( 0.15));
+	 m_controller.povDown().whileTrue(m_pivotTemp.setPowerCmd(-0.15));
 	}
 
   /**

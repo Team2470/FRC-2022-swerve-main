@@ -110,8 +110,8 @@ public class DriveWithController extends CommandBase {
                 yMove *= 0.3;
                 rotate *= 0.25;
             } else {
-                xMove *= 1.0;
-                yMove *= 1.0;
+                xMove *= 0.6;
+                yMove *= 0.6;
                 rotate *= 0.5;
             }
 
