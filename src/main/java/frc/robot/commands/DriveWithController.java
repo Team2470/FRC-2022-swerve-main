@@ -101,9 +101,18 @@ public class DriveWithController extends CommandBase {
         }
 
         if (moving) {
-            xMove = Math.copySign(xMove * xMove, xMove);
-            yMove = Math.copySign(yMove * yMove, yMove);
-            rotate = Math.copySign(rotate * rotate, rotate);
+            // xMove = Math.copySign(xMove * xMove, xMove);
+            // yMove = Math.copySign(yMove * yMove, yMove);
+            // rotate = Math.copySign(rotate * rotate, rotate);
+
+ 
+            double amplitudeSquared = Math.pow(xMove, 2) + Math.pow(yMove, 2);
+            
+            xMove = Math.copySign(amplitudeSquared * Math.sin(rotate), xMove);
+            yMove = Math.copySign(amplitudeSquared * Math.sin(rotate), yMove);
+
+            
+ 
             
             if (drive.getSlowMode() || controller.getXButton()){
                 xMove *= 0.3;
