@@ -4,19 +4,15 @@
 
 package frc.robot;
 
-import java.util.HashMap;
-
-import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.auto.PIDConstants;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -38,14 +34,14 @@ public final class Constants {
       }
    }
 
-   public static class Drive {
+   public static class DriveConstants {
       //: Physical constants (motors, sensors, ...)
-      public static final double kDriveVoltageCompensation = 10;
+      public static final double kDriveVoltageCompensation = 12;
       public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
       public static final double kWheelBaseLengthMeters = Units.inchesToMeters(25.5);
       public static final double kTrackWidthMeters = Units.inchesToMeters(20.5);
 
-      public static final double kDriveGearReduction = SdsModuleConfigurations.MK4I_L2.getDriveReduction();
+      public static final double kDriveGearReduction = SdsModuleConfigurations.MK4I_L3.getDriveReduction();
       
       public static final double kMaxDriveVelocityMetersPerSecond = 
          DCMotor.getNEO(1).freeSpeedRadPerSec / (2) * kDriveGearReduction * kWheelDiameterMeters * (kDriveVoltageCompensation/12.0);
@@ -97,49 +93,44 @@ public final class Constants {
       }
       //: specific module config
       public static final ModuleConfig kFrontLeft = new ModuleConfig("Front Left")
-      .setDrivingID(17)
-      .setEncoderID(16)
-      .setSteeringID(16)
-      .setOffset(-232.5+180+90)
+         .setDrivingID(17)
+         .setEncoderID(16)
+         .setSteeringID(16)
+         .setOffset(-232.5+180+90)
          .setTab(0, 0);
 
       public static final ModuleConfig kFrontRight = new ModuleConfig("Front Right")
-      .setDrivingID(11)
+         .setDrivingID(11)
          .setEncoderID(10)
          .setSteeringID(10)
          .setOffset(-28.1+90)
          .setTab(0, 2);
 
       public static final ModuleConfig kBackLeft = new ModuleConfig("Back Left")
-      .setDrivingID(15)
+         .setDrivingID(15)
          .setEncoderID(14)
          .setSteeringID(14)
          .setOffset(-127.3+90+180+90)
          .setTab(0, 4);
 
       public static final ModuleConfig kBackRight = new ModuleConfig("Back Right")
-      .setDrivingID(13)
-      .setEncoderID(12)
-      .setSteeringID(12)
-      .setOffset(-235.1+90+90)
+         .setDrivingID(13)
+         .setEncoderID(12)
+         .setSteeringID(12)
+         .setOffset(-235.1+90+90)
          .setTab(0, 6);
    }
 
-   public static class Auto {
+   public static class AutoConstants {
       public static final double kAutoVoltageCompensation = 10;
-      public static final double kMaxSpeedMetersPerSecond = Drive.kMaxDriveVelocityMetersPerSecond * 0.75;
-      public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-      public static final PathConstraints pathConstrains = new PathConstraints(3.5, 2);
-      public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-      public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
-      public static final double kPXController = 1;
-      public static final double kPYController = 1;
-      public static final double kPThetaController = 1;
+      public static final PIDConstants kPIDTranslation = new PIDConstants(5.0, 0, 0); // : PID constants for translation error
+      public static final PIDConstants kPIDRotation = new PIDConstants(2.0, 0, 0); // : Theta rotation,
 
-      // Constraint for the motion profiled robot angle controller
-      public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
-         new TrapezoidProfile.Constraints
-            ( kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared );
    }
+
+   public static class VisionConstants {
+      public static final Transform3d kBackLeftCamera = new Transform3d(); // TODO
+      public static final Transform3d kBackRightCamera = new Transform3d(); // TODO
+   } 
 }

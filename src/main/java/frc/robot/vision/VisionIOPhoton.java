@@ -18,9 +18,7 @@ public class VisionIOPhoton implements VisionIO {
     private final String name;
     private final PhotonPoseEstimator odometry;
     private double pastTimestamp;
-    private Transform3d pose;
     public List<PhotonTrackedTarget> targets;
-    private static DriverStation.Alliance storedAlliance = DriverStation.Alliance.Invalid;
 
     /**
      * Implements PhotonVision camera
@@ -30,11 +28,10 @@ public class VisionIOPhoton implements VisionIO {
      */
     public VisionIOPhoton(String name, Transform3d pose) {
         this.name = name;
-        this.pose = pose;
         camera = new PhotonCamera(name);
 
         odometry = new PhotonPoseEstimator(
-                FieldConstants.BLUE_FIELD_LAYOUT, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, pose);
+                FieldConstants.BLUE_FIELD_LAYOUT, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP, camera, pose);
         odometry.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
     }
 

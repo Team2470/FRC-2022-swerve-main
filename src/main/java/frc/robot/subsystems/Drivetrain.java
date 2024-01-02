@@ -1,24 +1,37 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.Drive.ModuleConfig;
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.DriveConstants.ModuleConfig;
+
+import java.util.HashMap;
+import java.util.List;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.revrobotics.CANSparkMax;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
@@ -26,9 +39,13 @@ import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 public class Drivetrain extends SubsystemBase {
+
+   private static final double ESTIMATION_COEFFICIENT = 0.025;
+
    //: Helpers
-   private final SwerveDriveOdometry m_odometry;
+   private final SwerveDrivePoseEstimator m_odometry;
    private final Field2d m_field = new Field2d();
+   private final VisionSubsystem m_vision;
 
    //: Hardware
    private final Pigeon2 m_imu;
@@ -43,11 +60,13 @@ public class Drivetrain extends SubsystemBase {
       m_slowMode = slowMode;
    }
 
-   public Drivetrain() {
+   public Drivetrain(VisionSubsystem vision) {
+      m_vision = vision;
+
       //: IMU setup
       m_imu = new Pigeon2(
-         Constants.Drive.kPigeonID, 
-         Constants.Drive.kPigeonCANBus.bus_name
+         Constants.DriveConstants.kPigeonID, 
+         Constants.DriveConstants.kPigeonCANBus.bus_name
       );
       m_imu.configEnableCompass(false);
 
@@ -65,40 +84,48 @@ public class Drivetrain extends SubsystemBase {
       
 
       Mk4ModuleConfiguration moduleConfig = Mk4ModuleConfiguration.getDefaultSteerNEO();
-      moduleConfig.setNominalVoltage(Constants.Drive.kDriveVoltageCompensation);
+      moduleConfig.setNominalVoltage(Constants.DriveConstants.kDriveVoltageCompensation);
 
       //: Swerve setup
       this.m_swerve_modules[0] = this.createModule(
-         Constants.Drive.kFrontLeft,
+         Constants.DriveConstants.kFrontLeft,
          moduleConfig, tab
       );
       this.m_swerve_modules[1] = this.createModule(
-         Constants.Drive.kFrontRight,
+         Constants.DriveConstants.kFrontRight,
          moduleConfig, tab
       );
       this.m_swerve_modules[2] = this.createModule(
-         Constants.Drive.kBackLeft,
+         Constants.DriveConstants.kBackLeft,
          moduleConfig, tab
       );
       this.m_swerve_modules[3] = this.createModule(
-         Constants.Drive.kBackRight,
+         Constants.DriveConstants.kBackRight,
          moduleConfig, tab
       );
 
       // Setup odometry
-      m_odometry = new SwerveDriveOdometry(
-         Constants.Drive.kDriveKinematics,
-         getIMUHeading(),
-         getModulePositions()
+      m_odometry = new SwerveDrivePoseEstimator(
+         DriveConstants.kDriveKinematics,
+         new Rotation2d(),
+         new SwerveModulePosition[] {
+             new SwerveModulePosition(),
+             new SwerveModulePosition(),
+             new SwerveModulePosition(),
+             new SwerveModulePosition()
+         },
+         new Pose2d(),
+         VecBuilder.fill(0.1, 0.1, 0.1),
+         VecBuilder.fill(0.5, 0.5, 0.5)
       );
 
       var odometryTab = tab.getLayout("Odometry", BuiltInLayouts.kList)
          .withSize(2,2)
          .withPosition(10,0);
 
-   odometryTab.addNumber("X (inches)", ()->Units.metersToInches(m_odometry.getPoseMeters().getX()));
-   odometryTab.addNumber("Y (inches)", ()->Units.metersToInches(m_odometry.getPoseMeters().getY()));
-   odometryTab.addNumber("Theta (degrees)", ()->m_odometry.getPoseMeters().getRotation().getDegrees());
+   odometryTab.addNumber("X (inches)", ()->Units.metersToInches(getPose().getX()));
+   odometryTab.addNumber("Y (inches)", ()->Units.metersToInches(getPose().getY()));
+   odometryTab.addNumber("Theta (degrees)", ()->getPose().getRotation().getDegrees());
 
    tab.add("Field", m_field)
       .withSize(5,4)
@@ -126,8 +153,8 @@ public class Drivetrain extends SubsystemBase {
 
          this.m_swerve_modules[i].set(
             states[i].speedMetersPerSecond / 
-               Constants.Drive.kMaxDriveVelocityMetersPerSecond * 
-               Constants.Drive.kDriveVoltageCompensation,
+               Constants.DriveConstants.kMaxDriveVelocityMetersPerSecond * 
+               Constants.DriveConstants.kDriveVoltageCompensation,
             states[i].angle.getRadians()
          );
       }
@@ -173,7 +200,7 @@ public class Drivetrain extends SubsystemBase {
       else
          { chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotation); }
 
-      setModuleStates(Constants.Drive.kDriveKinematics.toSwerveModuleStates(chassisSpeeds));
+      setModuleStates(Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds));
    }
 
    public void stop() {
@@ -183,10 +210,26 @@ public class Drivetrain extends SubsystemBase {
    @Override
    public void periodic() {
 
-      // Upldate robote pose
+      // Update robot pose
       m_odometry.update(getIMUHeading(), getModulePositions());
+      
+      // Feed in Vision measurements
+      for (int i = 0; i < m_vision.getVisionOdometry().size(); i++) {
+         m_odometry.addVisionMeasurement(
+                 m_vision.getVisionOdometry().get(i).getPose(),
+                 m_vision.getVisionOdometry().get(i).getTimestamp(),
+                 VecBuilder.fill(
+                         m_vision.getMinDistance(i) * ESTIMATION_COEFFICIENT,
+                         m_vision.getMinDistance(i) * ESTIMATION_COEFFICIENT,
+                         5.0
+                  )
+         );
+     }
+     m_vision.setReferencePose(getPose());
 
-      m_field.setRobotPose(m_odometry.getPoseMeters());
+
+
+      m_field.setRobotPose(getPose());
 
       SmartDashboard.putBoolean("Slow Mode", m_slowMode);
    }
@@ -196,7 +239,7 @@ public class Drivetrain extends SubsystemBase {
    }
 
    public Rotation2d getOdomHeading() {
-      return m_odometry.getPoseMeters().getRotation();
+      return getPose().getRotation();
    }
 
    public boolean isLevel() {
@@ -216,7 +259,7 @@ public class Drivetrain extends SubsystemBase {
    * @return the pose.
    */
    public Pose2d getPose() {
-      return m_odometry.getPoseMeters();
+      return m_odometry.getEstimatedPosition();
    }
    /**
     * Resets the odometry to the specified pose
@@ -225,5 +268,40 @@ public class Drivetrain extends SubsystemBase {
    public void resetOdometry(Pose2d pose) {
       m_odometry.resetPosition(getIMUHeading(), getModulePositions(), pose);
    }
-   
+
+   //
+   // Command Helpers
+   //
+
+   public Command xStop() {
+      return new RunCommand(() -> {
+        var latchedModuleStates = new SwerveModuleState[] {
+           new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+           new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+           new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+           new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+        }; this.setModuleStates(latchedModuleStates);
+     }, this);
+   }
+
+   //: uses drivetrain member 
+	public Command createAutoPath(HashMap<String, Command> eventMap, String pathName, PathConstraints pathConstraints) {
+		List<PathPlannerTrajectory> pathGroup = 
+			PathPlanner.loadPathGroup(pathName, pathConstraints);
+
+		SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+			this::getPose,
+			this::resetOdometry,
+			Constants.DriveConstants.kDriveKinematics,
+
+         AutoConstants.kPIDTranslation,
+         AutoConstants.kPIDRotation,
+
+			this::setModuleStates,
+			eventMap, true, this
+		);
+
+		return autoBuilder.fullAuto(pathGroup);
+	}
+  
 }

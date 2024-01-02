@@ -117,9 +117,9 @@ public class DriveWithController extends CommandBase {
 
             // Now we need to map the percentages to Meters (or Radians) per second, as that is what the drive train
             // subsystem accepts
-            xMove *= Constants.Drive.kMaxDriveVelocityMetersPerSecond;
-            yMove *= Constants.Drive.kMaxDriveVelocityMetersPerSecond;
-            rotate *= Constants.Drive.kMaxAngularVelocityRadiansPerSecond;
+            xMove *= Constants.DriveConstants.kMaxDriveVelocityMetersPerSecond;
+            yMove *= Constants.DriveConstants.kMaxDriveVelocityMetersPerSecond;
+            rotate *= Constants.DriveConstants.kMaxAngularVelocityRadiansPerSecond;
 
             SmartDashboard.putNumber("DriveWithController - xMove", xMove);
             SmartDashboard.putNumber("DriveWithController - yMove", yMove);

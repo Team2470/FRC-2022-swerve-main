@@ -276,7 +276,7 @@ public class FieldConstants {
                         new Rotation3d())
             };
 
-            WaypointConstants.update();
+        //     WaypointConstants.update();
         }
     }
 }
