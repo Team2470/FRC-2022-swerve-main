@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.FieldConstants;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -43,6 +44,11 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     m_robotContainer.robotPeriodic();
+
+    // auto start = System.currentTimeMillis();
+    FieldConstants.update();
+    // auto end = System.currentTimeMillis();
+    // Logger.getInstance().recordOutput("Times/FieldConstantsMs", end - start);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
