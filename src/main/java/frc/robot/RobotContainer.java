@@ -75,7 +75,50 @@ public class RobotContainer {
 
   	private void configureButtonBindings() {
 	 // Configure default commands
-	 m_drivetrain.setDefaultCommand(new DriveWithController(m_drivetrain, m_controller.getHID()));
+	 m_drivetrain.setDefaultCommand(new DriveWithController(
+		m_drivetrain,
+		// X Move Velocity - Forward
+		() -> -m_controller.getHID().getLeftY(),
+
+		// Y Move Velocity - Strafe
+		() -> -m_controller.getHID().getLeftX(),
+
+		// Rotate Angular velocity
+		() -> {
+			double leftTrigger = m_controller.getHID().getLeftTriggerAxis();
+			double rightTrigger = m_controller.getHID().getRightTriggerAxis();
+		
+			if (leftTrigger < rightTrigger) {
+				return  -rightTrigger;
+			} else {
+				return leftTrigger;
+			}
+		},
+
+		// Field Orientated
+		() -> !m_controller.getHID().getAButton(),
+
+		// Slow Mode
+		() -> m_drivetrain.getSlowMode() || m_controller.getHID().getXButton(),
+
+		// Disable X Movement
+		() -> m_controller.getHID().getBButton(),
+
+		// Disable Y Movement
+		() -> false,
+
+		// Heading Override
+		() -> {
+			switch (m_controller.getHID().getPOV()) {
+				case 0:
+					return 0.0;
+				case 180:
+					return 180.0;
+				default:
+					return null;
+			}
+		}
+	));
 
 	 m_controller.start().onTrue(new InstantCommand(m_drivetrain::resetHeading)); // TODO this should also do
 																											// something with odometry? As

@@ -1,23 +1,35 @@
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.CircularBuffer;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
 
-import static frc.robot.Constants.*;
-
 public class DriveWithController extends CommandBase {
     private static final double kDeadband = 0.15;
 
     private final Drivetrain drive;
-    private final XboxController controller;
+
+    // Inputs
+    private final DoubleSupplier xVelocitySupplier;
+    private final DoubleSupplier yVelocitySupplier;
+    private final DoubleSupplier angularVelocitySupplier;
+    private final BooleanSupplier fieldOrientedSupplier;
+    private final BooleanSupplier slowModeSupplier;
+    private final BooleanSupplier disableXMovementSupplier;
+    private final BooleanSupplier disableYMovementSupplier;
+    private final Supplier<Double> headingOverrideSupplier;
+
 
     // State
     private boolean fieldOrient;
@@ -26,6 +38,9 @@ public class DriveWithController extends CommandBase {
     private final SlewRateLimiter xFilter = new SlewRateLimiter(5);
     private final SlewRateLimiter yFilter = new SlewRateLimiter(5);
     private final SlewRateLimiter rotateFilter = new SlewRateLimiter(5);
+
+    private final PIDController headingController = new PIDController(0, 0, 0);
+    private boolean lastHeadingControllerEnabled = false;
 
     // Keep track of the last 5 module angles
     private static final int kAngleHistoryMilliseconds = 100;
@@ -37,9 +52,27 @@ public class DriveWithController extends CommandBase {
         new CircularBuffer(kAngleHistoryLength)
     };
 
-    public DriveWithController(Drivetrain drive, XboxController controller) {
+    public DriveWithController(Drivetrain drive, 
+        DoubleSupplier xVelocitySupplier, 
+        DoubleSupplier yVelocitySupplier, 
+        DoubleSupplier angularVelocitySupplier, 
+        BooleanSupplier fieldOrientedSupplier, 
+        BooleanSupplier slowModeSupplier,
+        BooleanSupplier disableXMovementSupplier,
+        BooleanSupplier disableYMovementSupplier,
+        Supplier<Double> headingOverrideSupplier
+        ) {
+        
         this.drive = drive;
-        this.controller = controller;
+        this.xVelocitySupplier = xVelocitySupplier;
+        this.yVelocitySupplier = yVelocitySupplier;
+        this.angularVelocitySupplier = angularVelocitySupplier;
+        this.fieldOrientedSupplier = fieldOrientedSupplier;
+        this.slowModeSupplier = slowModeSupplier;
+        this.disableXMovementSupplier = disableXMovementSupplier;
+        this.disableYMovementSupplier = disableYMovementSupplier;
+        this.headingOverrideSupplier = headingOverrideSupplier;
+        
         addRequirements(drive);
     }
 
@@ -60,19 +93,20 @@ public class DriveWithController extends CommandBase {
     @Override
     public void execute() {
         // Read gamepad state
-        double xMove = -controller.getLeftY();
-        double yMove = -controller.getLeftX();
-        double rotate;
+        double xMove = xVelocitySupplier.getAsDouble();
+        double yMove = yVelocitySupplier.getAsDouble();
+        double rotate = angularVelocitySupplier.getAsDouble();
+        fieldOrient = fieldOrientedSupplier.getAsBoolean();
 
-        double left = controller.getLeftTriggerAxis();
-        double right = controller.getRightTriggerAxis();
-
-        if (left < right) {
-            rotate =  -right;
-        } else {
-            rotate =  left;
+        if(disableXMovementSupplier.getAsBoolean()){
+            xMove = 0;
         }
-        
+        if(disableYMovementSupplier.getAsBoolean()){
+            yMove = 0;
+        }
+
+        Double headingOverride = headingOverrideSupplier.get();
+
         //Apply filter
         xMove = xFilter.calculate(xMove);
         yMove = yFilter.calculate(yMove);
@@ -82,14 +116,6 @@ public class DriveWithController extends CommandBase {
         xMove = MathUtil.applyDeadband(xMove, kDeadband);
         yMove = MathUtil.applyDeadband(yMove, kDeadband);
         rotate = MathUtil.applyDeadband(rotate, kDeadband);
-
-        // Check to for changes between robot and field centric drive modes
-
-        fieldOrient = !controller.getAButton();
-
-        if(controller.getBButton()){
-            xMove = 0;
-        }
 
         // Determine if the robot should be moving,
         boolean moving = xMove != 0 || yMove != 0 || rotate != 0;
@@ -105,7 +131,7 @@ public class DriveWithController extends CommandBase {
             yMove = Math.copySign(yMove * yMove, yMove);
             rotate = Math.copySign(rotate * rotate, rotate);
             
-            if (drive.getSlowMode() || controller.getXButton()){
+            if (slowModeSupplier.getAsBoolean()){
                 xMove *= 0.3;
                 yMove *= 0.3;
                 rotate *= 0.25;
@@ -120,6 +146,17 @@ public class DriveWithController extends CommandBase {
             xMove *= Constants.DriveConstants.kMaxDriveVelocityMetersPerSecond;
             yMove *= Constants.DriveConstants.kMaxDriveVelocityMetersPerSecond;
             rotate *= Constants.DriveConstants.kMaxAngularVelocityRadiansPerSecond;
+
+            // Heading controller
+            if (headingOverride != null) {
+                if (!lastHeadingControllerEnabled) {
+                    // Reset heading controller if we are entering it for the first time
+                    headingController.reset();
+                }
+
+                // Calculate the rotate command in Rad/Sec so we can reuse the PID values used in auto
+                rotate = headingController.calculate(headingOverride);
+            }            
 
             SmartDashboard.putNumber("DriveWithController - xMove", xMove);
             SmartDashboard.putNumber("DriveWithController - yMove", yMove);
@@ -143,13 +180,11 @@ public class DriveWithController extends CommandBase {
             drive.setModuleStates(latchedModuleStates);
         }
 
-        SmartDashboard.putNumber("Last Module Angle Buffer 0[oldest]", lastModuleAngles[0].get(0));
-        SmartDashboard.putNumber("Last Module Angle Buffer 0[latest]", lastModuleAngles[0].get(kAngleHistoryLength-1));
-
+        SmartDashboard.putBoolean("DriveWithController - Heading Override enabled", headingOverride != null);
         SmartDashboard.putBoolean("DriveWithController - Moving", moving);
         SmartDashboard.putBoolean("DriveWithController - Field oriented", fieldOrient);
-
         lastMovingState = moving;
+        lastHeadingControllerEnabled = headingOverride != null;
     }
 
     @Override 
