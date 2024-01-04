@@ -33,8 +33,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final VisionSubsystem m_vision =
       new VisionSubsystem(
-          new VisionIOPhoton("Back Left", VisionConstants.kBackLeftCamera),
-          new VisionIOPhoton("Back Right", VisionConstants.kBackRightCamera));
+          new VisionIOPhoton("Back-Left", VisionConstants.kBackLeftCamera),
+          new VisionIOPhoton("Back-Right", VisionConstants.kBackRightCamera));
   private final Drivetrain m_drivetrain = new Drivetrain(m_vision);
   private final PivotTemp m_pivotTemp = new PivotTemp();
 
@@ -124,8 +124,8 @@ public class RobotContainer {
 
     // m_controller.povLeft().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
 
-    m_controller.povUp().whileTrue(m_pivotTemp.setPowerCmd(0.6));
-    m_controller.povDown().whileTrue(m_pivotTemp.setPowerCmd(-0.6));
+    // m_controller.povUp().whileTrue(m_pivotTemp.setPowerCmd(0.6));
+    // m_controller.povDown().whileTrue(m_pivotTemp.setPowerCmd(-0.6));
 
     m_controller.back().onTrue(m_pivotTemp.resetEncoderCmd());
   }

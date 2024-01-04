@@ -15,6 +15,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -39,6 +40,7 @@ public class Drivetrain extends SubsystemBase {
 
   // : Helpers
   private final SwerveDrivePoseEstimator m_odometry;
+  // private final SwerveDriveOdometry m_odometry; // TODO make this selectable
   private final Field2d m_field = new Field2d();
   private final VisionSubsystem m_vision;
 

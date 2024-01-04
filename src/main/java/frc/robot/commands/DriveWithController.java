@@ -2,13 +2,18 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.util.CircularBuffer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drivetrain;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -37,7 +42,8 @@ public class DriveWithController extends CommandBase {
   private final SlewRateLimiter yFilter = new SlewRateLimiter(5);
   private final SlewRateLimiter rotateFilter = new SlewRateLimiter(5);
 
-  private final PIDController headingController = new PIDController(0, 0, 0);
+  private final TrapezoidProfile.Constraints headingControllerConstraints =  new TrapezoidProfile.Constraints(DriveConstants.kMaxAngularVelocityRadiansPerSecond/4.0, 2*Math.PI);
+  private final ProfiledPIDController headingController = new ProfiledPIDController(2.0, 0, 0, headingControllerConstraints);
   private boolean lastHeadingControllerEnabled = false;
 
   // Keep track of the last 5 module angles
@@ -72,6 +78,8 @@ public class DriveWithController extends CommandBase {
     this.headingOverrideSupplier = headingOverrideSupplier;
 
     addRequirements(drive);
+
+    headingController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
@@ -147,14 +155,20 @@ public class DriveWithController extends CommandBase {
       rotate *= Constants.DriveConstants.kMaxAngularVelocityRadiansPerSecond;
 
       // Heading controller
+      // TODO should be moved before moving cuttoff
       if (headingOverride != null) {
         if (!lastHeadingControllerEnabled) {
           // Reset heading controller if we are entering it for the first time
-          headingController.reset();
+          headingController.reset(new State(drive.getOdomHeading().getRadians(), 0)); // TODO need to account for angular velocity
         }
 
         // Calculate the rotate command in Rad/Sec so we can reuse the PID values used in auto
-        rotate = headingController.calculate(headingOverride);
+        headingController.setGoal(Math.toRadians(headingOverride));
+        rotate = headingController.calculate(drive.getOdomHeading().getRadians());
+        rotate = MathUtil.clamp(rotate, -headingControllerConstraints.maxVelocity, headingControllerConstraints.maxVelocity);
+
+        SmartDashboard.putNumber("DriveWithController - Heading goal", headingOverride);
+        SmartDashboard.putNumber("DriveWithController - Heading error", Math.toDegrees(headingController.getPositionError()));
       }
 
       SmartDashboard.putNumber("DriveWithController - xMove", xMove);
