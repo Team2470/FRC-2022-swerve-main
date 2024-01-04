@@ -1,9 +1,5 @@
 package frc.robot.commands;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -14,185 +10,193 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 public class DriveWithController extends CommandBase {
-    private static final double kDeadband = 0.15;
+  private static final double kDeadband = 0.15;
 
-    private final Drivetrain drive;
+  private final Drivetrain drive;
 
-    // Inputs
-    private final DoubleSupplier xVelocitySupplier;
-    private final DoubleSupplier yVelocitySupplier;
-    private final DoubleSupplier angularVelocitySupplier;
-    private final BooleanSupplier fieldOrientedSupplier;
-    private final BooleanSupplier slowModeSupplier;
-    private final BooleanSupplier disableXMovementSupplier;
-    private final BooleanSupplier disableYMovementSupplier;
-    private final Supplier<Double> headingOverrideSupplier;
+  // Inputs
+  private final DoubleSupplier xVelocitySupplier;
+  private final DoubleSupplier yVelocitySupplier;
+  private final DoubleSupplier angularVelocitySupplier;
+  private final BooleanSupplier fieldOrientedSupplier;
+  private final BooleanSupplier slowModeSupplier;
+  private final BooleanSupplier disableXMovementSupplier;
+  private final BooleanSupplier disableYMovementSupplier;
+  private final Supplier<Double> headingOverrideSupplier;
 
+  // State
+  private boolean fieldOrient;
+  private boolean lastMovingState = false;
+  private SwerveModuleState[] latchedModuleStates;
+  private final SlewRateLimiter xFilter = new SlewRateLimiter(5);
+  private final SlewRateLimiter yFilter = new SlewRateLimiter(5);
+  private final SlewRateLimiter rotateFilter = new SlewRateLimiter(5);
 
-    // State
-    private boolean fieldOrient;
-    private boolean lastMovingState = false;
-    private SwerveModuleState[] latchedModuleStates;
-    private final SlewRateLimiter xFilter = new SlewRateLimiter(5);
-    private final SlewRateLimiter yFilter = new SlewRateLimiter(5);
-    private final SlewRateLimiter rotateFilter = new SlewRateLimiter(5);
+  private final PIDController headingController = new PIDController(0, 0, 0);
+  private boolean lastHeadingControllerEnabled = false;
 
-    private final PIDController headingController = new PIDController(0, 0, 0);
-    private boolean lastHeadingControllerEnabled = false;
+  // Keep track of the last 5 module angles
+  private static final int kAngleHistoryMilliseconds = 100;
+  private static final int kAngleHistoryLength = kAngleHistoryMilliseconds / 20;
+  private CircularBuffer[] lastModuleAngles = {
+    new CircularBuffer(kAngleHistoryLength),
+    new CircularBuffer(kAngleHistoryLength),
+    new CircularBuffer(kAngleHistoryLength),
+    new CircularBuffer(kAngleHistoryLength)
+  };
 
-    // Keep track of the last 5 module angles
-    private static final int kAngleHistoryMilliseconds = 100;
-    private static final int kAngleHistoryLength = kAngleHistoryMilliseconds/20;
-    private CircularBuffer[] lastModuleAngles = {
-        new CircularBuffer(kAngleHistoryLength),
-        new CircularBuffer(kAngleHistoryLength),
-        new CircularBuffer(kAngleHistoryLength),
-        new CircularBuffer(kAngleHistoryLength)
-    };
+  public DriveWithController(
+      Drivetrain drive,
+      DoubleSupplier xVelocitySupplier,
+      DoubleSupplier yVelocitySupplier,
+      DoubleSupplier angularVelocitySupplier,
+      BooleanSupplier fieldOrientedSupplier,
+      BooleanSupplier slowModeSupplier,
+      BooleanSupplier disableXMovementSupplier,
+      BooleanSupplier disableYMovementSupplier,
+      Supplier<Double> headingOverrideSupplier) {
 
-    public DriveWithController(Drivetrain drive, 
-        DoubleSupplier xVelocitySupplier, 
-        DoubleSupplier yVelocitySupplier, 
-        DoubleSupplier angularVelocitySupplier, 
-        BooleanSupplier fieldOrientedSupplier, 
-        BooleanSupplier slowModeSupplier,
-        BooleanSupplier disableXMovementSupplier,
-        BooleanSupplier disableYMovementSupplier,
-        Supplier<Double> headingOverrideSupplier
-        ) {
-        
-        this.drive = drive;
-        this.xVelocitySupplier = xVelocitySupplier;
-        this.yVelocitySupplier = yVelocitySupplier;
-        this.angularVelocitySupplier = angularVelocitySupplier;
-        this.fieldOrientedSupplier = fieldOrientedSupplier;
-        this.slowModeSupplier = slowModeSupplier;
-        this.disableXMovementSupplier = disableXMovementSupplier;
-        this.disableYMovementSupplier = disableYMovementSupplier;
-        this.headingOverrideSupplier = headingOverrideSupplier;
-        
-        addRequirements(drive);
+    this.drive = drive;
+    this.xVelocitySupplier = xVelocitySupplier;
+    this.yVelocitySupplier = yVelocitySupplier;
+    this.angularVelocitySupplier = angularVelocitySupplier;
+    this.fieldOrientedSupplier = fieldOrientedSupplier;
+    this.slowModeSupplier = slowModeSupplier;
+    this.disableXMovementSupplier = disableXMovementSupplier;
+    this.disableYMovementSupplier = disableYMovementSupplier;
+    this.headingOverrideSupplier = headingOverrideSupplier;
+
+    addRequirements(drive);
+  }
+
+  @Override
+  public void initialize() {
+    fieldOrient = true;
+    lastMovingState = false;
+
+    // Flush buffers with current module angles
+    SwerveModuleState[] currentModuleState = drive.getModuleStates();
+    for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < kAngleHistoryLength; j++) {
+        lastModuleAngles[i].addLast(currentModuleState[i].angle.getDegrees());
+      }
+    }
+  }
+
+  @Override
+  public void execute() {
+    // Read gamepad state
+    double xMove = xVelocitySupplier.getAsDouble();
+    double yMove = yVelocitySupplier.getAsDouble();
+    double rotate = angularVelocitySupplier.getAsDouble();
+    fieldOrient = fieldOrientedSupplier.getAsBoolean();
+
+    if (disableXMovementSupplier.getAsBoolean()) {
+      xMove = 0;
+    }
+    if (disableYMovementSupplier.getAsBoolean()) {
+      yMove = 0;
     }
 
-    @Override
-    public void initialize() {
-        fieldOrient = true;
-        lastMovingState = false;
+    Double headingOverride = headingOverrideSupplier.get();
 
-        // Flush buffers with current module angles
-        SwerveModuleState[] currentModuleState = drive.getModuleStates();
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < kAngleHistoryLength; j++) {
-                lastModuleAngles[i].addLast(currentModuleState[i].angle.getDegrees());
-            }
-        }
+    // Apply filter
+    xMove = xFilter.calculate(xMove);
+    yMove = yFilter.calculate(yMove);
+    rotate = rotateFilter.calculate(rotate);
+
+    // Apply deadband
+    xMove = MathUtil.applyDeadband(xMove, kDeadband);
+    yMove = MathUtil.applyDeadband(yMove, kDeadband);
+    rotate = MathUtil.applyDeadband(rotate, kDeadband);
+
+    // Determine if the robot should be moving,
+    boolean moving = xMove != 0 || yMove != 0 || rotate != 0;
+
+    // Capture module angles
+    SwerveModuleState[] currentModuleState = drive.getModuleStates();
+    for (int i = 0; i < 4; i++) {
+      lastModuleAngles[i].addLast(currentModuleState[i].angle.getDegrees());
     }
 
-    @Override
-    public void execute() {
-        // Read gamepad state
-        double xMove = xVelocitySupplier.getAsDouble();
-        double yMove = yVelocitySupplier.getAsDouble();
-        double rotate = angularVelocitySupplier.getAsDouble();
-        fieldOrient = fieldOrientedSupplier.getAsBoolean();
+    if (moving) {
+      xMove = Math.copySign(xMove * xMove, xMove);
+      yMove = Math.copySign(yMove * yMove, yMove);
+      rotate = Math.copySign(rotate * rotate, rotate);
 
-        if(disableXMovementSupplier.getAsBoolean()){
-            xMove = 0;
-        }
-        if(disableYMovementSupplier.getAsBoolean()){
-            yMove = 0;
-        }
+      if (slowModeSupplier.getAsBoolean()) {
+        xMove *= 0.3;
+        yMove *= 0.3;
+        rotate *= 0.25;
+      } else {
+        xMove *= 0.6;
+        yMove *= 0.6;
+        rotate *= 0.5;
+      }
 
-        Double headingOverride = headingOverrideSupplier.get();
+      // Now we need to map the percentages to Meters (or Radians) per second, as that is what the
+      // drive train
+      // subsystem accepts
+      xMove *= Constants.DriveConstants.kMaxDriveVelocityMetersPerSecond;
+      yMove *= Constants.DriveConstants.kMaxDriveVelocityMetersPerSecond;
+      rotate *= Constants.DriveConstants.kMaxAngularVelocityRadiansPerSecond;
 
-        //Apply filter
-        xMove = xFilter.calculate(xMove);
-        yMove = yFilter.calculate(yMove);
-        rotate = rotateFilter.calculate(rotate);
-
-        // Apply deadband
-        xMove = MathUtil.applyDeadband(xMove, kDeadband);
-        yMove = MathUtil.applyDeadband(yMove, kDeadband);
-        rotate = MathUtil.applyDeadband(rotate, kDeadband);
-
-        // Determine if the robot should be moving,
-        boolean moving = xMove != 0 || yMove != 0 || rotate != 0;
-
-        // Capture module angles
-        SwerveModuleState[] currentModuleState = drive.getModuleStates();
-        for (int i = 0; i < 4; i++) {
-            lastModuleAngles[i].addLast(currentModuleState[i].angle.getDegrees());
+      // Heading controller
+      if (headingOverride != null) {
+        if (!lastHeadingControllerEnabled) {
+          // Reset heading controller if we are entering it for the first time
+          headingController.reset();
         }
 
-        if (moving) {
-            xMove = Math.copySign(xMove * xMove, xMove);
-            yMove = Math.copySign(yMove * yMove, yMove);
-            rotate = Math.copySign(rotate * rotate, rotate);
-            
-            if (slowModeSupplier.getAsBoolean()){
-                xMove *= 0.3;
-                yMove *= 0.3;
-                rotate *= 0.25;
-            } else {
-                xMove *= 0.6;
-                yMove *= 0.6;
-                rotate *= 0.5;
-            }
+        // Calculate the rotate command in Rad/Sec so we can reuse the PID values used in auto
+        rotate = headingController.calculate(headingOverride);
+      }
 
-            // Now we need to map the percentages to Meters (or Radians) per second, as that is what the drive train
-            // subsystem accepts
-            xMove *= Constants.DriveConstants.kMaxDriveVelocityMetersPerSecond;
-            yMove *= Constants.DriveConstants.kMaxDriveVelocityMetersPerSecond;
-            rotate *= Constants.DriveConstants.kMaxAngularVelocityRadiansPerSecond;
+      SmartDashboard.putNumber("DriveWithController - xMove", xMove);
+      SmartDashboard.putNumber("DriveWithController - yMove", yMove);
+      SmartDashboard.putNumber("DriveWithController - rotate", rotate);
 
-            // Heading controller
-            if (headingOverride != null) {
-                if (!lastHeadingControllerEnabled) {
-                    // Reset heading controller if we are entering it for the first time
-                    headingController.reset();
-                }
+      drive.drive(xMove, yMove, rotate, fieldOrient);
+    } else {
+      // The robot is currently not moving. Check to see if the robot was moving
+      if (lastMovingState || latchedModuleStates == null) {
+        // The robot was moving and is now moving, so we need to latch the last module states for
+        // the "idle"
+        // position
+        latchedModuleStates =
+            new SwerveModuleState[] {
+              new SwerveModuleState(0, Rotation2d.fromDegrees(lastModuleAngles[0].get(0))),
+              new SwerveModuleState(0, Rotation2d.fromDegrees(lastModuleAngles[1].get(0))),
+              new SwerveModuleState(0, Rotation2d.fromDegrees(lastModuleAngles[2].get(0))),
+              new SwerveModuleState(0, Rotation2d.fromDegrees(lastModuleAngles[3].get(0))),
+            };
+        SmartDashboard.putNumber(
+            "Latched Module Angle 0", latchedModuleStates[0].angle.getDegrees());
+      }
 
-                // Calculate the rotate command in Rad/Sec so we can reuse the PID values used in auto
-                rotate = headingController.calculate(headingOverride);
-            }            
-
-            SmartDashboard.putNumber("DriveWithController - xMove", xMove);
-            SmartDashboard.putNumber("DriveWithController - yMove", yMove);
-            SmartDashboard.putNumber("DriveWithController - rotate", rotate);
-
-            drive.drive(xMove, yMove, rotate, fieldOrient);
-        } else {
-            // The robot is currently not moving. Check to see if the robot was moving
-            if (lastMovingState || latchedModuleStates == null) {
-                // The robot was moving and is now moving, so we need to latch the last module states for the "idle"
-                // position
-                latchedModuleStates = new SwerveModuleState[]{
-                    new SwerveModuleState(0, Rotation2d.fromDegrees(lastModuleAngles[0].get(0))),
-                    new SwerveModuleState(0, Rotation2d.fromDegrees(lastModuleAngles[1].get(0))),
-                    new SwerveModuleState(0, Rotation2d.fromDegrees(lastModuleAngles[2].get(0))),
-                    new SwerveModuleState(0, Rotation2d.fromDegrees(lastModuleAngles[3].get(0))),
-                };
-                SmartDashboard.putNumber("Latched Module Angle 0", latchedModuleStates[0].angle.getDegrees());
-            }
-
-            drive.setModuleStates(latchedModuleStates);
-        }
-
-        SmartDashboard.putBoolean("DriveWithController - Heading Override enabled", headingOverride != null);
-        SmartDashboard.putBoolean("DriveWithController - Moving", moving);
-        SmartDashboard.putBoolean("DriveWithController - Field oriented", fieldOrient);
-        lastMovingState = moving;
-        lastHeadingControllerEnabled = headingOverride != null;
+      drive.setModuleStates(latchedModuleStates);
     }
 
-    @Override 
-    public boolean isFinished() {
-        return false;
-    }
+    SmartDashboard.putBoolean(
+        "DriveWithController - Heading Override enabled", headingOverride != null);
+    SmartDashboard.putBoolean("DriveWithController - Moving", moving);
+    SmartDashboard.putBoolean("DriveWithController - Field oriented", fieldOrient);
+    lastMovingState = moving;
+    lastHeadingControllerEnabled = headingOverride != null;
+  }
 
-    @Override public void end(boolean interrupted) {
-        drive.stop();
-    }
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    drive.stop();
+  }
 }

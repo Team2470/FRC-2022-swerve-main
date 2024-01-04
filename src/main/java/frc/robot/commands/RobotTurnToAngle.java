@@ -34,7 +34,7 @@ public class RobotTurnToAngle extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double output = m_Controller.calculate(m_drivetrain.getOdomHeading().getDegrees(),m_angle);
+    double output = m_Controller.calculate(m_drivetrain.getOdomHeading().getDegrees(), m_angle);
 
     SmartDashboard.putNumber("TurnToAngle Output", output);
     SmartDashboard.putNumber("TurnToAngle Error", m_Controller.getPositionError());
