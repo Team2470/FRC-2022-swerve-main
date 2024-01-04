@@ -42,7 +42,7 @@ public class DriveWithController extends CommandBase {
   private final SlewRateLimiter yFilter = new SlewRateLimiter(5);
   private final SlewRateLimiter rotateFilter = new SlewRateLimiter(5);
 
-  private final TrapezoidProfile.Constraints headingControllerConstraints =  new TrapezoidProfile.Constraints(DriveConstants.kMaxAngularVelocityRadiansPerSecond/4.0, 2*Math.PI);
+  private final TrapezoidProfile.Constraints headingControllerConstraints =  new TrapezoidProfile.Constraints(DriveConstants.kMaxAngularVelocityRadiansPerSecond/4.0, 4*Math.PI);
   private final ProfiledPIDController headingController = new ProfiledPIDController(2.0, 0, 0, headingControllerConstraints);
   private boolean lastHeadingControllerEnabled = false;
 
