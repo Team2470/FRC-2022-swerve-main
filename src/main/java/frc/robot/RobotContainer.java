@@ -17,8 +17,10 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveWithController;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.PivotLEDs;
 import frc.robot.subsystems.PivotTemp;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.PivotLEDs.Side;
 import frc.robot.vision.VisionIOPhoton;
 
 /**
@@ -35,6 +37,8 @@ public class RobotContainer {
       new VisionSubsystem(
           new VisionIOPhoton("Back-Left", VisionConstants.kBackLeftCamera),
           new VisionIOPhoton("Back-Right", VisionConstants.kBackRightCamera));
+  private final PivotLEDs m_pivotLEDsLeft = new PivotLEDs(Side.kLeft, m_vision.getCameras()[0]);
+  private final PivotLEDs m_pivotLEDsRight = new PivotLEDs(Side.kRight, m_vision.getCameras()[1]);
   private final Drivetrain m_drivetrain = new Drivetrain(m_vision);
   private final PivotTemp m_pivotTemp = new PivotTemp();
 

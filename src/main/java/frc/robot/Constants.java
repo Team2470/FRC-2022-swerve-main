@@ -7,8 +7,10 @@ package frc.robot;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -144,7 +146,13 @@ public final class Constants {
   }
 
   public static class VisionConstants {
-    public static final Transform3d kBackLeftCamera = new Transform3d(); // TODO
-    public static final Transform3d kBackRightCamera = new Transform3d(); // TODO
+    public static final Transform3d kBackLeftCamera = new Transform3d(
+      new Translation3d(Units.inchesToMeters(-5.89), Units.inchesToMeters(6.30), Units.inchesToMeters(9.66)),
+      new Rotation3d(0,Units.degreesToRadians(-15.0),Units.degreesToRadians(150))
+    );
+    public static final Transform3d kBackRightCamera = new Transform3d(
+      new Translation3d(Units.inchesToMeters(-5.89), -Units.inchesToMeters(6.30), Units.inchesToMeters(9.66)),
+      new Rotation3d(0,Units.degreesToRadians(-15.0),Units.degreesToRadians(-150))
+    );
   }
 }

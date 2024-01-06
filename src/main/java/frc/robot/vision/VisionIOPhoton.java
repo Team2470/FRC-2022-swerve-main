@@ -1,7 +1,9 @@
 package frc.robot.vision;
 
 import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.FieldConstants;
+
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
@@ -16,6 +18,7 @@ public class VisionIOPhoton implements VisionIO {
   private final PhotonPoseEstimator odometry;
   private double pastTimestamp;
   public List<PhotonTrackedTarget> targets;
+  private int lastDetectedTargetCount = 0;
 
   /**
    * Implements PhotonVision camera
@@ -52,7 +55,8 @@ public class VisionIOPhoton implements VisionIO {
     }
 
     inputs.isNew = false;
-
+    lastDetectedTargetCount = result.targets.size();
+    SmartDashboard.putNumber(name + " detected tags", lastDetectedTargetCount);
     if (currentPose.isPresent() && targets != null) {
       if (targets.size() > 1) {
         double minDistance = Double.MAX_VALUE;
@@ -110,6 +114,21 @@ public class VisionIOPhoton implements VisionIO {
   @Override
   public void setReferencePose(Pose2d pose) {
     odometry.setReferencePose(pose);
+  }
+
+  @Override
+  public boolean isConnected() {
+      return camera.isConnected();
+  }
+
+  @Override
+  public int detectedTagCount() {
+    return lastDetectedTargetCount;
+  }
+
+  @Override
+  public void takeSnapshot() {
+      camera.takeOutputSnapshot();
   }
 
   private boolean checkValidResult(List<PhotonTrackedTarget> result) {

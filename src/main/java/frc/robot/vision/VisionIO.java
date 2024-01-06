@@ -29,4 +29,10 @@ public interface VisionIO {
   }
 
   default void setReferencePose(Pose2d pose) {}
+
+  default boolean isConnected() { return false; }
+
+  default int detectedTagCount() {return 0;}
+  
+  default void takeSnapshot() {} 
 }

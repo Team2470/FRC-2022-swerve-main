@@ -4,8 +4,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.vision.VisionIO;
+
+import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +37,8 @@ public class VisionSubsystem extends SubsystemBase {
     for (int i = 0; i < cameras.length; i++) {
       inputs[i] = new VisionIO.VisionIOInputs();
     }
+
+    // TODO configure a vision tab in ShuffleBoard
   }
 
   @Override
@@ -47,17 +54,23 @@ public class VisionSubsystem extends SubsystemBase {
       // Logger.getInstance().processInputs("Vision/" + cameras[i].getName() + "/Inputs",
       // inputs[i]);
 
-      if (inputs[i].hasTarget
-          && inputs[i].isNew
-          && !DriverStation.isAutonomous()
-          && inputs[i].maxDistance < LOWEST_DISTANCE) {
-        if (useSingleTag) {
-          if (inputs[i].singleIDUsed == acceptableTagID) {
+      // TODO figure out what the FMS sends, before robot match starts.
+      // 2910 had: !DriverStation.isAutonomous()
+      // Going to try to accept updates all the time. This should maybe settable/toggle by the driver or elsewhere to control
+      // when to accept updates
+      if (true) {
+        SmartDashboard.putBoolean("Vision accepting updates", true);
+        if (inputs[i].hasTarget && inputs[i].isNew && inputs[i].maxDistance < LOWEST_DISTANCE) {
+          if (useSingleTag) {
+            if (inputs[i].singleIDUsed == acceptableTagID) {
+              processVision(i);
+            }
+          } else {
             processVision(i);
           }
-        } else {
-          processVision(i);
-        }
+        }  
+      } else {
+        SmartDashboard.putBoolean("Vision accepting updates", false);
       }
     }
 
@@ -78,6 +91,11 @@ public class VisionSubsystem extends SubsystemBase {
   /** Returns the last recorded pose */
   public List<VisionSubsystem.PoseAndTimestamp> getVisionOdometry() {
     return results;
+  }
+
+  /** Returns the array of known cameras */
+  public VisionIO[] getCameras() {
+    return cameras;
   }
 
   /** Inner class to record a pose and its timestamp */
@@ -116,5 +134,15 @@ public class VisionSubsystem extends SubsystemBase {
 
   public double getMinDistance(int camera) {
     return inputs[camera].minDistance;
+  }
+
+  public void takeSnapshot() {
+    for (VisionIO io : cameras) {
+      io.takeSnapshot();
+    }
+  }
+
+  public Command takeSnapshotCommand() {
+    return Commands.runOnce(this::takeSnapshot);
   }
 }
