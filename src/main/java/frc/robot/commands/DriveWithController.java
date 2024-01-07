@@ -38,8 +38,8 @@ public class DriveWithController extends CommandBase {
   private boolean fieldOrient;
   private boolean lastMovingState = false;
   private SwerveModuleState[] latchedModuleStates;
-  private final SlewRateLimiter xFilter = new SlewRateLimiter(5);
-  private final SlewRateLimiter yFilter = new SlewRateLimiter(5);
+  private final SlewRateLimiter xFilter = new SlewRateLimiter(3);
+  private final SlewRateLimiter yFilter = new SlewRateLimiter(3);
   private final SlewRateLimiter rotateFilter = new SlewRateLimiter(5);
 
   private final TrapezoidProfile.Constraints headingControllerConstraints =  new TrapezoidProfile.Constraints(DriveConstants.kMaxAngularVelocityRadiansPerSecond/4.0, 4*Math.PI);
@@ -142,8 +142,8 @@ public class DriveWithController extends CommandBase {
         yMove *= 0.3;
         rotate *= 0.25;
       } else {
-        xMove *= 0.6;
-        yMove *= 0.6;
+        xMove *= 1.0;
+        yMove *= 1.0;
         rotate *= 0.5;
       }
 
