@@ -77,6 +77,7 @@ public class Drivetrain extends SubsystemBase {
 
     Mk4ModuleConfiguration moduleConfig = Mk4ModuleConfiguration.getDefaultSteerNEO();
     moduleConfig.setNominalVoltage(Constants.DriveConstants.kDriveVoltageCompensation);
+    moduleConfig.setDriveCurrentLimit(40);
 
     // : Swerve setup
     this.m_swerve_modules[0] =
@@ -101,7 +102,7 @@ public class Drivetrain extends SubsystemBase {
             },
             new Pose2d(),
             VecBuilder.fill(0.1, 0.1, 0.1),
-            VecBuilder.fill(0.5, 0.5, 0.5));
+            VecBuilder.fill(1.5, 1.5, 1.5)); // 7028 uses 1.5
 
     var odometryTab =
         tab.getLayout("Odometry", BuiltInLayouts.kList).withSize(2, 2).withPosition(10, 0);

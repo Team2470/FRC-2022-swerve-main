@@ -60,7 +60,7 @@ public class VisionSubsystem extends SubsystemBase {
       // when to accept updates
       if (true) {
         SmartDashboard.putBoolean("Vision accepting updates", true);
-        if (inputs[i].hasTarget && inputs[i].isNew && inputs[i].maxDistance < LOWEST_DISTANCE) {
+        if (inputs[i].hasTarget && inputs[i].isNew && inputs[i].maxDistance < LOWEST_DISTANCE && inputs[i].maxAmbiguity < 0.4) {
           if (useSingleTag) {
             if (inputs[i].singleIDUsed == acceptableTagID) {
               processVision(i);
