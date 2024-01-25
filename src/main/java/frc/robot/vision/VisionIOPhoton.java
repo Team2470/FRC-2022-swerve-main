@@ -34,7 +34,7 @@ public class VisionIOPhoton implements VisionIO {
     odometry =
         new PhotonPoseEstimator(
             FieldConstants.BLUE_FIELD_LAYOUT,
-            PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP,
+            PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_RIO,
             camera,
             pose);
     odometry.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);

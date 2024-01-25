@@ -6,10 +6,10 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain;
 
-public class RobotTurnToAngle extends CommandBase {
+public class RobotTurnToAngle extends Command {
 
   private Drivetrain m_drivetrain;
   private PIDController m_Controller = new PIDController(.1, 0, 0);

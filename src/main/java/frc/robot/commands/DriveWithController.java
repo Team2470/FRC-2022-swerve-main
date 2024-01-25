@@ -10,7 +10,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.util.CircularBuffer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -19,7 +19,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-public class DriveWithController extends CommandBase {
+public class DriveWithController extends Command {
   private static final double kDeadband = 0.15;
 
   private final Drivetrain drive;
@@ -184,10 +184,10 @@ public class DriveWithController extends CommandBase {
         // position
         latchedModuleStates =
             new SwerveModuleState[] {
-              new SwerveModuleState(0, Rotation2d.fromDegrees(lastModuleAngles[0].get(0))),
-              new SwerveModuleState(0, Rotation2d.fromDegrees(lastModuleAngles[1].get(0))),
-              new SwerveModuleState(0, Rotation2d.fromDegrees(lastModuleAngles[2].get(0))),
-              new SwerveModuleState(0, Rotation2d.fromDegrees(lastModuleAngles[3].get(0))),
+              new SwerveModuleState(0, Rotation2d.fromDegrees((double)lastModuleAngles[0].get(0))),
+              new SwerveModuleState(0, Rotation2d.fromDegrees((double)lastModuleAngles[1].get(0))),
+              new SwerveModuleState(0, Rotation2d.fromDegrees((double)lastModuleAngles[2].get(0))),
+              new SwerveModuleState(0, Rotation2d.fromDegrees((double)lastModuleAngles[3].get(0))),
             };
         SmartDashboard.putNumber(
             "Latched Module Angle 0", latchedModuleStates[0].angle.getDegrees());

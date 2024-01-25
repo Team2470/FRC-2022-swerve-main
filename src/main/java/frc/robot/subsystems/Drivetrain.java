@@ -2,10 +2,16 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkMax;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
@@ -19,6 +25,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -203,6 +210,10 @@ public class Drivetrain extends SubsystemBase {
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotation);
     }
 
+    setChassisSpeeds(chassisSpeeds);
+  }
+
+  private void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
     setModuleStates(Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds));
   }
 
@@ -291,22 +302,43 @@ public class Drivetrain extends SubsystemBase {
   }
 
   // : uses drivetrain member
-  public Command createAutoPath(
-      HashMap<String, Command> eventMap, String pathName, PathConstraints pathConstraints) {
-    List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName, pathConstraints);
+  /** DOES NOT WORK CURRENTLY WITH NEW PATHPLANNER */
+  public Command createAutoPath(HashMap<String, Command> events, String pathFile, PathConstraints pathConstraints) {
+    AutoBuilder.configureHolonomic(
+      this::getPose, this::resetOdometry, 
+      () -> DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates()),
+      this::setChassisSpeeds, 
+      new HolonomicPathFollowerConfig(
+        new PIDConstants(5d,0d,0d),
+        new PIDConstants(2d,0d,0d),
+        3.5, //: max speed (m/s)
+        0.4, //: distance between modules and center of robot
+        new ReplanningConfig()
+      ), () -> {
+        var alliances = DriverStation.getAlliance();
+        if (alliances.isPresent()) {
+          return alliances.get() == DriverStation.Alliance.Red;
+        } return false;
+      }, this);
 
-    SwerveAutoBuilder autoBuilder =
-        new SwerveAutoBuilder(
-            this::getPose,
-            this::resetOdometry,
-            Constants.DriveConstants.kDriveKinematics,
-            AutoConstants.kPIDTranslation,
-            AutoConstants.kPIDRotation,
-            this::setModuleStates,
-            eventMap,
-            true,
-            this);
-
-    return autoBuilder.fullAuto(pathGroup);
+      return AutoBuilder.buildAuto(pathFile);
   }
+  // public Command createAutoPath(
+  //     HashMap<String, Command> eventMap, String pathName, PathConstraints pathConstraints) {
+  //   List<PathPlannerTrajectory> pathGroup = PathPlannerPath.fromChoreoTrajectory(pathName, pathConstraints);
+
+  //   SwerveAutoBuilder autoBuilder =
+  //       new SwerveAutoBuilder(
+  //           this::getPose,
+  //           this::resetOdometry,
+  //           Constants.DriveConstants.kDriveKinematics,
+  //           AutoConstants.kPIDTranslation,
+  //           AutoConstants.kPIDRotation,
+  //           this::setModuleStates,
+  //           eventMap,
+  //           true,
+  //           this);
+
+  //   return autoBuilder.fullAuto(pathGroup);
+  // }
 }

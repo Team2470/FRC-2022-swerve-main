@@ -6,7 +6,8 @@ package frc.robot;
 
 import com.kennedyrobotics.auto.AutoSelector;
 import com.kennedyrobotics.hardware.misc.RevDigit;
-import com.pathplanner.lib.server.PathPlannerServer;
+import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -55,7 +56,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    PathPlannerServer.startServer(5811);
+    // PathPlannerServer.startServer(5811);`
 
     // Auto Selector
     m_revDigit = new RevDigit();
@@ -65,6 +66,12 @@ public class RobotContainer {
 
     // Initialize other autos here
     // TODO
+    m_autoSelector.registerCommand("Test", "TEST", m_drivetrain.createAutoPath(
+      null, "New Auto", 
+      new PathConstraints(3, 2, 
+        Constants.DriveConstants.kMaxAngularVelocityRadiansPerSecond, 
+        Constants.DriveConstants.kMaxAngularVelocityRadiansPerSecond)
+    ));
 
     m_autoSelector.initialize();
   }

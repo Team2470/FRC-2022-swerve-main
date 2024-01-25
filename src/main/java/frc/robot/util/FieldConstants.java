@@ -12,7 +12,7 @@ public class FieldConstants {
   public static final double FIELD_LENGTH_M = Units.feetToMeters(54.0);
   public static AprilTagFieldLayout BLUE_FIELD_LAYOUT;
   public static AprilTagFieldLayout RED_FIELD_LAYOUT;
-  private static DriverStation.Alliance storedAlliance = DriverStation.Alliance.Invalid;
+  private static DriverStation.Alliance storedAlliance = DriverStation.Alliance.Blue; // DriverStation.Alliance.Invalid;
 
   static {
     try {
@@ -96,7 +96,7 @@ public class FieldConstants {
   };
 
   public static AprilTagFieldLayout getFieldLayout() {
-    if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
+    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
       return BLUE_FIELD_LAYOUT;
     } else {
       return RED_FIELD_LAYOUT;
@@ -104,8 +104,8 @@ public class FieldConstants {
   }
 
   public static void update() {
-    if (DriverStation.getAlliance() != storedAlliance) {
-      storedAlliance = DriverStation.getAlliance();
+    if (DriverStation.getAlliance().get() != storedAlliance) {
+      storedAlliance = DriverStation.getAlliance().get();
       System.out.println(storedAlliance);
 
       PORTAL_TAG_X =
