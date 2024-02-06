@@ -33,14 +33,13 @@ public final class Constants {
     private CanBus(String value) {
       this.bus_name = value;
     }
-  }
-
+  } 
   public static class DriveConstants {
     // : Physical constants (motors, sensors, ...)
     public static final double kDriveVoltageCompensation = 12;
     public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
-    public static final double kWheelBaseLengthMeters = Units.inchesToMeters(25.5);
-    public static final double kTrackWidthMeters = Units.inchesToMeters(20.5);
+    public static final double kWheelBaseLengthMeters = Units.inchesToMeters(11.375*2);
+    public static final double kTrackWidthMeters = Units.inchesToMeters(12.375*2);
 
     public static final double kDriveGearReduction =
         SdsModuleConfigurations.MK4I_L3.getDriveReduction();

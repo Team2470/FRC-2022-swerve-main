@@ -4,16 +4,19 @@ import com.swervedrivespecialties.swervelib.ctre.*;
 import com.swervedrivespecialties.swervelib.rev.*;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 
-/**
- * @deprecated use {@link MkSwerveModuleBuilder} instead, which provides support for CANivores.
- */
-@Deprecated(since = "2023.1.2.0", forRemoval = true)
+
 public final class Mk4iSwerveModuleHelper {
     private Mk4iSwerveModuleHelper() {
     }
 
     private static DriveControllerFactory<?, Integer> getFalcon500DriveFactory(Mk4ModuleConfiguration configuration) {
         return new Falcon500DriveControllerFactoryBuilder()
+                .withVoltageCompensation(configuration.getNominalVoltage())
+                .withCurrentLimit(configuration.getDriveCurrentLimit())
+                .build();
+    }
+    private static DriveControllerFactory<?, Integer> getKrakenDriveFactory(Mk4ModuleConfiguration configuration) {
+        return new KrakenDriveControllerFactoryBuilder()
                 .withVoltageCompensation(configuration.getNominalVoltage())
                 .withCurrentLimit(configuration.getDriveCurrentLimit())
                 .build();
@@ -193,6 +196,28 @@ public final class Mk4iSwerveModuleHelper {
         );
     }
 
+        public static SwerveModule createKrakenNeo(
+                ShuffleboardLayout container,
+                Mk4ModuleConfiguration configuration,
+                GearRatio gearRatio,
+                int driveMotorPort,
+                int steerMotorPort,
+                int steerEncoderPort,
+                double steerOffset
+        ) {
+                return new SwerveModuleFactory<>(
+                        gearRatio.getConfiguration(),
+                        getKrakenDriveFactory(configuration),
+                        getNeoSteerFactory(configuration)
+                ).create(
+                        container,
+                        driveMotorPort,
+                        new SteerConfiguration<>(
+                                steerMotorPort,
+                                new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+                        )
+                );
+        }
     /**
      * Creates a Mk4i swerve module that uses NEOs for driving and steering.
      * Module information is displayed in the specified ShuffleBoard container.
