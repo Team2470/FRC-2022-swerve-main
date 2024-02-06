@@ -36,10 +36,11 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final VisionSubsystem m_vision =
       new VisionSubsystem(
-          new VisionIOPhoton("Back-Left", VisionConstants.kBackLeftCamera),
-          new VisionIOPhoton("Back-Right", VisionConstants.kBackRightCamera));
-  private final PivotLEDs m_pivotLEDsLeft = new PivotLEDs(Side.kLeft, m_vision.getCameras()[0]);
-  private final PivotLEDs m_pivotLEDsRight = new PivotLEDs(Side.kRight, m_vision.getCameras()[1]);
+          // new VisionIOPhoton("Back-Left", VisionConstants.kBackLeftCamera),
+          // new VisionIOPhoton("Back-Right", VisionConstants.kBackRightCamera)
+        );
+  // private final PivotLEDs m_pivotLEDsLeft = new PivotLEDs(Side.kLeft, m_vision.getCameras()[0]);
+  // private final PivotLEDs m_pivotLEDsRight = new PivotLEDs(Side.kRight, m_vision.getCameras()[1]);
   private final Drivetrain m_drivetrain = new Drivetrain(m_vision);
   private final PivotTemp m_pivotTemp = new PivotTemp();
 

@@ -157,9 +157,9 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void setNominalVoltages(double voltage) {
-    for (SwerveModule swerveModule : m_swerve_modules) {
-      ((CANSparkMax) swerveModule.getDriveMotor()).enableVoltageCompensation(voltage);
-    }
+    // for (SwerveModule swerveModule : m_swerve_modules) {
+    //   ((CANSparkMax) swerveModule.getDriveMotor()).enableVoltageCompensation(voltage);
+    // }
   }
 
   public SwerveModuleState[] getModuleStates() {
