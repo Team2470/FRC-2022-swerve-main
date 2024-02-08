@@ -46,7 +46,8 @@ public class KrakenDriveControllerFactoryBuilder {
 
             if (hasCurrentLimit()) {
                 motorConfig.CurrentLimits.SupplyCurrentLimit = currentLimit;
-                motorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+                motorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+                motorConfig.CurrentLimits.StatorCurrentLimitEnable = false;
             }
 
             if (hasVoltageCompensation()) {
