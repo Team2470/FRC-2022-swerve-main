@@ -12,6 +12,7 @@ import edu.wpi.first.util.CircularBuffer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drivetrain;
@@ -38,8 +39,8 @@ public class DriveWithController extends Command {
   private boolean fieldOrient;
   private boolean lastMovingState = false;
   private SwerveModuleState[] latchedModuleStates;
-  private final SlewRateLimiter xFilter = new SlewRateLimiter(3);
-  private final SlewRateLimiter yFilter = new SlewRateLimiter(3);
+  private final SlewRateLimiter xFilter = new SlewRateLimiter(5);
+  private final SlewRateLimiter yFilter = new SlewRateLimiter(5);
   private final SlewRateLimiter rotateFilter = new SlewRateLimiter(5);
 
   private final TrapezoidProfile.Constraints headingControllerConstraints =  new TrapezoidProfile.Constraints(DriveConstants.kMaxAngularVelocityRadiansPerSecond/4.0, 4*Math.PI);
@@ -133,13 +134,21 @@ public class DriveWithController extends Command {
     }
 
     if (moving) {
-      xMove = Math.copySign(xMove * xMove, xMove);
-      yMove = Math.copySign(yMove * yMove, yMove);
+      //xMove = Math.copySign(xMove * xMove, xMove);
+      //yMove = Math.copySign(yMove * yMove, yMove);
       rotate = Math.copySign(rotate * rotate, rotate);
 
+      Translation2d moveTranslation = new Translation2d(xMove, yMove);
+      double moveSpeed = moveTranslation.getNorm() * moveTranslation.getNorm();
+      Rotation2d angle = moveTranslation.getAngle();
+
+      xMove = moveSpeed * angle.getCos();
+      yMove = moveSpeed * angle.getSin();
+
+
       if (slowModeSupplier.getAsBoolean()) {
-        xMove *= 0.3;
-        yMove *= 0.3;
+        xMove *= 0.15;
+        yMove *= 0.15;
         rotate *= 0.25;
       } else {
         xMove *= 1.0;

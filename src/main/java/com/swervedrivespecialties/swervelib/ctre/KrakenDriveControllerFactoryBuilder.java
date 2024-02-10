@@ -55,6 +55,8 @@ public class KrakenDriveControllerFactoryBuilder {
                 motorConfig.Voltage.PeakReverseVoltage = -nominalVoltage;
             }
 
+            motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
             TalonFX motor = new TalonFX(driveConfiguration);
 
             motor.setNeutralMode(NeutralModeValue.Brake);
