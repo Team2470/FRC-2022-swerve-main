@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.CircularBuffer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -101,10 +102,18 @@ public class DriveWithController extends CommandBase {
         }
 
         if (moving) {
-            xMove = Math.copySign(xMove * xMove, xMove);
-            yMove = Math.copySign(yMove * yMove, yMove);
+            // xMove = Math.copySign(xMove * xMove, xMove);
+            // yMove = Math.copySign(yMove * yMove, yMove);
             rotate = Math.copySign(rotate * rotate, rotate);
+    
+            Translation2d moveTranslation = new Translation2d(xMove, yMove);
+            double moveSpeed = moveTranslation.getNorm() * moveTranslation.getNorm();
+            Rotation2d angle = moveTranslation.getAngle();
             
+            xMove = moveSpeed * angle.getCos();
+            yMove = moveSpeed * angle.getSin();
+
+        
             if (drive.getSlowMode() || controller.getXButton()){
                 xMove *= 0.3;
                 yMove *= 0.3;

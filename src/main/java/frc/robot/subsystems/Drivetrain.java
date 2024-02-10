@@ -6,7 +6,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+// import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -60,7 +60,6 @@ public class Drivetrain extends SubsystemBase {
          ( "Pitch", () -> m_imu.getPitch() );
       imuShuffleboard.addNumber
          ( "Roll", () -> m_imu.getRoll() );
-
       
 
       Mk4ModuleConfiguration moduleConfig = Mk4ModuleConfiguration.getDefaultSteerNEO();
@@ -68,41 +67,36 @@ public class Drivetrain extends SubsystemBase {
 
       //: Swerve setup
       this.m_swerve_modules[0] = this.createModule(
-         Constants.Drive.kFrontLeft,
-         moduleConfig, tab
+         Constants.Drive.kFrontLeft, moduleConfig, tab
       );
       this.m_swerve_modules[1] = this.createModule(
-         Constants.Drive.kFrontRight,
-         moduleConfig, tab
+         Constants.Drive.kFrontRight, moduleConfig, tab
       );
       this.m_swerve_modules[2] = this.createModule(
-         Constants.Drive.kBackLeft,
-         moduleConfig, tab
+         Constants.Drive.kBackLeft,moduleConfig, tab
       );
       this.m_swerve_modules[3] = this.createModule(
-         Constants.Drive.kBackRight,
-         moduleConfig, tab
+         Constants.Drive.kBackRight, moduleConfig, tab
       );
 
       // Setup odometry
       m_odometry = new SwerveDriveOdometry(
          Constants.Drive.kDriveKinematics,
-         getIMUHeading(),
-         getModulePositions()
+         getIMUHeading(), getModulePositions()
       );
 
       var odometryTab = tab.getLayout("Odometry", BuiltInLayouts.kList)
          .withSize(2,2)
          .withPosition(10,0);
 
-   odometryTab.addNumber("X (inches)", ()->Units.metersToInches(m_odometry.getPoseMeters().getX()));
-   odometryTab.addNumber("Y (inches)", ()->Units.metersToInches(m_odometry.getPoseMeters().getY()));
-   odometryTab.addNumber("Theta (degrees)", ()->m_odometry.getPoseMeters().getRotation().getDegrees());
+      odometryTab.addNumber("X (inches)", ()->Units.metersToInches(m_odometry.getPoseMeters().getX()));
+      odometryTab.addNumber("Y (inches)", ()->Units.metersToInches(m_odometry.getPoseMeters().getY()));
+      odometryTab.addNumber("Theta (degrees)", ()->m_odometry.getPoseMeters().getRotation().getDegrees());
 
-   tab.add("Field", m_field)
-      .withSize(5,4)
-      .withPosition(8,2);
-}
+      tab.add("Field", m_field)
+         .withSize(5,4)
+         .withPosition(8,2);
+   }
 
    private SwerveModule createModule(ModuleConfig config, Mk4ModuleConfiguration moduleConfig, ShuffleboardTab tab) {
       return Mk4SwerveModuleHelper.createNeo(
@@ -179,12 +173,9 @@ public class Drivetrain extends SubsystemBase {
       drive(0, 0, 0, false);
    }
 
-   @Override
-   public void periodic() {
-
+   @Override public void periodic() {
       // Upldate robote pose
       m_odometry.update(getIMUHeading(), getModulePositions());
-
       m_field.setRobotPose(m_odometry.getPoseMeters());
 
       SmartDashboard.putBoolean("Slow Mode", m_slowMode);
@@ -224,5 +215,4 @@ public class Drivetrain extends SubsystemBase {
    public void resetOdometry(Pose2d pose) {
       m_odometry.resetPosition(getIMUHeading(), getModulePositions(), pose);
    }
-   
 }
