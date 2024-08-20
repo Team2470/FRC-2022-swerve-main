@@ -428,9 +428,9 @@ public class RobotContainer {
 	 m_controller.rightBumper()
 		  .onTrue(new GripperCloseAndWristUp(m_armJoint1, m_Armjoint2, m_Gripper, m_Wrist, m_drivetrain));
 
-    m_controller.povRight().whileTrue(new RobotTurnToAngle(m_drivetrain, 0));
+    // m_controller.povRight().whileTrue(new RobotTurnToAngle(m_drivetrain, 0));
 
-    m_controller.povLeft().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
+    // m_controller.povLeft().whileTrue(new RobotTurnToAngle(m_drivetrain, 180));
 
 	m_controller.back().onTrue(new InstantCommand(
 		()->m_Gripper.enableRightSight(!m_Gripper.getRightSightEnabled())
@@ -471,7 +471,7 @@ public class RobotContainer {
 	 // new
 	 // ArmJoint1Outward(m_armJoint1).beforeStarting(()->m_drivetrain.setSlowMode(true))
 	 // );
-	 m_buttonPad.button(4).onTrue(
+	 m_controller.povUp().onTrue(
 		  new MoveArmsToCube2(m_armJoint1, m_Armjoint2, m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 	 // m_buttonPad.button(5).whileTrue(
@@ -508,7 +508,7 @@ public class RobotContainer {
 	 m_buttonPad.button(12).onTrue(
 		  new MoveWristJoint2(m_Wrist, 0).beforeStarting(() -> m_drivetrain.setSlowMode(true)));
 
-	 m_buttonPad.button(10).onTrue(
+	 m_controller.povLeft().onTrue(
 		  new ParallelCommandGroup(
 				new MoveArmsToStartingPosition(m_armJoint1, m_Armjoint2, m_Wrist).beforeStarting(()->m_vision.showGrid()),
 				new SequentialCommandGroup(
@@ -517,7 +517,7 @@ public class RobotContainer {
 					 new RunCommand(() -> m_drivetrain.setSlowMode(false))))
 
 	 );
-	 	m_buttonPad.button(9).onTrue(
+	 	m_controller.povDown().onTrue(
 		  	new ScheduleCommand(new RunCommand(() -> m_Gripper.openGripper(), m_Gripper)).alongWith(
 				new MoveArmsToPickUpPosition(m_armJoint1, m_Armjoint2, m_Wrist)
 					.beforeStarting(() -> m_drivetrain.setSlowMode(true)).beforeStarting(()->m_vision.showGripper())
