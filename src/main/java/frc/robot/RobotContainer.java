@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -52,6 +53,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.ArmJoint1Outward;
 import frc.robot.commands.ArmJoint2Inward;
 import frc.robot.commands.ArmJoint2Outward;
 import frc.robot.commands.BalanceOnChargeStation;
@@ -91,6 +93,7 @@ public class RobotContainer {
 	// OI
 	private final CommandXboxController m_controller = new CommandXboxController(0);
 	private final CommandJoystick m_buttonPad = new CommandJoystick(1);
+	private final CommandJoystick m_testPad = new CommandJoystick(2);
 	// The robot's subsystems and commands are defined here...
 	private final Drivetrain m_drivetrain = new Drivetrain();
 	private final ArmJoint1 m_armJoint1 = new ArmJoint1();
@@ -526,6 +529,19 @@ public class RobotContainer {
 	 	m_buttonPad.button(1).onTrue(
 		  new MoveArmsToCone2NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)
 				.beforeStarting(() -> m_drivetrain.setSlowMode(true))
+		);
+
+		m_testPad.button(1).whileTrue(
+		  new ArmJoint1Outward(m_armJoint1)
+
+		);
+		m_testPad.button(5).whileTrue(
+		  new FunctionalCommand(
+		  	() -> {},
+			() -> m_armJoint1.inwards(),
+			(Boolean foo) -> m_armJoint1.stop(),
+			() -> false
+		  )
 		);
   	}
 

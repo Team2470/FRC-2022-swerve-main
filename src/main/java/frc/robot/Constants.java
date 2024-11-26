@@ -135,11 +135,11 @@ public final class Constants {
       public static final int kSolenoidChannelRatchet = 7;
       public static final int kMotorID = 20;
       public static final int kEncoderID = 20;
-      public static final CanBus kMotorCANBus = CanBus.kCanivore; 
-      public static final CanBus kEncoderCANBus = CanBus.kCanivore;
+      //public static final CanBus kMotorCANBus = CanBus.kCanivore; 
+      public static final CanBus kEncoderCANBus = CanBus.kRoboRIO;
 
-      public static final int kReverseSoftLimit = 550;
-      public static final int kForwardSoftLimit = 1289;
+      public static final double kReverseSoftLimit = (550.0/4096.0)*360.0;
+      public static final double kForwardSoftLimit = (1289.0/4096.0)*360.0;
    }
 
    public static class Auto {
