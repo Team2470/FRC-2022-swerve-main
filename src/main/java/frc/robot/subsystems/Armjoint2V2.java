@@ -13,6 +13,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -25,7 +29,7 @@ import frc.robot.Constants.PidArmCfg;
 
 public class Armjoint2V2 extends PIDSubsystem {
   /** Creates a new Armjoint2V2. */
-  private final WPI_TalonFX m_motor;
+  private final CANSparkMax m_motor;
   private final CANCoder m_encoder;
   private final PidArmCfg m_Cfg;
   private final ArmFeedforward m_feedforward;
@@ -48,14 +52,14 @@ public class Armjoint2V2 extends PIDSubsystem {
           m_Cfg.vVoltSecondPerRad, m_Cfg.aVoltSecondSquaredPerRad);
         
     
-        m_motor = new WPI_TalonFX(m_Cfg.motorID, m_Cfg.motorCanbus.bus_name);
-        m_motor.configFactoryDefault();
+        m_motor = new CANSparkMax(m_Cfg.motorID, MotorType.kBrushless);
+        m_motor.restoreFactoryDefaults();
         m_motor.setInverted(true);
-        m_motor.configForwardSoftLimitEnable(true);
-        m_motor.configReverseSoftLimitEnable(true);
-        m_motor.configReverseSoftLimitThreshold(m_Cfg.reverseSoftLimit);
-        m_motor.configForwardSoftLimitThreshold(m_Cfg.forwardSoftLimit);
-        m_motor.setNeutralMode(NeutralMode.Brake);
+      //  m_motor.configForwardSoftLimitEnable(true);
+      //  m_motor.configReverseSoftLimitEnable(true);
+      //  m_motor.configReverseSoftLimitThreshold(m_Cfg.reverseSoftLimit);
+      //  m_motor.configForwardSoftLimitThreshold(m_Cfg.forwardSoftLimit);
+        m_motor.setIdleMode(IdleMode.kBrake);
         //m_motor.configVoltageCompSaturation(10);
         //m_motor.enableVoltageCompensation(true);
     
@@ -66,11 +70,33 @@ public class Armjoint2V2 extends PIDSubsystem {
         m_encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
         m_encoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
     
-        m_motor.configRemoteFeedbackFilter(m_encoder, 0);
-        m_motor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
-        m_motor.setSensorPhase(true);
-    
-    
+        // m_motor.configRemoteFeedbackFilter(m_encoder, 0);
+        // m_motor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
+        // m_motor.setSensorPhase(true);
+
+        // Reduce CAN Bus usage, since we are using this as a dumb motor for week zero we can turn down
+        // a lot of the status frame periods. When we start using the encoder, then we can increase the
+        // kStatus2 frame back to 20ms (or 10ms)
+        //
+        // See ths page for what each frame contains: https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces#can-packet-structure
+        //
+        // Default 10ms: Applied output, Faults, Sticky Faults, Is Follower
+        m_motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100);
+        // Default 20ms: Motor Velocity, Motor Temperature, Motor Voltage, Motor Current
+        m_motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+        // Default 20ms: Motor Position
+        m_motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
+        // Default 50ms: Analog Sensor Voltage, Analog Sensor Velocity, Analog Sensor Position
+        m_motor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
+        // Default 20ms: Alternate Encoder Velocity, Alternate Encoder Position
+        m_motor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 500);
+        // Default 200ms: Duty Cycle Absolute Encoder Position, Duty Cycle Absolute Encoder Absolute Angle
+        m_motor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 500);
+        // Default 200ms: Duty Cycle Absolute Encoder Velocity,  Duty Cycle Absolute Encoder Frequency
+        m_motor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 500);
+        // IDK what status 7 is, but I'm not going to touch it.
+
+        m_motor.burnFlash();
   }
 
   @Override
@@ -103,14 +129,14 @@ public class Armjoint2V2 extends PIDSubsystem {
   
   
   public void upwards(){
-    m_motor.set(ControlMode.PercentOutput, .5);
+    m_motor.set(.5);
   }
 
   public void downwards() {
-    m_motor.set(ControlMode.PercentOutput, -.5);
+    m_motor.set(-.5);
   }
   public void stop() { 
-    m_motor.neutralOutput();
+    m_motor.stopMotor();
   }
 
   @Override

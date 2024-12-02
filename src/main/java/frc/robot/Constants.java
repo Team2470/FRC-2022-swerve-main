@@ -163,7 +163,7 @@ public final class Constants {
    public static class PidArmCfg {
       public int motorID, encoderID;
       public CanBus motorCanbus, encoderCanbus;
-      public int reverseSoftLimit, forwardSoftLimit;
+      public double reverseSoftLimit, forwardSoftLimit;
       public double maxVelocityRadPerSecond, maxAccelerationRadPerSecond;
       public double svolts, gvolts, vVoltSecondPerRad, aVoltSecondSquaredPerRad;
       public double P,I,D;
@@ -184,7 +184,7 @@ public final class Constants {
          return this;
       }
 
-      public PidArmCfg setLimits (int reverseSoftLimit, int forwardSoftLimit) {
+      public PidArmCfg setLimits (double reverseSoftLimit, double forwardSoftLimit) {
          this.reverseSoftLimit = reverseSoftLimit;
          this.forwardSoftLimit= forwardSoftLimit;
          return this;
@@ -233,8 +233,8 @@ public final class Constants {
 
       public static final PidArmCfg kArmjoint2 = new PidArmCfg()
          .setCanIDs(21, 21)
-         .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
-         .setLimits(0, 1960) //back  1600 min 3400
+         .setCanbuses(CanBus.kRoboRIO, CanBus.kRoboRIO)
+         .setLimits(0, 1960.0/4096.0*360.0) //back  1600 min 3400
          .setMotionProfileConstants(3.14, 3.14)
          .setFeedforwardConstants(0, 0.31, 5.39, 0)
          .setPID(.55, 0, 0)
