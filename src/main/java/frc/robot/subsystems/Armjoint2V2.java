@@ -105,7 +105,6 @@ public class Armjoint2V2 extends PIDSubsystem {
     super.periodic();
     SmartDashboard.putNumber(m_Cfg.name + " encoderAbosoluteAngle", m_encoder.getAbsolutePosition());
     SmartDashboard.putNumber(m_Cfg.name + " encoderAngle", m_encoder.getPosition());
-    SmartDashboard.putNumber(m_Cfg.name + " Motor Selected Sensor position", m_motor.getSelectedSensorPosition());
     SmartDashboard.putNumber(m_Cfg.name + " Motor Error", getController().getPositionError());
     SmartDashboard.putNumber(m_Cfg.name + " Angle From Ground", getAngleFromGround().getDegrees());
     SmartDashboard.putNumber(m_Cfg.name + " Angle From Joint", getAngle().getDegrees());
@@ -129,12 +128,21 @@ public class Armjoint2V2 extends PIDSubsystem {
   
   
   public void upwards(){
-    m_motor.set(.5);
+    if (getAngle().getDegrees() >= m_Cfg.forwardSoftLimit) {
+      m_motor.stopMotor();
+    } else {
+      m_motor.set(.5);
+    } 
   }
 
   public void downwards() {
-    m_motor.set(-.5);
+    if (getAngle().getDegrees() <= m_Cfg.reverseSoftLimit) {
+      m_motor.stopMotor();
+    } else {
+      m_motor.set(-.5); 
+    }
   }
+
   public void stop() { 
     m_motor.stopMotor();
   }
@@ -146,6 +154,16 @@ public class Armjoint2V2 extends PIDSubsystem {
 
     if (outPutVoltage > m_Cfg.outPutVoltage ) {
       outPutVoltage =  m_Cfg.outPutVoltage;
+    }
+
+    double angle = getAngle().getDegrees();
+
+    if(angle <= m_Cfg.reverseSoftLimit && outPutVoltage < 0){
+      outPutVoltage = 0;
+    }
+
+    if(m_Cfg.forwardSoftLimit <= angle && 0 < outPutVoltage) {
+      outPutVoltage = 0;
     }
 
     m_motor.setVoltage(outPutVoltage);

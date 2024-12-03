@@ -543,6 +543,8 @@ public class RobotContainer {
 			() -> false
 		  )
 		);
+		m_testPad.button(6).whileTrue(new ArmJoint2Outward(m_Armjoint2));
+		m_testPad.button(2).whileTrue(new ArmJoint2Inward(m_Armjoint2));
   	}
 
   /**
