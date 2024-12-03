@@ -98,7 +98,7 @@ public class ArmJoint1 extends SubsystemBase {
 
   public void outwards(){
     engageRatchet(false);
-    if (getAngle().getDegrees() >= Constants.ArmJoint1.kForwardSoftLimit) {
+    if (m_encoder.getPosition() >= Constants.ArmJoint1.kForwardSoftLimit) {
       m_motor.stopMotor();
     } else {
       m_motor.set( .25);
@@ -107,7 +107,7 @@ public class ArmJoint1 extends SubsystemBase {
 
   public void inwards() {
     engageRatchet(true);
-    if (getAngle().getDegrees() <= Constants.ArmJoint1.kReverseSoftLimit) {
+    if (m_encoder.getPosition() <= Constants.ArmJoint1.kReverseSoftLimit) {
       m_motor.stopMotor();
     } else {
       m_motor.set( -.5);

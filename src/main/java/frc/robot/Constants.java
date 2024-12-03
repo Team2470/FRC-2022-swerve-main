@@ -246,8 +246,8 @@ public final class Constants {
 
       public static final PidArmCfg kWrist = new PidArmCfg()
          .setCanIDs(22, 22)
-         .setCanbuses(CanBus.kCanivore, CanBus.kCanivore)
-         .setLimits(-1550, 1000) //back  1600 min 3400
+         .setCanbuses(CanBus.kRoboRIO, CanBus.kRoboRIO)
+         .setLimits(-1550.0/4096.0*360.0, 1000.0/4096.0*360.0) //back  1600 min 3400
          .setMotionProfileConstants(3.14, 3.14)
          .setFeedforwardConstants(0, 0.1, 3.05, 0)
          .setPID(0.2, 0, 0)

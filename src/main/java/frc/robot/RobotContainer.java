@@ -526,10 +526,10 @@ public class RobotContainer {
 					.beforeStarting(() -> m_drivetrain.setSlowMode(true)).beforeStarting(()->m_vision.showGripper())
 				)
 		);
-	 	m_buttonPad.button(1).onTrue(
-		  new MoveArmsToCone2NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)
-				.beforeStarting(() -> m_drivetrain.setSlowMode(true))
-		);
+	 	// m_buttonPad.button(1).onTrue(
+		//   new MoveArmsToCone2NoStradle(m_armJoint1, m_Armjoint2, m_Wrist)
+		// 		.beforeStarting(() -> m_drivetrain.setSlowMode(true))
+		// );
 
 		m_testPad.button(1).whileTrue(
 		  new ArmJoint1Outward(m_armJoint1)
@@ -545,6 +545,8 @@ public class RobotContainer {
 		);
 		m_testPad.button(6).whileTrue(new ArmJoint2Outward(m_Armjoint2));
 		m_testPad.button(2).whileTrue(new ArmJoint2Inward(m_Armjoint2));
+		m_testPad.button(3).whileTrue(new WristJointInward2(m_Wrist));
+		m_testPad.button(7).whileTrue(new WristJointOutward2(m_Wrist));
   	}
 
   /**

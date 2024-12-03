@@ -128,7 +128,7 @@ public class Armjoint2V2 extends PIDSubsystem {
   
   
   public void upwards(){
-    if (getAngle().getDegrees() >= m_Cfg.forwardSoftLimit) {
+    if (m_encoder.getPosition() >= m_Cfg.forwardSoftLimit) {
       m_motor.stopMotor();
     } else {
       m_motor.set(.5);
@@ -136,7 +136,7 @@ public class Armjoint2V2 extends PIDSubsystem {
   }
 
   public void downwards() {
-    if (getAngle().getDegrees() <= m_Cfg.reverseSoftLimit) {
+    if (m_encoder.getPosition() <= m_Cfg.reverseSoftLimit) {
       m_motor.stopMotor();
     } else {
       m_motor.set(-.5); 
@@ -156,7 +156,7 @@ public class Armjoint2V2 extends PIDSubsystem {
       outPutVoltage =  m_Cfg.outPutVoltage;
     }
 
-    double angle = getAngle().getDegrees();
+    double angle = m_encoder.getPosition();
 
     if(angle <= m_Cfg.reverseSoftLimit && outPutVoltage < 0){
       outPutVoltage = 0;
